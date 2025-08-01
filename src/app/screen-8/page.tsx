@@ -17,9 +17,9 @@ function ReviewItem({
 }) {
   return (
     <div className="flex justify-between items-start bg-white p-4 rounded shadow-sm">
-      <div>
+      <div className="max-w-[75%]">
         <p className="font-medium">{label}</p>
-        <p className="mt-1 text-gray-700">{value}</p>
+        <p className="mt-1 text-gray-700 whitespace-pre-wrap">{value}</p>
       </div>
       <a href={editLink} className="text-sm text-[#076aff] hover:underline">
         Edit
@@ -67,33 +67,59 @@ export default function Step8() {
         </h1>
 
         <div className="space-y-4">
-          <ReviewItem label="Name" value={data.name} editLink="/" />
-          <ReviewItem label="Email" value={data.email} editLink="/" />
-          <ReviewItem label="One-Liner" value={data.message} editLink="/screen-2" />
+          <ReviewItem label="Full Name" value={data.name} editLink="/" />
+          <ReviewItem label="Email Address" value={data.email} editLink="/" />
           <ReviewItem
-            label="Audience"
+            label="Brand One-Liner"
+            value={data.message}
+            editLink="/screen-2"
+          />
+          <ReviewItem
+            label="Target Audience"
             value={
               <>
-                {data.persona && <span>{data.persona}</span>}
+                {data.persona}
                 {data.customAudience && (
-                  <span>
-                    <br />“{data.customAudience}”
-                  </span>
+                  <>
+                    <br />
+                    “{data.customAudience}”
+                  </>
                 )}
               </>
             }
             editLink="/screen-3"
           />
           <ReviewItem
-            label="Values"
+            label="Brand Values"
             value={Object.entries(data.brandValues)
               .map(([k, v]) => `${k}: ${v}`)
               .join(' · ')}
             editLink="/screen-4"
           />
-          <ReviewItem label="Tagline" value={data.tagline} editLink="/screen-5" />
-          <ReviewItem label="Tone" value={data.voiceTone} editLink="/screen-6" />
-          <ReviewItem label="Content Focus" value={data.topic} editLink="/screen-7" />
+          <ReviewItem
+            label="Tagline"
+            value={data.tagline}
+            editLink="/screen-5"
+          />
+          <ReviewItem
+            label="Voice Tone"
+            value={data.voiceTone}
+            editLink="/screen-6"
+          />
+          <ReviewItem
+            label="Content Focus"
+            value={data.topic}
+            editLink="/screen-7"
+          />
+          <ReviewItem
+            label="Writing Sample"
+            value={
+              data.writingSample.trim()
+                ? data.writingSample
+                : <em>(none provided)</em>
+            }
+            editLink="/screen-7"
+          />
         </div>
 
         <label className="flex items-start space-x-2 mt-6">
@@ -113,9 +139,7 @@ export default function Step8() {
           disabled={!agreed || loading}
           className={`
             mt-4 w-full py-3 rounded text-white font-medium
-            ${agreed
-              ? 'bg-[#f66630] hover:bg-[#e6551a]'
-              : 'bg-gray-300 cursor-not-allowed'}
+            ${agreed ? 'bg-[#f66630] hover:bg-[#e6551a]' : 'bg-gray-300 cursor-not-allowed'}
             transition-colors duration-200
           `}
         >
