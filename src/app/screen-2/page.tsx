@@ -1,78 +1,77 @@
+// src/app/screen-2/page.tsx
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useForm } from '../context/FormContext';
-import ProgressBar from '../components/ProgressBar';
+import { useForm } from '../../context/FormContext';
+import ProgressBar from '../../components/ProgressBar';
 import { useState, useEffect } from 'react';
 
-export default function Step1() {
+export default function Step2() {
   const router = useRouter();
   const { data, setData } = useForm();
-  const [name, setName] = useState(data.name);
-  const [email, setEmail] = useState(data.email);
+  const [message, setMessage] = useState(data.message);
 
+  // initialize from context if returning
   useEffect(() => {
-    setName(data.name);
-    setEmail(data.email);
+    setMessage(data.message);
   }, [data]);
 
+  const handleBack = () => router.back();
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email) {
-      alert('Please fill out both fields.');
+    if (!message.trim()) {
+      alert('Please enter your tight marketing message.');
       return;
     }
-    setData({ name, email });
-    router.push('/screen-2');
+    setData({ message });
+    router.push('/screen-3');
   };
 
   return (
     <main className="min-h-screen flex flex-col px-4 pt-12">
-      <ProgressBar step={1} total={8} />
+      <ProgressBar step={2} total={8} />
 
       <form
         onSubmit={handleNext}
         className="bg-gray-50 p-8 rounded-lg shadow w-full max-w-md mx-auto"
       >
+
         <h1 className="text-2xl font-bold mb-6 text-center">
-          Step 1: Who’s this voice for?
+          Step 2: Describe Your Brand in a Single Sentence
         </h1>
 
-        <label className="block mb-4">
-          <span className="font-medium">Full Name</span>
-          <input
-            type="text"
-            value={name}
-            onChange={e => setName(e.target.value)}
-            className="mt-1 w-full p-2 border rounded"
-          />
-        </label>
+        <p className="mb-4">
+          For <strong>{data.name}</strong> ({data.email})
+        </p>
 
         <label className="block mb-6">
-          <span className="font-medium">Email Address</span>
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            className="mt-1 w-full p-2 border rounded"
+          <span className="font-medium">Message (max 280 chars)</span>
+          <textarea
+            rows={4}
+            maxLength={280}
+            value={message}
+            onChange={e => setMessage(e.target.value)}
+            className="mt-1 w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
           />
+          <p className="text-xs text-gray-500 mt-1">
+            {message.length}/280 characters
+          </p>
         </label>
 
         <div className="flex justify-between">
-          {/* Disabled Back */}
           <button
             type="button"
-            disabled
+            onClick={handleBack}
             className="
               px-6 py-2 rounded border border-gray-300
               bg-white text-black
-              opacity-50 cursor-not-allowed
+              hover:bg-[#076aff] hover:text-white
+              transition-colors duration-200
             "
           >
             ← Back
           </button>
 
-          {/* Next hover uses #f66630 */}
           <button
             type="submit"
             className="
