@@ -10,7 +10,7 @@ export type FormData = {
   message: string;
   persona: string;
   customAudience?: string;
-  brandValues: Record<string, string>;
+  brandValues: Record<string, number>;
   tagline: string;
   voiceTone: string;
   topic: string;

@@ -19,27 +19,27 @@ const VALUES = [
 export default function Step4() {
   const router = useRouter();
   const { data, setData } = useForm();
-  // initialize with context or default 5
-  const [brandValues, setBrandValues] = useState<Record<string, number>>(
-    () =>
-      VALUES.reduce((acc, key) => {
-        acc[key] = data.brandValues?.[key] ?? 5;
-        return acc;
-      }, {} as Record<string, number>)
+
+  const [brandValues, setBrandValues] = useState<Record<string, number>>(() =>
+    VALUES.reduce((acc, key) => {
+      acc[key] = Number(data.brandValues?.[key]) || 5;
+      return acc;
+    }, {} as Record<string, number>)
   );
 
   useEffect(() => {
-    // sync when coming back
     setBrandValues(prev => {
-      const copy = { ...prev };
+      const updated = { ...prev };
       VALUES.forEach(key => {
-        copy[key] = data.brandValues?.[key] ?? copy[key];
+        const parsed = Number(data.brandValues?.[key]);
+        updated[key] = isNaN(parsed) ? updated[key] : parsed;
       });
-      return copy;
+      return updated;
     });
   }, [data]);
 
   const handleBack = () => router.back();
+
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
     setData({ brandValues });
@@ -58,10 +58,11 @@ export default function Step4() {
           Step 4: Prioritize Your Top Brand Qualities
         </h1>
 
-
         {VALUES.map(key => (
           <div key={key} className="flex flex-col">
-            <label className="mb-1 font-medium">{key}: {brandValues[key]}</label>
+            <label className="mb-1 font-medium">
+              {key}: {brandValues[key]}
+            </label>
             <input
               type="range"
               min={0}
