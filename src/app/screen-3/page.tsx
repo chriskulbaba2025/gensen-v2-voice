@@ -13,17 +13,20 @@ export default function Step3() {
 
   // preload if returning
   useEffect(() => {
-    setPersona(data.persona);
-    setCustomAudience(data.customAudience);
+    setPersona(data.persona || '');
+    setCustomAudience(data.customAudience || '');
   }, [data]);
 
   const handleBack = () => router.back();
+
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!persona && !customAudience.trim()) {
       alert('Please select or describe your target audience.');
       return;
     }
+
     setData({ persona, customAudience });
     router.push('/screen-4');
   };
