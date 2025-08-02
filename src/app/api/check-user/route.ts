@@ -5,7 +5,13 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const res = await fetch(process.env.N8N_CHECK_WEBHOOK!, {
+    const webhookURL = process.env.N8N_CHECK_WEBHOOK;
+    if (!webhookURL) {
+      console.error('Missing N8N_CHECK_WEBHOOK in environment variables.');
+      return NextResponse.json({ error: 'Server config error' }, { status: 500 });
+    }
+
+    const res = await fetch(webhookURL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -20,11 +26,13 @@ export async function POST(req: Request) {
     const result = await res.json();
 
     if (!result?.welcomeMessage) {
+      console.error('[n8n MISSING RESPONSE] result:', result);
       return NextResponse.json({ error: 'No welcomeMessage returned from n8n' }, { status: 500 });
     }
 
     return NextResponse.json(result);
   } catch (err) {
+    console.error('check-user error:', err);
     return NextResponse.json({ error: 'Server error calling n8n' }, { status: 500 });
   }
 }
