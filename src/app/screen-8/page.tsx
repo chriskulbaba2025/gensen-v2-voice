@@ -1,4 +1,3 @@
-// src/app/screen-8/page.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -40,12 +39,14 @@ export default function Step8() {
 
     setLoading(true);
     try {
-      const res = await fetch('/api/voice-builder', {
+      const res = await fetch('/api/submit-brand', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
+
       if (!res.ok) throw new Error('Network response was not ok');
+
       router.push('/thank-you');
     } catch (err) {
       console.error(err);
@@ -137,11 +138,9 @@ export default function Step8() {
         <button
           type="submit"
           disabled={!agreed || loading}
-          className={`
-            mt-4 w-full py-3 rounded text-white font-medium
-            ${agreed ? 'bg-[#f66630] hover:bg-[#e6551a]' : 'bg-gray-300 cursor-not-allowed'}
-            transition-colors duration-200
-          `}
+          className={`mt-4 w-full py-3 rounded text-white font-medium ${
+            agreed ? 'bg-[#f66630] hover:bg-[#e6551a]' : 'bg-gray-300 cursor-not-allowed'
+          } transition-colors duration-200`}
         >
           {loading ? 'Generating…' : 'Create My Brand Voice'}
         </button>
