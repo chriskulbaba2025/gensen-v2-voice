@@ -2,9 +2,10 @@
 import './globals.css';
 import { ReactNode } from 'react';
 import { FormProvider } from '@/context/FormContext';
+import Navbar from '@/components/Navbar'; // ✅ Injected import
 
 export const metadata = {
-  title: 'GENSEN Voice Forge',  // ← choose your title here
+  title: 'GENSEN Voice Forge',
   description: 'MVP wizard for agency brand voice creation',
 };
 
@@ -16,6 +17,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="flex flex-col min-h-screen">
+        <Navbar /> {/* ✅ Navbar injected */}
+        
         <header className="w-full py-4 bg-white flex flex-col items-center shadow-sm">
           <img
             src="https://responsegenerators.ca/wp-content/uploads/2025/07/Gensen-Logo-Final-version-lower-case-logo-and-spaces1.webp"
