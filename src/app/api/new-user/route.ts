@@ -30,11 +30,14 @@ export async function POST(req: Request) {
     const rawText = await n8nResponse.text();
     let result = {};
 
-    try {
-      result = rawText ? JSON.parse(rawText) : {};
-    } catch (err) {
-      console.warn('[NEW USER] Non-JSON response from n8n:', rawText);
-    }
+  try {
+  result = rawText ? JSON.parse(rawText) : {};
+} catch (err: unknown) {
+  console.error('[NEW USER] Failed to parse n8n JSON response:', err);
+  console.warn('[NEW USER] Raw response body:', rawText);
+  result = {};
+}
+
 
     console.log('[NEW USER RESULT]', result);
 

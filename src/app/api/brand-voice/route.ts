@@ -1,65 +1,52 @@
 // src/app/api/brand-voice/route.ts
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 
-export async function POST(req: Request) {
+type Length = 'standard' | 'pillar';
+type Intent = 'informational' | 'transactional';
+
+interface BrandVoicePayload {
+  email?: string;
+  keywords?: string;
+  audience?: string;
+  length?: Length;
+  intent?: Intent;
+  internalLinks?: string[];
+}
+
+function isBrandVoicePayload(x: unknown): x is BrandVoicePayload {
+  if (typeof x !== 'object' || x === null) return false;
+  const o = x as Record<string, unknown>;
+  if ('length' in o && o.length !== undefined && o.length !== 'standard' && o.length !== 'pillar') return false;
+  if ('intent' in o && o.intent !== undefined && o.intent !== 'informational' && o.intent !== 'transactional') return false;
+  if ('internalLinks' in o && o.internalLinks !== undefined && !Array.isArray(o.internalLinks)) return false;
+  return true;
+}
+
+export async function POST(req: NextRequest) {
   try {
-    // ✅ Parse request from frontend
-    const body = await req.json();
-    console.log('==============================');
-    console.log('[📦 RECEIVED FROM FRONTEND]');
-    console.log(JSON.stringify(body, null, 2));
-    console.log('==============================');
+    const bodyUnknown = (await req.json()) as unknown;
 
-    // ✅ Validate webhook URL
-    const webhookURL = process.env.N8N_BRAND_VOICE_WEBHOOK;
-    if (!webhookURL) {
-      console.error('❌ Missing N8N_BRAND_VOICE_WEBHOOK in environment variables');
-      return NextResponse.json({ error: 'Server misconfiguration: missing webhook URL' }, { status: 500 });
+    if (!isBrandVoicePayload(bodyUnknown)) {
+      return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
     }
 
-    console.log('[➡️ FORWARDING TO N8N WEBHOOK]', webhookURL);
+    const payload: BrandVoicePayload = bodyUnknown;
 
-    // ✅ Forward request to n8n
-    const n8nRes = await fetch(webhookURL, {
+    const webhook = process.env.NEXT_PUBLIC_N8N_WEBHOOK;
+    if (!webhook) {
+      // No webhook configured: echo payload for visibility
+      return NextResponse.json({ ok: true, received: payload }, { status: 200 });
+    }
+
+    const resp = await fetch(webhook, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body: JSON.stringify(payload),
     });
 
-    // ✅ Capture n8n response
-    const rawText = await n8nRes.text();
-    console.log('==============================');
-    console.log('[📨 RAW RESPONSE FROM N8N]');
-    console.log(rawText);
-    console.log('==============================');
-
-    // ✅ Handle error response
-    if (!n8nRes.ok) {
-      console.error('[❌ N8N WEBHOOK ERROR]', rawText);
-      return NextResponse.json(
-        { error: 'n8n webhook failed', details: rawText },
-        { status: 502 }
-      );
-    }
-
-    // ✅ Attempt to parse JSON safely
-    let parsedResponse: any;
-    try {
-      parsedResponse = JSON.parse(rawText);
-    } catch {
-      parsedResponse = { raw: rawText };
-    }
-
-    console.log('[✅ PARSED N8N RESPONSE]', parsedResponse);
-
-    // ✅ Return response to frontend
-    return NextResponse.json({ ok: true, n8n: parsedResponse }, { status: 200 });
-
-  } catch (err: any) {
-    console.error('❌ brand-voice route error:', err);
-    return NextResponse.json(
-      { error: 'Internal Server Error', details: err.message },
-      { status: 500 }
-    );
+    const text = await resp.text();
+    return new NextResponse(text, { status: resp.status });
+  } catch {
+    return NextResponse.json({ error: 'Bad request' }, { status: 400 });
   }
 }

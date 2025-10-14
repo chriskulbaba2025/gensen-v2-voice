@@ -17,9 +17,10 @@ export default function Step2() {
     }
   );
 
-  useEffect(() => {
-    setData({ sliderScores: sliders });
-  }, [sliders]);
+ useEffect(() => {
+  setData({ sliderScores: sliders });
+}, [sliders, setData]);
+
 
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();

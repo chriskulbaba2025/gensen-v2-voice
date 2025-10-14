@@ -112,13 +112,13 @@ export default function NewUserPage() {
     startFlow();
   }, []);
 
-  // Reveal stat box after 0.6 s fade
-  useEffect(() => {
-    if (loading) {
-      const timer = setTimeout(() => setShowStats(true), 600);
-      return () => clearTimeout(timer);
-    }
-  }, [loading]);
+useEffect(() => {
+  if (loading) {
+    const timer = setTimeout(() => setShowStats(true), 600);
+    return () => clearTimeout(timer);
+  }
+}, [loading, setShowStats]);
+
 
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
