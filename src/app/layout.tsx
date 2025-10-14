@@ -1,8 +1,9 @@
 // src/app/layout.tsx
 import './globals.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';   // ✅ Load Font Awesome globally
 import { ReactNode } from 'react';
 import { FormProvider } from '@/context/FormContext';
-import Navbar from '@/components/Navbar'; // ✅ Injected import
+import Navbar from '@/components/Navbar';
 
 export const metadata = {
   title: 'GENSEN Voice Forge',
@@ -17,13 +18,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="flex flex-col min-h-screen">
-        <Navbar /> {/* ✅ Navbar injected */}
-        
+        <Navbar />
+
         <header className="w-full py-4 bg-white flex flex-col items-center shadow-sm">
           <img
-            src="https://responsegenerators.ca/wp-content/uploads/2025/07/Gensen-Logo-Final-version-lower-case-logo-and-spaces1.webp"
-            alt="GENSEN Logo"
-            className="w-48 h-auto mb-2"
+            src="https://omnipressence.com/wp-content/uploads/2025/09/op-logo-full-script.webp"
+            alt="Omnipressence Logo"
+            className="w-88 h-auto mb-[20px] mt-[20px] rounded-[15px]"
           />
           <h1 className="text-2xl font-bold text-gray-800">
             GENSEN Brand-Voice Builder

@@ -1,129 +1,126 @@
-// src/app/screen-5/page.tsx
 'use client';
 
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from '@/context/FormContext';
 import ProgressBar from '@/components/ProgressBar';
-import { useState, useEffect } from 'react';
 
-const PRESETS = [
-  'Friendly & Approachable',
-  'Bold & Confident',
-  'Warm & Empathetic',
-  'Professional & Direct',
-];
-
-export default function Step5() {
+export default function Step8() {
   const router = useRouter();
-  const { data, setData } = useForm();
-  const [selection, setSelection] = useState(
-    PRESETS.includes(data.tagline) ? data.tagline : 'custom'
-  );
-  const [customTagline, setCustomTagline] = useState(
-    PRESETS.includes(data.tagline) ? '' : data.tagline
-  );
+  const { data } = useForm();
+  const [agreed, setAgreed] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // preload if returning
-  useEffect(() => {
-    if (PRESETS.includes(data.tagline)) {
-      setSelection(data.tagline);
-      setCustomTagline('');
-    } else {
-      setSelection('custom');
-      setCustomTagline(data.tagline);
-    }
-  }, [data]);
-
-  const handleBack = () => router.back();
-  const handleNext = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const finalTagline =
-      selection === 'custom' ? customTagline.trim() : selection;
-    if (!finalTagline) {
-      alert('Please choose or write a tagline.');
-      return;
+    if (!agreed) return;
+    setLoading(true);
+
+    try {
+      // ✅ Clean, minimal payload for n8n
+      const payload = {
+        firstName: data.firstName,
+        email: data.email,
+        business: data.business,
+        url: data.url,
+        brandCore: data.brandCore,
+        sliderScores: data.sliderScores,
+        topic: data.topic,
+        writingSample: data.writingSample,
+      };
+
+      console.log('OUTGOING DATA:', payload); // optional: see payload in console
+
+      const res = await fetch('/api/brand-voice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error('Network response was not ok');
+      router.push('/thank-you');
+    } catch (err) {
+      console.error(err);
+      alert('Oops—something went wrong. Please try again.');
+      setLoading(false);
     }
-    setData({ tagline: finalTagline });
-    router.push('/screen-6');
   };
 
   return (
     <main className="min-h-screen flex flex-col px-4 pt-12">
-      <ProgressBar step={5} total={8} />
+      <ProgressBar step={8} total={8} />
 
       <form
-        onSubmit={handleNext}
-        className="bg-gray-50 p-8 rounded-lg shadow w-full max-w-md mx-auto space-y-6"
+        onSubmit={handleSubmit}
+        className="bg-gray-50 p-8 rounded-lg shadow w-full max-w-xl mx-auto space-y-6"
       >
         <h1 className="text-2xl font-bold text-center">
-          Step 5: Pick or Write Your Tone Tagline
+          Step 8: Review & Submit Your Brand Voice
         </h1>
 
-        <fieldset className="space-y-4">
-          {PRESETS.map(preset => (
-            <label key={preset} className="flex items-center space-x-2">
-              <input
-                type="radio"
-                name="tagline"
-                value={preset}
-                checked={selection === preset}
-                onChange={() => setSelection(preset)}
-                className="form-radio h-5 w-5 text-primary"
-              />
-              <span>{preset}</span>
-            </label>
-          ))}
+        <div className="space-y-4">
+          <div className="bg-white p-4 rounded shadow-sm">
+            <p className="font-medium">Full Name</p>
+            <p className="mt-1 text-gray-700">
+              {`${data.firstName || ''} ${data.lastName || ''}`.trim()}
+            </p>
+          </div>
 
-          <label className="flex items-center space-x-2">
-            <input
-              type="radio"
-              name="tagline"
-              value="custom"
-              checked={selection === 'custom'}
-              onChange={() => setSelection('custom')}
-              className="form-radio h-5 w-5 text-primary"
-            />
-            <span>Custom tagline</span>
-          </label>
-        </fieldset>
+          <div className="bg-white p-4 rounded shadow-sm">
+            <p className="font-medium">Email</p>
+            <p className="mt-1 text-gray-700">{data.email}</p>
+          </div>
 
-        {selection === 'custom' && (
-          <textarea
-            rows={2}
-            maxLength={60}
-            value={customTagline}
-            onChange={e => setCustomTagline(e.target.value)}
-            placeholder="Enter your custom tagline…"
-            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-        )}
+          <div className="bg-white p-4 rounded shadow-sm">
+            <p className="font-medium">Business</p>
+            <p className="mt-1 text-gray-700">{data.business}</p>
+          </div>
 
-        <div className="flex justify-between pt-4">
-          <button
-            type="button"
-            onClick={handleBack}
-            className="
-              px-6 py-2 rounded border border-gray-300
-              bg-white text-black
-              hover:bg-[#076aff] hover:text-white
-              transition-colors duration-200
-            "
-          >
-            ← Back
-          </button>
-          <button
-            type="submit"
-            className="
-              px-6 py-2 rounded border border-gray-300
-              bg-white text-black
-              hover:bg-[#f66630] hover:text-white
-              transition-colors duration-200
-            "
-          >
-            Next →
-          </button>
+          <div className="bg-white p-4 rounded shadow-sm">
+            <p className="font-medium">Website</p>
+            <p className="mt-1 text-gray-700">{data.url}</p>
+          </div>
+
+          <div className="bg-white p-4 rounded shadow-sm">
+            <p className="font-medium">Focus Topic</p>
+            <p className="mt-1 text-gray-700">{data.topic}</p>
+          </div>
+
+          <div className="bg-white p-4 rounded shadow-sm">
+            <p className="font-medium">Writing Sample</p>
+            <p className="mt-1 text-gray-700 whitespace-pre-wrap">
+              {data.writingSample || '(none provided)'}
+            </p>
+          </div>
         </div>
-      </form>
-    </main>
-  );
+{/* Consent checkbox */}
+<label className="flex items-start space-x-2 mt-6">
+  <input
+    type="checkbox"
+    checked={agreed}
+    onChange={(e) => setAgreed(e.target.checked)}
+    className="form-checkbox h-5 w-5 text-[#076aff] mt-1"
+    required
+  />
+  <span className="text-sm text-gray-700 leading-snug">
+    I consent to receive emails and agree that my submitted information will be used to
+    generate my brand voice according to Omnipressence’s privacy policy.
+  </span>
+</label>
+
+{/* Submit button */}
+<button
+  type="submit"
+  disabled={!agreed || loading}
+  className={`mt-4 w-full py-3 rounded text-white font-medium ${
+    agreed
+      ? 'bg-[#f66630] hover:bg-[#e6551a]'
+      : 'bg-gray-300 cursor-not-allowed'
+  } transition-colors duration-200`}
+>
+  {loading ? 'Generating…' : 'Create My Brand Voice'}
+  </button>
+</form>
+</main>
+);
 }

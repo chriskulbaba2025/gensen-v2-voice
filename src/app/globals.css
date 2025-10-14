@@ -1,26 +1,136 @@
 @import "tailwindcss";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
 
+/* ──────────────────────────────────────────────
+   THEME VARIABLES
+────────────────────────────────────────────── */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --brand-blue: #076aff;
+  --brand-lightblue: #40a9ff;
+  --glow-color: rgba(7, 106, 255, 0.25);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --glow-color: rgba(64, 169, 255, 0.35);
   }
 }
 
+/* ──────────────────────────────────────────────
+   GLOBAL STYLES
+────────────────────────────────────────────── */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Raleway", Arial, Helvetica, sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ──────────────────────────────────────────────
+   CUSTOM ANIMATIONS
+────────────────────────────────────────────── */
+
+/* Dual rotating countdown rings */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-reverse-slower {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 4s linear infinite;
+}
+
+.animate-spin-reverse-slower {
+  animation: spin-reverse-slower 6s linear infinite;
+}
+
+/* Glowing stat box — single arrival pulse only */
+@keyframes pulse-once {
+  0% {
+    box-shadow: 0 0 0 var(--glow-color);
+  }
+  50% {
+    box-shadow: 0 0 25px var(--glow-color);
+  }
+  100% {
+    box-shadow: 0 0 8px var(--glow-color);
+  }
+}
+
+.animate-pulse-once {
+  animation: pulse-once 1.5s ease-out forwards;
+}
+
+/* Fade transitions for section changes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 1s ease forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.8s ease forwards;
+}
+
+/* ──────────────────────────────────────────────
+   UTILITY + ACCESSIBILITY
+────────────────────────────────────────────── */
+::selection {
+  background: var(--brand-blue);
+  color: #fff;
+}
+
+a {
+  color: var(--brand-blue);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Soft box shadow for visual polish */
+.shadow-soft {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Optional global container smooth entry */
+.section-fade-in {
+  animation: fadeIn 1s ease both;
 }

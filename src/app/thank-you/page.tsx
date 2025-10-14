@@ -24,13 +24,13 @@ export default function ThankYouPage() {
           Want any refinements — tone tweaks or a human polish? Reach out anytime.
         </p>
 
-        <div className="mb-6">
+        <div className="mb-6 flex justify-center">
           <Image
-            src="https://responsegenerators.ca/wp-content/uploads/2025/07/current-crop-1-1.webp"
-            alt="GENSEN Content Types"
-            width={600}
-            height={400}
-            className="rounded-lg shadow mx-auto"
+            src="https://omnipressence.com/wp-content/uploads/2025/09/Gensen-Logo-Final-version-lower-case-logo-and-spaces1-356x295-1.webp"
+            alt="GENSEN Logo"
+            width={356}
+            height={295}
+            className="rounded-xl shadow-md"
           />
         </div>
 
@@ -39,7 +39,7 @@ export default function ThankYouPage() {
         </p>
 
         <button
-          onClick={() => router.push('/generate')} // Placeholder route
+          onClick={() => router.push('/generate')}
           className="px-6 py-3 bg-[#f66630] text-white font-medium rounded hover:bg-[#e6551a] transition-colors duration-200"
         >
           Start Creating with My Brand Voice
@@ -48,10 +48,10 @@ export default function ThankYouPage() {
         <p className="mt-6 text-sm text-gray-600">
           Need adjustments? Contact Brad Grant, Chief Client Officer: <br />
           <a
-            href="mailto:brad@rgdirect.com"
+            href="mailto:brad@omnipressence.com"
             className="text-[#076aff] hover:underline"
           >
-            brad@rgdirect.com
+            brad@omnipressence.com
           </a>
         </p>
       </div>

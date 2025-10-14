@@ -7,25 +7,21 @@ import { useState } from 'react';
 export default function Page1() {
   const router = useRouter();
   const { data, setData } = useForm();
-
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setMessage('');
-    setSubmitted(true);
 
     try {
       const res = await fetch('/api/check-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: data.name,
+          firstName: data.firstName,
+          lastName: data.lastName,
           email: data.email,
           business: data.business,
           url: data.url,
@@ -33,112 +29,106 @@ export default function Page1() {
       });
 
       const result = await res.json();
-      console.log('[n8n RESPONSE]', result);
+      console.log('[CHECK RESULT]', result);
 
-      const welcome = result?.welcomeMessage;
-      if (!welcome) throw new Error('No welcomeMessage returned from backend');
+      // Handle boolean or string/numeric truthy response
+      const existsFlag =
+        result?.exists === true ||
+        result?.exists === 'true' ||
+        result?.exists === 1 ||
+        result?.exists === '1';
 
-      setMessage(welcome);
-      setData({ ...data, message: welcome });
+      if (existsFlag) {
+        router.push('/existing-user');
+      } else {
+        router.push('/new-user');
+      }
     } catch (err) {
-      setError('We had an issue retrieving your message. Please continue — we’ll fix it shortly.');
+      console.error('Submit Error:', err);
+      setError('Unable to verify your account. Please try again shortly.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleNext = () => {
-    router.push('/screen-2');
-  };
-
   return (
-    <main className="min-h-screen flex flex-col items-center justify-start px-4 pt-12">
+    <main className="min-h-screen flex flex-col items-center justify-start px-4 pt-12 pb-[120px]">
       <form
         onSubmit={handleSubmit}
-        className="bg-gray-50 p-8 rounded-lg shadow w-full max-w-md"
+        className="bg-gray-50 p-8 rounded-lg shadow w-full max-w-3xl"
       >
         <h1 className="text-2xl font-bold mb-6 text-center">
           Step 1: Enter Your Business Details
         </h1>
 
-        <label className="block mb-4">
-          <span className="font-medium">Name</span>
-          <input
-            type="text"
-            value={data.name}
-            onChange={e => setData({ ...data, name: e.target.value })}
-            required
-            className="mt-1 w-full p-2 border rounded"
-          />
-        </label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <span className="font-medium">First Name</span>
+            <input
+              type="text"
+              value={data.firstName || ''}
+              onChange={(e) => setData({ ...data, firstName: e.target.value })}
+              required
+              className="mt-1 w-full p-2 border rounded"
+            />
+          </div>
+          <div>
+            <span className="font-medium">Last Name</span>
+            <input
+              type="text"
+              value={data.lastName || ''}
+              onChange={(e) => setData({ ...data, lastName: e.target.value })}
+              required
+              className="mt-1 w-full p-2 border rounded"
+            />
+          </div>
+        </div>
 
-        <label className="block mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <span className="font-medium">Business</span>
+            <input
+              type="text"
+              value={data.business || ''}
+              onChange={(e) => setData({ ...data, business: e.target.value })}
+              required
+              className="mt-1 w-full p-2 border rounded"
+            />
+          </div>
+          <div>
+            <span className="font-medium">Website URL</span>
+            <input
+              type="url"
+              value={data.url || ''}
+              onChange={(e) => setData({ ...data, url: e.target.value })}
+              required
+              placeholder="https://www.site.com"
+              className="mt-1 w-full p-2 border rounded"
+            />
+          </div>
+        </div>
+
+        <div className="mb-6">
           <span className="font-medium">Email</span>
           <input
             type="email"
-            value={data.email}
-            onChange={e => setData({ ...data, email: e.target.value })}
+            value={data.email || ''}
+            onChange={(e) => setData({ ...data, email: e.target.value })}
             required
             className="mt-1 w-full p-2 border rounded"
           />
-        </label>
-
-        <label className="block mb-4">
-          <span className="font-medium">Business</span>
-          <input
-            type="text"
-            value={data.business}
-            onChange={e => setData({ ...data, business: e.target.value })}
-            required
-            className="mt-1 w-full p-2 border rounded"
-          />
-        </label>
-
-        <label className="block mb-6">
-          <span className="font-medium">Website URL</span>
-          <input
-    type="url"
-    value={data.url}
-    onChange={e => setData({ ...data, url: e.target.value })}
-    required
-    placeholder="https://www.site.com"
-    className="mt-1 w-full p-2 border rounded"
-  />
-</label>
+        </div>
 
         <button
           type="submit"
           disabled={loading}
           className="w-full px-6 py-2 rounded border border-gray-300 bg-white text-black hover:bg-[#076aff] hover:text-white transition-colors duration-200"
         >
-          {loading ? 'Analyzing...' : 'Submit'}
+          {loading ? 'Checking...' : 'Submit'}
         </button>
+
+        {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
       </form>
-
-      {submitted && (
-        <div className="mt-10 text-center w-full max-w-md">
-          {loading && (
-            <p className="animate-pulse text-gray-600 text-lg">Analyzing your brand voice - this takes up to 90 seconds... </p>
-          )}
-
-          {!loading && message && (
-            <p className="text-lg font-semibold mb-4 whitespace-pre-wrap">{message}</p>
-          )}
-
-          {!loading && error && (
-            <p className="text-red-500 text-sm mb-4">{error}</p>
-          )}
-
-          {!loading && (
-            <button
-              onClick={handleNext}
-              className="mt-2 px-6 py-2 rounded border border-gray-300 bg-white text-black hover:bg-[#f66630] hover:text-white transition-colors duration-200"
-            >
-              Next →
-            </button>
-          )}
-        </div>
-      )}
     </main>
   );
 }
