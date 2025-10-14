@@ -8,9 +8,10 @@ import { useRouter } from 'next/navigation';
 export default function Navbar() {
   const router = useRouter();
 
-  const handleLogout = async () => {
-    router.push('/login');
-  };
+ const handleLogout = async () => {
+  window.location.href = 'https://gensen-v2-writer.vercel.app/login';
+};
+
 
   return (
     <nav className="flex justify-between items-center px-[40px] py-[20px] border-b border-[#00000020] bg-white z-50">
