@@ -1,265 +1,352 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useForm } from '../../context/FormContext';
-import { useState, useEffect } from 'react';
-import ProgressBar from '@/components/ProgressBar';
+import { useRouter } from "next/navigation";
+import { useForm } from "../../context/FormContext";
+import { useState, useEffect } from "react";
+import ProgressBar from "@/components/ProgressBar";
+
+// ─────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────
+interface SliderScores {
+  warmthAuthority: number;
+  authorityEnergy: number;
+  warmthEnergy: number;
+  clarityCreativity: number;
+  creativityEmpathy: number;
+  clarityEmpathy: number;
+  overall: number;
+}
 
 export default function Step2() {
   const router = useRouter();
   const { data, setData } = useForm();
 
-  const [sliders, setSliders] = useState(
+  const [sliders, setSliders] = useState<SliderScores>(
     data.sliderScores || {
-      emotional: 5,
-      expressive: 5,
+      warmthAuthority: 5,
+      authorityEnergy: 5,
+      warmthEnergy: 5,
+      clarityCreativity: 5,
+      creativityEmpathy: 5,
+      clarityEmpathy: 5,
       overall: 5,
     }
   );
 
- useEffect(() => {
-  setData({ sliderScores: sliders });
-}, [sliders, setData]);
+  useEffect(() => {
+    if (data.sliderScores) setSliders(data.sliderScores);
+  }, [data.sliderScores]);
 
+  const handleChange = (key: keyof SliderScores, value: number) => {
+    setSliders((prev) => ({ ...prev, [key]: value }));
+  };
 
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
     setData({ sliderScores: sliders });
-    router.push('/screen-3');
+    router.push("/screen-3");
   };
 
   const handleBack = () => router.back();
-
-  const handleSliderChange = (key: keyof typeof sliders, value: number) => {
-    setSliders((prev) => ({ ...prev, [key]: value }));
-  };
-
-  // === Slider 1: Warmth–Authority–Energy ===
-  const getToneDescriptor = (value: number) => {
-    if (value <= 2)
+  // ─────────────────────────────────────────────
+  // Warmth ↔ Authority
+  // ─────────────────────────────────────────────
+  const getWarmthAuthorityDescription = (value: number) => {
+    if (value <= 3)
       return {
-        label: 'Pure Warmth',
-        example:
-          'Empathetic and steady. Human, calm, grounded. Guides gently, never sells. Example: “We get it. Content takes time. Let’s make that time count.”',
+        title: "Pure Warmth",
+        text: `You lead with care and steady intent. The tone is open, calm, and grounded in empathy. Every sentence feels like a hand on the shoulder: reassuring, not selling. It helps people slow down, understand, and feel ready to act.\n\nExample:\nWe don’t rush results.\nWe build trust first.\nWhen people see your consistency, they start believing your message without you having to repeat it.\nThat’s how strong brands grow: one quiet, honest moment at a time.`,
       };
-    if (value === 3)
+    if (value <= 7)
       return {
-        label: 'Warm Authority',
-        example:
-          'Supportive leader. Balances empathy with quiet confidence. Example: “You don’t need louder content. You need content that earns trust.”',
-      };
-    if (value === 4)
-      return {
-        label: 'Authoritative with Warmth',
-        example:
-          'Assured and instructive without edge. Expert who listens first. Example: “Consistency builds confidence. Let’s start there.”',
-      };
-    if (value >= 5 && value <= 6)
-      return {
-        label: 'Pure Authority',
-        example:
-          'Composed, strategic, outcome driven. Minimal emotion, maximum clarity. Example: “The plan is simple. Align your voice. Publish on rhythm. Measure results.”',
-      };
-    if (value === 7)
-      return {
-        label: 'Authoritative with Energy',
-        example:
-          'Confident momentum. Encouraging, not pushy. Example: “You already know the message. Let’s move it into motion.”',
-      };
-    if (value === 8)
-      return {
-        label: 'Energetic Authority',
-        example:
-          'Fast but controlled. Precision with pace. Example: “Momentum matters. Every post should pull the next one forward.”',
+        title: "Balanced Warm Authority",
+        text: `You sound like a calm expert who listens before guiding. The tone blends warmth with direction, turning insight into action. Every message feels steady, helpful, and quietly persuasive.\n\nExample:\nYou already have the knowledge.\nOur role is to make it sound clear and credible.\nWe shape content that teaches, encourages, and earns attention naturally - not by pushing, but by showing people what’s possible when they trust you.`,
       };
     return {
-      label: 'Pure Energy',
-      example:
-        'Focused drive. Sounds like action itself, never chaos. Example: “You’ve got clarity. Now execute before the spark fades.”',
+      title: "Pure Authority",
+      text: `You communicate with confidence that feels earned. Every line is lean, focused, and firm. There’s still warmth in the delivery, but it’s channeled through precision and purpose. The message gives clarity and direction without noise.\n\nExample:\nThe best leaders don’t chase attention.\nThey direct it.\nWe turn complex ideas into simple strategies that move people and performance forward - one clear message, perfectly timed.`,
     };
   };
 
-  // === Slider 2: Clarity–Creativity–Empathy ===
-  const getExpressionDescriptor = (value: number) => {
-    if (value <= 2)
+  // ─────────────────────────────────────────────
+  // Authority ↔ Energy
+  // ─────────────────────────────────────────────
+  const getAuthorityEnergyDescription = (value: number) => {
+    if (value <= 3)
       return {
-        label: 'Pure Clarity',
-        example:
-          'Structured and concise. Every word serves understanding. Example: “Clear ideas build trust faster than clever words.”',
+        title: "Measured Authority",
+        text: `You stay composed and deliberate. Your message moves with purpose, not urgency. Every statement feels grounded, intentional, and confident without pressure.\n\nExample:\nProgress comes from steady focus.\nEach plan unfolds with logic and trust.\nYou don’t rush decisions - you guide them.\nThat’s how strong direction becomes lasting momentum.`,
       };
-    if (value === 3)
+    if (value <= 7)
       return {
-        label: 'Clarity with Creativity',
-        example:
-          'Grounded logic with subtle spark. Example: “Facts tell the story, but phrasing gives it rhythm.”',
-      };
-    if (value === 4)
-      return {
-        label: 'Balanced Expression',
-        example:
-          'Measured and intentional. Combines clear reasoning with personality. Example: “Good writing shows its thinking without showing off.”',
-      };
-    if (value >= 5 && value <= 6)
-      return {
-        label: 'Pure Creativity',
-        example:
-          'Inventive but still disciplined. Adds tone and story to structure. Example: “Ideas work harder when language moves with purpose.”',
-      };
-    if (value === 7)
-      return {
-        label: 'Creative with Empathy',
-        example:
-          'Expressive yet emotionally intelligent. Example: “Write like you know who’s on the other side of the screen.”',
-      };
-    if (value === 8)
-      return {
-        label: 'Empathetic Creativity',
-        example:
-          'Warm imagination with awareness. Example: “Stories that care connect faster than statements that prove.”',
+        title: "Balanced Drive",
+        text: `You stay in motion with purpose in your stride. Each plan starts clear, gains pace, and keeps its line. The tone feels alive yet measured enough to listen.\n\nExample:\nYou make progress visible, one confident decision at a time.\nPeople follow because you balance speed with sense.\nYour clarity keeps the pace productive, not frantic.`,
       };
     return {
-      label: 'Pure Empathy',
-      example:
-        'Emotion led and people first. Example: “Say it the way your audience needs to hear it, not the way you need to say it.”',
+      title: "Full Energy",
+      text: `You speak with visible intent. Each message sparks urgency and drive. You keep clarity high but momentum higher - pushing ideas forward with conviction and rhythm.\n\nExample:\nEvery choice signals action.\nWe move when others wait.\nEach message propels people to act - fast, clear, and focused on the next step.`,
     };
   };
 
-  // === Slider 3: Combined Tone Balance ===
-  const getBalanceDescriptor = (value: number) => {
-    if (value <= 2)
+  // ─────────────────────────────────────────────
+  // Warmth ↔ Energy (V2.1)
+  // ─────────────────────────────────────────────
+  const getWarmthEnergyDescription = (value: number) => {
+    if (value <= 3)
       return {
-        label: 'Grounded Balance',
-        example:
-          'Calm and deliberate. Reflective tone that values space and thought. Example: “Every message earns attention through clarity, not volume.”',
+        title: "Pure Warmth",
+        text: `You speak with steady calm that earns trust before you ever make a point. The tone feels like a guide’s hand - patient, kind, always composed. You make complexity simple by slowing the pace until clarity appears.\n\nExample:\nWe take time to listen before we lead.\nThe goal isn’t speed: it’s strength that lasts.\nWhen people feel supported and understood, they move forward naturally.\nThat’s how lasting progress begins.`,
       };
-    if (value === 3)
+    if (value <= 7)
       return {
-        label: 'Measured Rhythm',
-        example:
-          'Reflective but beginning to build flow. Example: “Keep the pace steady and the message aligned.”',
-      };
-    if (value === 4)
-      return {
-        label: 'Assured Flow',
-        example:
-          'Balanced energy with confidence. Example: “When your tone moves with purpose, people trust your message.”',
-      };
-    if (value >= 5 && value <= 6)
-      return {
-        label: 'Pure Balance',
-        example:
-          'Calm meets drive. Predictable rhythm with flexible tone. Example: “Each piece fits cleanly into the rhythm of your brand.”',
-      };
-    if (value === 7)
-      return {
-        label: 'Dynamic Balance',
-        example:
-          'Smooth momentum, alive but measured. Example: “Energy is valuable when it keeps clarity intact.”',
-      };
-    if (value === 8)
-      return {
-        label: 'Energized Rhythm',
-        example:
-          'Fast yet controlled, agile tone with strategic pacing. Example: “Keep your message sharp enough to move fast and still stay clear.”',
+        title: "Balanced Warm Energy",
+        text: `Your tone walks the line between warmth and motion. There’s empathy in your rhythm and confidence in your direction. You move people by showing that action can feel calm, and calm can still create change.\n\nExample:\nYou already know where you’re headed - we just help you move with purpose.\nEvery message carries balance: part encouragement, part direction.\nStep by step, clarity turns into progress.`,
       };
     return {
-      label: 'Forward Momentum',
-      example:
-        'Peak movement and drive. Inspires consistent action without noise. Example: “Your brand speaks like it’s already moving forward.”',
+      title: "Pure Energy",
+      text: `You sound sharp, focused, alive. The language carries weight and movement - fast but never rushed. Every word pushes forward with intent, turning clarity into drive.\n\nExample:\nMomentum doesn’t wait.\nIt starts with the next word, the next idea, the next step.\nSpeak with conviction, act with rhythm, and let motion do the talking.`,
+    };
+  };
+// ─────────────────────────────────────────────
+// Clarity ↔ Creativity (V2.1)
+// ─────────────────────────────────────────────
+const getClarityCreativityDescription = (value: number) => {
+  if (value <= 3)
+    return {
+      title: "Pure Clarity",
+      text: `You write to reveal, not impress. Every sentence has purpose and calm precision. The tone builds instant trust by removing clutter and letting meaning lead. It’s confident, respectful, and easy to follow - a voice people rely on when they need direction.\n\nExample:\nStrong ideas speak plainly.\nYou don’t decorate truth: you define it.\nThe right words build understanding, one clear decision at a time.`,
+    };
+  if (value <= 7)
+    return {
+      title: "Balanced Expression",
+      text: `Your voice moves with logic and light. Structure gives your ideas shape; tone gives them life. You teach, inspire, and lead through rhythm - showing that clarity and creativity don’t compete; they collaborate.\n\nExample:\nFacts earn attention, but tone keeps it.\nYou turn explanation into engagement, turning each insight into something people can see, feel, and remember.`,
+    };
+  return {
+    title: "Pure Creativity",
+    text: `You speak in motion. The words paint, pulse, and connect instantly. Meaning becomes story; insight becomes emotion. You stretch language just enough to wake the reader - never to lose them.\n\nExample:\nAn idea isn’t finished until it moves someone.\nYou bring logic to life, adding rhythm where others stop at reason.\nThe message doesn’t just explain - it resonates.`,
+  };
+};
+// ─────────────────────────────────────────────
+// Creativity ↔ Empathy (V2.2)
+// ─────────────────────────────────────────────
+const getCreativityEmpathyDescription = (value: number) => {
+  if (value <= 3)
+    return {
+      title: "Pure Creativity",
+      text: `You think in color and shape. Every idea arrives like a spark - surprising but deliberate. The tone inspires curiosity, turning complex thoughts into something people can see, hear, and almost feel. You write to open minds, not to impress them.\n\nExample:\nYou build bridges out of imagination.\nEach line paints movement, like a brush across water.\nYour stories expand what feels possible, while still keeping both feet on the ground.`,
+    };
+  if (value <= 7)
+    return {
+      title: "Balanced Creative Empathy",
+      text: `You speak in rhythm - half insight, half heartbeat. Ideas start vivid, then soften into understanding. The tone shows awareness: bold enough to catch attention, gentle enough to keep it. People feel guided, not directed.\n\nExample:\nYou use creativity as connection.\nEvery phrase carries warmth beneath the structure.\nYou turn inspiration into belonging - showing people they are part of the idea, not the audience of it.`,
+    };
+  return {
+    title: "Pure Empathy",
+    text: `You write like you’re in the same room as your reader. Each word lands with care, creating calm in the noise. The message doesn’t push: it invites. People listen because they feel seen, not sold to.\n\nExample:\nYou start with listening, then translate what you hear into language that feels human.\nYour writing doesn’t persuade - it understands.\nThat understanding builds trust, and trust opens doors that logic alone never could.`,
+  };
+};
+// ─────────────────────────────────────────────
+// Clarity ↔ Empathy (V2.1)
+// ─────────────────────────────────────────────
+const getClarityEmpathyDescription = (value: number) => {
+  if (value <= 3)
+    return {
+      title: "Pure Clarity",
+      text: `You write like an architect - deliberate, structured, exact. Every word fits its place, every line holds weight. You focus on understanding above emotion, building trust through logic and clean rhythm.\n\nExample:\nYou keep your language simple so your message feels strong.\nFacts do the work; tone stays neutral.\nYou make complex ideas sound obvious - that’s your quiet power.`,
+    };
+  if (value <= 7)
+    return {
+      title: "Balanced Clarity and Empathy",
+      text: `You blend precision with awareness. The tone feels clear but not cold, thoughtful but not hesitant. You explain first, then connect. Each sentence gives people both the “what” and the “why.”\n\nExample:\nYou shape your message so it feels like conversation, not instruction.\nYou guide people through logic and care at once.\nThey finish reading with clarity - and confidence that you understand them.`,
+    };
+  return {
+    title: "Pure Empathy",
+    text: `You write to reach people where they are. Your words carry patience, kindness, and respect. Clarity still matters, but understanding leads. The tone feels human, like conversation between equals.\n\nExample:\nYou speak in sentences that listen.\nYou replace authority with understanding.\nReaders feel calm and seen — and that’s what keeps them engaged.`,
+  };
+};
+// ─────────────────────────────────────────────
+// Overall Tone Balance (V3.5 — Capstone Field)
+// ─────────────────────────────────────────────
+const getOverallDescription = (value: number) => {
+  if (value <= 3)
+    return {
+      title: "Grounded Balance",
+      text: `You write with measured pace and deliberate rhythm. Each thought feels anchored, considered, and steady. The sentences breathe; they give space for understanding. This tone removes friction and creates psychological safety - the reader never feels rushed or overwhelmed. You communicate confidence by doing less, saying only what must be said, and letting the weight of clarity speak for itself. Your words sound like focus, your rhythm like trust being built in real time.\n\nExample:\nYou open with calm assurance - short, precise sentences that sound composed.\nEach paragraph invites reflection rather than reaction.\nYou use pauses as part of persuasion, allowing people to feel the meaning before they process it.\nThis is the rhythm of expertise: the slower you speak, the faster they believe.`,
+    };
+  if (value <= 7)
+    return {
+      title: "Dynamic Equilibrium",
+      text: `You balance poise with progress. The message moves forward, but each idea has room to land. This tone feels confident yet conversational - the kind of voice that can energize a team meeting or calm a stakeholder in the same breath. You use cadence as a design tool: alternating tempo, sentence length, and emphasis to keep readers mentally active while emotionally grounded. Every section feels like guidance in motion - measured, clear, alive.\n\nExample:\nYou build rhythm through variation - one short line to focus attention, one longer to expand meaning.\nYour tone rises and settles like breathing - movement without chaos.\nYou sound approachable but composed, blending expert certainty with human rhythm.\nThe result: content that feels alive, not loud; confident, not cold.`,
+    };
+  return {
+    title: "Forward Momentum",
+    text: `You write with kinetic energy and clarity fused together. Each paragraph carries pulse and direction, like a well-timed stride. You use movement as meaning - verbs lead, sentences flow, ideas escalate naturally. The tone projects vision and competence: it doesn’t wait for change, it initiates it. Your writing feels awake, physical, and focused - every phrase propels understanding forward. This is where communication turns into leadership.\n\nExample:\nYou start strong, finish stronger - each sentence builds pressure toward action.\nYour verbs carry muscle: move, build, align, deliver.\nParagraphs unfold like momentum you can hear - fast enough to inspire, clear enough to trust.\nReaders don’t just follow your message; they feel themselves accelerate with it.`,
+  };
+};
+
+
+  // ─────────────────────────────────────────────
+  // Placeholder generator for other sliders
+  // ─────────────────────────────────────────────
+  const getPlaceholderDescription = (title: string) => {
+    return {
+      title: `[PLACEHOLDER: ${title}]`,
+      text: `[PLACEHOLDER: Paste description + example for "${title}" here]`,
     };
   };
 
-  const tone = getToneDescriptor(sliders.emotional);
-  const expression = getExpressionDescriptor(sliders.expressive);
-  const balance = getBalanceDescriptor(sliders.overall);
 
+  // ─────────────────────────────────────────────
+  // Slider Component
+  // ─────────────────────────────────────────────
+  interface SliderProps {
+    title: string;
+    leftLabel: string;
+    rightLabel: string;
+    value: number;
+    description: string;
+    onChange: (val: number) => void;
+    dynamicText?: { title: string; text: string } | null;
+  }
+
+  const Slider = ({
+    title,
+    leftLabel,
+    rightLabel,
+    value,
+    description,
+    onChange,
+    dynamicText,
+  }: SliderProps) => (
+    <section className="bg-gray-50 border rounded-lg p-6 shadow-sm w-full max-w-3xl mb-6 select-none">
+      <h2 className="text-lg font-semibold mb-1 text-gray-800">{title}</h2>
+      <p className="text-sm text-gray-600 mb-3">{description}</p>
+      <input
+        type="range"
+        min={1}
+        max={10}
+        step={1}
+        value={value}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          onChange(Number(e.target.value))
+        }
+        className="w-full h-2 bg-gray-200 rounded-lg appearance-none accent-[#076aff] cursor-grab active:cursor-grabbing"
+      />
+      <div className="flex justify-between text-sm text-gray-600 mt-1">
+        <span>{leftLabel}</span>
+        <span>{rightLabel}</span>
+      </div>
+
+      {dynamicText && (
+        <div className="mt-3 p-4 bg-white border rounded-md shadow-sm transition-all duration-200">
+          <p className="text-sm font-semibold text-[#076aff] mb-1">
+            {dynamicText.title}
+          </p>
+          <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+            {dynamicText.text}
+          </p>
+        </div>
+      )}
+    </section>
+  );
+
+  // ─────────────────────────────────────────────
+  // Render
+  // ─────────────────────────────────────────────
   return (
     <main className="min-h-screen flex flex-col items-center px-4 pt-12 mb-20">
       <ProgressBar step={2} total={4} />
-
       <h1 className="text-2xl font-bold mb-4 text-center">
         Step 2: Tune Your Brand Voice
       </h1>
-
       <p className="text-gray-600 text-center max-w-2xl mb-10 leading-relaxed">
-        This section helps define how your voice sounds in practice. Each slider shapes tone,
-        clarity, and overall energy so the system understands your natural rhythm.
+        Adjust each slider to define how your brand feels and sounds. Each
+        control moves between two traits that shape tone, pace, and emotion.
       </p>
 
-      {/* === Card 1 === */}
-      <section className="bg-gray-50 border rounded-lg p-6 shadow-sm w-full max-w-3xl mb-8">
-        <h2 className="text-lg font-semibold mb-2 text-gray-800">
-          Warmth ↔ Authority ↔ Energy
-        </h2>
-        <p className="text-sm text-gray-600 mb-4">
-          Adjust this to set how confident or relaxed your brand sounds. It balances
-          approachability, control, and pace.
-        </p>
-        <input
-          type="range"
-          min={1}
-          max={10}
-          value={sliders.emotional}
-          onChange={(e) => handleSliderChange('emotional', Number(e.target.value))}
-          className="w-full accent-[#076aff]"
-        />
-        <div className="flex justify-between items-center mt-2 mb-2">
-          <p className="text-sm font-medium text-gray-700">{tone.label}</p>
-          <p className="text-sm text-gray-500">Tone Level: {sliders.emotional}</p>
-        </div>
-        <p className="text-sm italic text-gray-700 leading-relaxed">{tone.example}</p>
-      </section>
+      <h3 className="text-xl font-semibold mb-3 text-[#076aff]">Tone Dynamics</h3>
 
-      {/* === Card 2 === */}
-      <section className="bg-gray-50 border rounded-lg p-6 shadow-sm w-full max-w-3xl mb-8">
-        <h2 className="text-lg font-semibold mb-2 text-gray-800">
-          Clarity ↔ Creativity ↔ Empathy
-        </h2>
-        <p className="text-sm text-gray-600 mb-4">
-          Adjust this to define how imaginative or structured your message feels. It balances
-          precision with personality and emotional awareness.
-        </p>
-        <input
-          type="range"
-          min={1}
-          max={10}
-          value={sliders.expressive}
-          onChange={(e) => handleSliderChange('expressive', Number(e.target.value))}
-          className="w-full accent-[#076aff]"
-        />
-        <div className="flex justify-between items-center mt-2 mb-2">
-          <p className="text-sm font-medium text-gray-700">{expression.label}</p>
-          <p className="text-sm text-gray-500">Tone Level: {sliders.expressive}</p>
-        </div>
-        <p className="text-sm italic text-gray-700 leading-relaxed">{expression.example}</p>
-      </section>
+      <Slider
+        title="Warmth ↔ Authority"
+        leftLabel="Warmth"
+        rightLabel="Authority"
+        description="Sets whether your message feels gentle and human (Warmth) or confident and directive (Authority)."
+        value={sliders.warmthAuthority}
+        onChange={(val) => handleChange("warmthAuthority", val)}
+        dynamicText={getWarmthAuthorityDescription(sliders.warmthAuthority)}
+      />
 
-      {/* === Card 3 === */}
-      <section className="bg-gray-50 border rounded-lg p-6 shadow-sm w-full max-w-3xl mb-10">
-        <h2 className="text-lg font-semibold mb-2 text-gray-800">
-          Combined Tone Balance
-        </h2>
-        <p className="text-sm text-gray-600 mb-4">
-          This overall slider represents your complete brand tone blend. It helps the system gauge
-          your preferred rhythm and balance across messages.
-        </p>
-        <input
-          type="range"
-          min={1}
-          max={10}
-          value={sliders.overall}
-          onChange={(e) => handleSliderChange('overall', Number(e.target.value))}
-          className="w-full accent-[#076aff]"
-        />
-        <div className="flex justify-between items-center mt-2 mb-2">
-          <p className="text-sm font-medium text-gray-700">{balance.label}</p>
-          <p className="text-sm text-gray-500">Tone Level: {sliders.overall}</p>
-        </div>
-        <p className="text-sm italic text-gray-700 leading-relaxed">{balance.example}</p>
-      </section>
+      <Slider
+        title="Authority ↔ Energy"
+        leftLabel="Authority"
+        rightLabel="Energy"
+        description="Controls how composed versus driven your tone is."
+        value={sliders.authorityEnergy}
+        onChange={(val) => handleChange("authorityEnergy", val)}
+        dynamicText={getAuthorityEnergyDescription(sliders.authorityEnergy)}
+      />
 
-      {/* === Navigation Buttons === */}
-      <div className="flex justify-between w-full max-w-3xl">
+      <Slider
+        title="Warmth ↔ Energy"
+        leftLabel="Warmth"
+        rightLabel="Energy"
+        description="Balances empathy with enthusiasm."
+        value={sliders.warmthEnergy}
+        onChange={(val) => handleChange("warmthEnergy", val)}
+        dynamicText={getWarmthEnergyDescription(sliders.warmthEnergy)}
+      />
+
+      <h3 className="text-xl font-semibold mt-8 mb-3 text-[#076aff]">
+        Expression Style
+      </h3>
+
+      <Slider
+  title="Clarity ↔ Creativity"
+  leftLabel="Clarity"
+  rightLabel="Creativity"
+  description="Defines whether writing prioritizes precision or imaginative flow."
+  value={sliders.clarityCreativity}
+  onChange={(val) => handleChange("clarityCreativity", val)}
+  dynamicText={getClarityCreativityDescription(sliders.clarityCreativity)}
+/>
+
+  <Slider
+  title="Creativity ↔ Empathy"
+  leftLabel="Creativity"
+  rightLabel="Empathy"
+  description="Determines how expressive versus emotionally aware your tone feels."
+  value={sliders.creativityEmpathy}
+  onChange={(val) => handleChange("creativityEmpathy", val)}
+  dynamicText={getCreativityEmpathyDescription(sliders.creativityEmpathy)}
+/>
+
+
+      <Slider
+        title="Clarity ↔ Empathy"
+        leftLabel="Clarity"
+        rightLabel="Empathy"
+        description="Controls whether messages sound direct or listener-focused."
+        value={sliders.clarityEmpathy}
+        onChange={(val) => handleChange("clarityEmpathy", val)}
+        dynamicText={getClarityEmpathyDescription(sliders.clarityEmpathy)}
+      />
+
+      <h3 className="text-xl font-semibold mt-8 mb-3 text-[#076aff]">
+        Overall Balance
+      </h3>
+
+      <Slider
+        title="Overall Tone Balance"
+        leftLabel="Grounded"
+        rightLabel="Dynamic"
+        description="Represents the general pace and confidence level of your brand’s communication style."
+        value={sliders.overall}
+        onChange={(val) => handleChange("overall", val)}
+        dynamicText={getOverallDescription(sliders.overall)}
+      />
+
+      <div className="flex justify-between w-full max-w-3xl mt-10">
         <button
           onClick={handleBack}
           className="px-6 py-2 rounded border border-gray-300 bg-white text-black hover:bg-[#076aff] hover:text-white transition-colors duration-200"

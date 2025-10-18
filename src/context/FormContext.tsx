@@ -24,42 +24,50 @@ export type OpportunityDetail = {
   opportunity: string;
 };
 
+// ──────────────────────────────────────────────
 // Global FormData structure
+// ──────────────────────────────────────────────
+
 export type FormData = {
+  // ── Basic info
   firstName: string;
   lastName: string;
   email: string;
   business: string;
   url: string;
+
+  // ── Additional metadata
   message: string;
   persona: string;
   customAudience?: string;
   brandValues: Record<string, number>;
   tagline: string;
   voiceTone: string;
+
+  // ── Brand-Voice inputs
   topic: string;
   writingSample: string;
 
-  // Raw data array from webhook (Brand Statement, Audience, ICP)
+  // ── Webhook-derived data
   core?: BrandCoreField[];
-
-  // Structured summary used in later steps
   brandCore?: {
     'Brand Statement'?: string;
     'Audience'?: string;
     'ICP'?: string;
   };
 
-  // ✅ Persisted socials data (from webhook)
+  // ── Social + Opportunity maps
   socials?: SocialDetail[];
-
-  // ✅ Local-only opportunity map (not persisted across pages)
   opportunities?: OpportunityDetail[];
 
-  // Tone sliders (Step 2)
-  sliderScores?: {
-    emotional: number;
-    expressive: number;
+  // ── Tone sliders (7-field model)
+  sliderScores: {
+    warmthAuthority: number;
+    authorityEnergy: number;
+    warmthEnergy: number;
+    clarityCreativity: number;
+    creativityEmpathy: number;
+    clarityEmpathy: number;
     overall: number;
   };
 };
@@ -73,7 +81,10 @@ type FormContextType = {
   setData: (values: Partial<FormData>) => void;
 };
 
+// ──────────────────────────────────────────────
 // Create context
+// ──────────────────────────────────────────────
+
 const FormContext = createContext<FormContextType | null>(null);
 
 // ──────────────────────────────────────────────
@@ -82,6 +93,7 @@ const FormContext = createContext<FormContextType | null>(null);
 
 export const FormProvider = ({ children }: { children: ReactNode }) => {
   const [data, setDataState] = useState<FormData>({
+    // ── Defaults for basic fields
     firstName: '',
     lastName: '',
     email: '',
@@ -96,23 +108,31 @@ export const FormProvider = ({ children }: { children: ReactNode }) => {
     topic: '',
     writingSample: '',
 
-    // Initialize placeholders for webhook and refined brand core
+    // ── Webhook and brand data
     core: [],
     brandCore: {
       'Brand Statement': '',
       'Audience': '',
       'ICP': '',
     },
+
+    // ── Social and opportunity maps
     socials: [],
     opportunities: [],
 
+    // ── Tone sliders (initialize mid-scale)
     sliderScores: {
-      emotional: 5,
-      expressive: 5,
+      warmthAuthority: 5,
+      authorityEnergy: 5,
+      warmthEnergy: 5,
+      clarityCreativity: 5,
+      creativityEmpathy: 5,
+      clarityEmpathy: 5,
       overall: 5,
     },
   });
 
+  // Global setter for merging new data
   const setData = (values: Partial<FormData>) => {
     setDataState((prev) => ({
       ...prev,

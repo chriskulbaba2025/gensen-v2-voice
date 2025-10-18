@@ -27,7 +27,7 @@ export default function Step4() {
         business: data.business,
         url: data.url,
         brandCore: data.brandCore,
-        sliderScores: data.sliderScores,
+        sliderScores: data.sliderScores, // ✅ includes tone data
         topic: data.topic,
         writingSample: data.writingSample,
       };
@@ -49,6 +49,30 @@ export default function Step4() {
     }
   };
 
+  // ─────────────────────────────────────────────
+  // Helper: Tone summary display
+  // ─────────────────────────────────────────────
+  const renderToneSummary = () => {
+    const s = data.sliderScores || {};
+    return (
+      <div className="bg-white p-4 rounded shadow-sm">
+        <p className="font-medium mb-2 text-[#076aff]">Tone Calibration Summary</p>
+        <ul className="space-y-1 text-gray-700 text-sm">
+          <li>Warmth ↔ Authority: <b>{s.warmthAuthority ?? '-'}</b></li>
+          <li>Authority ↔ Energy: <b>{s.authorityEnergy ?? '-'}</b></li>
+          <li>Warmth ↔ Energy: <b>{s.warmthEnergy ?? '-'}</b></li>
+          <li>Clarity ↔ Creativity: <b>{s.clarityCreativity ?? '-'}</b></li>
+          <li>Creativity ↔ Empathy: <b>{s.creativityEmpathy ?? '-'}</b></li>
+          <li>Clarity ↔ Empathy: <b>{s.clarityEmpathy ?? '-'}</b></li>
+          <li>Overall Tone Balance: <b>{s.overall ?? '-'}</b></li>
+        </ul>
+      </div>
+    );
+  };
+
+  // ─────────────────────────────────────────────
+  // Render
+  // ─────────────────────────────────────────────
   return (
     <main className="min-h-screen flex flex-col px-4 pt-12">
       <ProgressBar step={4} total={4} />
@@ -57,9 +81,12 @@ export default function Step4() {
         onSubmit={handleSubmit}
         className="bg-gray-50 p-8 rounded-lg shadow w-full max-w-xl mx-auto space-y-6"
       >
-        <h1 className="text-2xl font-bold text-center">Step 4: Review & Consent</h1>
+        <h1 className="text-2xl font-bold text-center">
+          Step 4: Review & Consent
+        </h1>
 
         <div className="space-y-4">
+          {/* Personal and business info */}
           <div className="bg-white p-4 rounded shadow-sm">
             <p className="font-medium">Full Name</p>
             <p className="mt-1 text-gray-700">
@@ -93,6 +120,9 @@ export default function Step4() {
               {data.writingSample || '(none provided)'}
             </p>
           </div>
+
+          {/* ✅ Tone summary section */}
+          {renderToneSummary()}
         </div>
 
         {/* Consent checkbox (required) */}
@@ -105,8 +135,9 @@ export default function Step4() {
             required
           />
           <span className="text-sm text-gray-700 leading-snug">
-            I consent to receive emails and agree that my submitted information will be used
-            to generate my brand voice according to Omnipressence’s privacy policy.
+            I consent to receive emails and agree that my submitted information
+            will be used to generate my brand voice according to Omnipressence’s
+            privacy policy.
           </span>
         </label>
 
