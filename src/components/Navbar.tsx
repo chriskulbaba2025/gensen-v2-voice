@@ -43,12 +43,12 @@ export default function Navbar() {
           Icon={Gauge}
         />
         <NavItem
-          href="https://voice.omnipressence.com/dashboard/welcome"
+          href="https://voice.omnipressence.com"
           label="Brand Voice"
           Icon={Gauge}
         />
         <NavItem
-          href="https://map.omnipressence.com/dashboard/welcome"
+          href="https://map.omnipressence.com"
           label="Topical Map"
           Icon={Gauge}
         />
