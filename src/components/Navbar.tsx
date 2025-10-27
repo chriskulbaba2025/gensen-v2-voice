@@ -1,20 +1,17 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
 import { Gauge, LogOut } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
 
 export default function Navbar() {
-  const router = useRouter();
-
   const handleLogout = async () => {
     try {
       await fetch('/api/auth/logout', { method: 'GET' });
     } catch (e) {
       console.error('Logout error', e);
     } finally {
-      router.push('https://portal.omnipressence.com/login');
+      window.location.href = 'https://portal.omnipressence.com/login';
     }
   };
 
@@ -22,7 +19,8 @@ export default function Navbar() {
     <nav className="flex justify-between items-center px-[40px] py-[20px] border-b border-[#00000020] bg-white z-50">
       {/* Logo → back to dashboard */}
       <a
-        href="https://portal.omnipressence.com/dashboard/welcome"
+        href="https://voice.omnipressence.com/dashboard/welcome"
+        target="_self"
         className="flex items-center no-underline"
       >
         <Image
@@ -43,25 +41,21 @@ export default function Navbar() {
           href="https://portal.omnipressence.com/dashboard/welcome"
           label="Dashboard"
           Icon={Gauge}
-          external
         />
         <NavItem
           href="https://voice.omnipressence.com/dashboard/welcome"
           label="Brand Voice"
           Icon={Gauge}
-          external
         />
         <NavItem
           href="https://map.omnipressence.com/dashboard/welcome"
           label="Topical Map"
           Icon={Gauge}
-          external
         />
         <NavItem
           href="https://portal.omnipressence.com/generate/step-1"
           label="Content Generator"
           Icon={Gauge}
-          external
         />
         <NavItemButton onClick={handleLogout} label="Logout" Icon={LogOut} />
       </div>
@@ -72,13 +66,12 @@ export default function Navbar() {
 type IconType = React.ComponentType<{ size?: number; className?: string }>;
 
 type NavItemProps = {
-  href?: string;
+  href: string;
   label: string;
   Icon: IconType;
-  external?: boolean;
 };
 
-function NavItem({ href = '#', label, Icon, external = false }: NavItemProps) {
+function NavItem({ href, label, Icon }: NavItemProps) {
   const content = (
     <>
       <Icon size={18} />
@@ -115,17 +108,10 @@ function NavItem({ href = '#', label, Icon, external = false }: NavItemProps) {
   const base =
     'flex items-center gap-[8px] text-[16px] font-medium text-black hover:text-[#076aff] no-underline';
 
-  if (external)
-    return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={base}>
-        {content}
-      </a>
-    );
-
   return (
-    <Link href={href} className={base}>
+    <a href={href} target="_self" rel="noopener noreferrer" className={base}>
       {content}
-    </Link>
+    </a>
   );
 }
 
