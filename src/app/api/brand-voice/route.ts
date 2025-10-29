@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
     const payload: BrandVoicePayload = bodyUnknown;
 
-    const webhook = process.env.NEXT_PUBLIC_N8N_WEBHOOK;
+    const webhook = process.env.NEXT_PUBLIC_N8N_BRAND_VOICE_WEBHOOK || 'https://primary-production-77e7.up.railway.app/webhook/brand-voice';
     if (!webhook) {
       // No webhook configured: echo payload for visibility
       return NextResponse.json({ ok: true, received: payload }, { status: 200 });

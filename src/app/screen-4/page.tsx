@@ -41,7 +41,7 @@ export default function Step4() {
       });
 
       if (!res.ok) throw new Error('Webhook failed');
-      router.push('/thank-you');
+      router.push('/report');
     } catch (err) {
       console.error(err);
       alert('Submission failed. Try again.');
