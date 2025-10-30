@@ -1,52 +1,63 @@
 // src/app/api/brand-voice/route.ts
 import { NextResponse, NextRequest } from 'next/server';
 
-type Length = 'standard' | 'pillar';
-type Intent = 'informational' | 'transactional';
-
 interface BrandVoicePayload {
-  email?: string;
-  keywords?: string;
-  audience?: string;
-  length?: Length;
-  intent?: Intent;
-  internalLinks?: string[];
+  firstName: string;
+  lastName: string;
+  email: string;
+  business?: string;
+  url?: string;
+  brandCore?: string;
+  topic?: string;
+  writingSample?: string;
+  sliderScores?: Record<string, number>;
 }
 
-function isBrandVoicePayload(x: unknown): x is BrandVoicePayload {
+// Basic validation
+function isValidPayload(x: unknown): x is BrandVoicePayload {
   if (typeof x !== 'object' || x === null) return false;
   const o = x as Record<string, unknown>;
-  if ('length' in o && o.length !== undefined && o.length !== 'standard' && o.length !== 'pillar') return false;
-  if ('intent' in o && o.intent !== undefined && o.intent !== 'informational' && o.intent !== 'transactional') return false;
-  if ('internalLinks' in o && o.internalLinks !== undefined && !Array.isArray(o.internalLinks)) return false;
-  return true;
+  return typeof o.email === 'string' && o.email.includes('@');
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const bodyUnknown = (await req.json()) as unknown;
+    const body = (await req.json()) as unknown;
 
-    if (!isBrandVoicePayload(bodyUnknown)) {
-      return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
+    if (!isValidPayload(body)) {
+      return NextResponse.json({ error: 'Invalid brand voice payload' }, { status: 400 });
     }
 
-    const payload: BrandVoicePayload = bodyUnknown;
-
-    const webhook = process.env.NEXT_PUBLIC_N8N_BRAND_VOICE_WEBHOOK || 'https://primary-production-77e7.up.railway.app/webhook/brand-voice';
-    if (!webhook) {
-      // No webhook configured: echo payload for visibility
-      return NextResponse.json({ ok: true, received: payload }, { status: 200 });
-    }
+    const webhook =
+      process.env.N8N_BRAND_VOICE_WEBHOOK ||
+      process.env.NEXT_PUBLIC_N8N_BRAND_VOICE_WEBHOOK ||
+      'https://primary-production-77e7.up.railway.app/webhook/brand-voice';
 
     const resp = await fetch(webhook, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(body),
     });
 
-    const text = await resp.text();
-    return new NextResponse(text, { status: resp.status });
-  } catch {
+    let n8nData: any;
+    try {
+      n8nData = await resp.json();
+    } catch {
+      n8nData = { raw: await resp.text() };
+    }
+
+    // Standardized response for front-end
+    return NextResponse.json(
+      {
+        success: resp.ok,
+        status: resp.status,
+        reportUrl: n8nData?.reportUrl ?? null,
+        n8nResponse: n8nData,
+      },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error('Error in /api/brand-voice:', err);
     return NextResponse.json({ error: 'Bad request' }, { status: 400 });
   }
 }

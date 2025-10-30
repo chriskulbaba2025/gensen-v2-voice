@@ -1,4 +1,3 @@
-// src/app/screen-4/page.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -20,6 +19,7 @@ export default function Step4() {
     setLoading(true);
 
     try {
+      // build payload from form data
       const payload = {
         firstName: data.firstName,
         lastName: data.lastName,
@@ -27,23 +27,33 @@ export default function Step4() {
         business: data.business,
         url: data.url,
         brandCore: data.brandCore,
-        sliderScores: data.sliderScores, // ✅ includes tone data
+        sliderScores: data.sliderScores,
         topic: data.topic,
         writingSample: data.writingSample,
       };
 
       console.log('OUTGOING DATA (screen-4):', payload);
 
-      const res = await fetch('/api/brand-voice', {
+      const response = await fetch('/api/brand-voice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error('Webhook failed');
-      router.push('/report');
-    } catch (err) {
-      console.error(err);
+      if (!response.ok) throw new Error('Webhook failed');
+
+      // parse webhook response
+      const result: { reportUrl?: string } = await response.json();
+
+      // save URL and route forward
+      if (result.reportUrl) {
+        localStorage.setItem('reportUrl', result.reportUrl);
+        router.push(`/report?url=${encodeURIComponent(result.reportUrl)}`);
+      } else {
+        router.push('/report');
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
       alert('Submission failed. Try again.');
       setLoading(false);
     }
@@ -56,7 +66,9 @@ export default function Step4() {
     const s = data.sliderScores || {};
     return (
       <div className="bg-white p-4 rounded shadow-sm">
-        <p className="font-medium mb-2 text-[#076aff]">Tone Calibration Summary</p>
+        <p className="font-medium mb-2 text-[#076aff]">
+          Tone Calibration Summary
+        </p>
         <ul className="space-y-1 text-gray-700 text-sm">
           <li>Warmth ↔ Authority: <b>{s.warmthAuthority ?? '-'}</b></li>
           <li>Authority ↔ Energy: <b>{s.authorityEnergy ?? '-'}</b></li>
@@ -86,7 +98,6 @@ export default function Step4() {
         </h1>
 
         <div className="space-y-4">
-          {/* Personal and business info */}
           <div className="bg-white p-4 rounded shadow-sm">
             <p className="font-medium">Full Name</p>
             <p className="mt-1 text-gray-700">
@@ -121,11 +132,9 @@ export default function Step4() {
             </p>
           </div>
 
-          {/* ✅ Tone summary section */}
           {renderToneSummary()}
         </div>
 
-        {/* Consent checkbox (required) */}
         <label className="flex items-start space-x-2 mt-2">
           <input
             type="checkbox"
@@ -141,7 +150,6 @@ export default function Step4() {
           </span>
         </label>
 
-        {/* Actions */}
         <div className="flex justify-between gap-4">
           <button
             type="button"
