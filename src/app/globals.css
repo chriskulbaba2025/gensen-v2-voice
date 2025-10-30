@@ -47,15 +47,16 @@ body {
 
 @keyframes spin-reverse-slower {
   from {
-    transform: rotate(0deg);
+    transform: rotate(360deg);
   }
   to {
-    transform: rotate(-360deg);
+    transform: rotate(0deg);
   }
 }
 
+/* Use consistent timing ratios */
 .animate-spin-slow {
-  animation: spin-slow 4s linear infinite;
+  animation: spin-slow 3s linear infinite;
 }
 
 .animate-spin-reverse-slower {
