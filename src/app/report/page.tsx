@@ -47,59 +47,63 @@ export default function ReportPage() {
           </div>
         </div>
 
-        {/* BRAND VOICE CONTENT */}
-        <div className="max-w-[750px] bg-white shadow-soft rounded-[15px] px-[32px] py-[40px] border border-[#e0e6f5] leading-relaxed text-[17px] text-[#0b1320]">
-          <h1 className="text-[32px] font-semibold text-[#002c71] mb-[20px] text-center">
-            Your Brand Voice — Powered by Gensenology
-          </h1>
+{/* BRAND VOICE CONTENT */}
+<div className="max-w-[750px] bg-white shadow-soft rounded-[15px] px-[32px] py-[40px] border border-[#e0e6f5] leading-relaxed text-[17px] text-[#0b1320]">
+  <h1 className="text-[32px] font-semibold text-[#002c71] mb-[20px] text-center">
+    Your Brand Voice — Powered by Gensenology
+  </h1>
 
-          <p className="mb-[18px]">
-            Your Brand Voice isn’t a manual to memorize. It’s momentum in written form.
-            You built it once through <strong>Gensen</strong>, and now it drives every message you share—fast,
-            consistent, unmistakably yours.
-          </p>
+  {/* Centered introduction */}
+  <p className="mb-[18px] text-center">
+    Your Brand Voice is not a manual to memorize. It is momentum in written form.
+    You built it once through <strong>Gensen</strong>, and now it drives every message you share.
+    Fast. Consistent. Unmistakably yours.
+  </p>
 
-          <h2 className="text-[22px] font-semibold text-[#002c71] mt-[30px] mb-[10px]">Built Once → Used Everywhere</h2>
-          <p className="mb-[16px]">
-            Every blog, post, caption, or newsletter you create inside the <strong>Omnipressence ecosystem</strong> draws from the same calibrated tone.
-            No re-training. No rewrites. Gensen remembers how you sound—confident but kind, expert but easy to read—and applies it automatically.
-          </p>
+  <h2 className="text-[22px] font-semibold text-[#002c71] mt-[30px] mb-[10px]">
+    Built Once → Used Everywhere
+  </h2>
+  <p className="mb-[16px]">
+    Every blog, post, caption, or newsletter you create inside the <strong>Omnipressence ecosystem</strong> draws from the same calibrated tone.
+    No re-training. No rewrites. Gensen remembers how you sound, confident but kind, expert but easy to read, and applies it automatically.
+  </p>
 
-          <h2 className="text-[22px] font-semibold text-[#002c71] mt-[30px] mb-[10px]">How It Works</h2>
-          <p className="mb-[16px]">
-            <strong>Gensenology</strong> blends human creativity with data precision. It studies your best language patterns and builds a living model that fuels all content:
-          </p>
-          <ul className="list-disc pl-[24px] mb-[16px]">
-            <li>Short social posts that feel natural</li>
-            <li>Articles that sound informed, not formal</li>
-            <li>Emails and newsletters that connect</li>
-            <li>UGC scripts that sound like real people</li>
-          </ul>
+  <h2 className="text-[22px] font-semibold text-[#002c71] mt-[30px] mb-[10px]">How It Works</h2>
+  <p className="mb-[16px]">
+    <strong>Gensenology</strong> blends human creativity with data precision. It studies your best language patterns and builds a living model that fuels all content:
+  </p>
+  <ul className="list-disc pl-[24px] mb-[16px]">
+    <li>Short social posts that feel natural</li>
+    <li>Articles that sound informed, not formal</li>
+    <li>Emails and newsletters that connect</li>
+    <li>UGC scripts that sound like real people</li>
+  </ul>
 
-          <h2 className="text-[22px] font-semibold text-[#002c71] mt-[30px] mb-[10px]">Why It Matters</h2>
-          <p className="mb-[16px]">
-            Consistency builds recognition. Recognition builds trust. Trust builds growth.
-            When tone stays stable, people relax into your message instead of testing it. That’s how brands earn attention without buying it.
-          </p>
+  <h2 className="text-[22px] font-semibold text-[#002c71] mt-[30px] mb-[10px]">Why It Matters</h2>
+  <p className="mb-[16px]">
+    Consistency builds recognition. Recognition builds trust. Trust builds growth.
+    When tone stays stable, people relax into your message instead of testing it. That is how brands earn attention without buying it.
+  </p>
 
-          <h2 className="text-[22px] font-semibold text-[#002c71] mt-[30px] mb-[10px]">Where It Lives</h2>
-          <p className="mb-[16px]">
-            Inside the GENSEN platform: <strong>Voice Builder</strong> defines how you sound, <strong>Topical Map</strong> finds what to say,
-            and <strong>Content Generator</strong> turns both into publish-ready assets. One login. One dataset. Endless aligned output.
-          </p>
+  <h2 className="text-[22px] font-semibold text-[#002c71] mt-[30px] mb-[10px]">Where It Lives</h2>
+  <p className="mb-[16px]">
+    Inside the GENSEN platform: <strong>Voice Builder</strong> defines how you sound, <strong>Topical Map</strong> finds what to say,
+    and <strong>Content Generator</strong> turns both into publish-ready assets. One login. One dataset. Endless aligned output.
+  </p>
 
-          <h2 className="text-[22px] font-semibold text-[#002c71] mt-[30px] mb-[10px]">Keep Using It</h2>
-          <p className="mb-[16px]">
-            You don’t need to adjust or update anything. Just create. Each campaign or post you launch keeps your voice steady, distinct, and alive.
-          </p>
+  <h2 className="text-[22px] font-semibold text-[#002c71] mt-[30px] mb-[10px]">Keep Using It</h2>
+  <p className="mb-[16px]">
+    You do not need to adjust or update anything. Just create. Each campaign or post you launch keeps your voice steady, distinct, and alive.
+  </p>
 
-          <h2 className="text-[22px] font-semibold text-[#002c71] mt-[30px] mb-[10px]">Your Next Step</h2>
-          <p>
-            Keep moving forward. The more you use Gensen, the more fluent your brand becomes.
-            Every post refines your reach. Every article expands your authority.
-            Your voice isn’t a line in a document—it’s a living system built to grow with you.
-          </p>
-        </div>
+  <h2 className="text-[22px] font-semibold text-[#002c71] mt-[30px] mb-[10px]">Your Next Step</h2>
+  <p>
+    Keep moving forward. The more you use Gensen, the more fluent your brand becomes.
+    Every post refines your reach. Every article expands your authority.
+    Your voice is not a line in a document, it is a living system built to grow with you.
+  </p>
+</div>
+
 
         {/* REMINDER */}
         <p className="mt-[40px] text-[18px] text-[#002c71] text-center">
