@@ -33,10 +33,11 @@ export default function ReportPage() {
 
       {/* ───────── LOADING SECTION ───────── */}
       <div
-        className={`transition-opacity duration-1000 ease-in-out ${
-          status === 'done' ? 'opacity-0 pointer-events-none' : 'opacity-100'
-        } absolute inset-0 flex flex-col items-center justify-start`}
-      >
+  className={`transition-opacity duration-1000 ease-in-out ${
+    status === 'done' ? 'opacity-0 pointer-events-none' : 'opacity-100'
+  } relative flex flex-col items-center justify-start`}
+>
+
         {/* TIMER */}
         <div className="relative w-[160px] h-[160px] flex items-center justify-center mb-[40px] mt-[40px]">
           <div className="absolute inset-0 rounded-full border-[8px] border-[#076aff] border-t-transparent animate-spin-slow"></div>
