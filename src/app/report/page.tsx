@@ -109,15 +109,26 @@ export default function ReportPage() {
 
       {/* ───────── RESULT SECTION ───────── */}
       {status === 'done' && html && (
-        <div
-          className="opacity-0 animate-fade-in bg-[#f5f8ff] text-[#0a0a0a] px-[20px] py-[40px] font-raleway flex flex-col items-center"
-          style={{ animation: 'fadeIn 1s forwards' }}
-        >
-          <div className="bg-white rounded-[15px] shadow-md p-[20px] max-w-[950px] w-full border border-[#e0e6f5]">
-            <div dangerouslySetInnerHTML={{ __html: html }} />
-          </div>
-        </div>
-      )}
+  <div
+    className="opacity-0 animate-fade-in bg-[#f5f8ff] text-[#0a0a0a] px-[20px] py-[60px] font-raleway flex flex-col items-center min-h-screen"
+    style={{ animation: 'fadeIn 1s forwards' }}
+  >
+    {/* Re-use the top logo for continuity */}
+    <Image
+      src="https://omnipressence.com/wp-content/uploads/2025/09/Gensen-Logo-Final-version-lower-case-logo-and-spaces1-356x295-1.webp"
+      alt="Gensen Logo"
+      width={250}
+      height={100}
+      className="rounded-[15px] object-contain mb-[30px]"
+    />
+
+    {/* Report box pinned near top */}
+    <div className="bg-white rounded-[15px] shadow-md p-[20px] max-w-[950px] w-full border border-[#e0e6f5] mt-[20px]">
+      <div dangerouslySetInnerHTML={{ __html: html }} />
+    </div>
+  </div>
+)}
+
     </div>
   );
 }
