@@ -9,6 +9,9 @@ import Image from 'next/image';
 export const metadata = {
   title: 'GENSEN Voice Forge',
   description: 'MVP wizard for agency brand voice creation',
+  icons: {
+    icon: 'https://omnipressence.com/wp-content/uploads/2025/09/favicon-logo-64-x-64.webp',
+  },
 };
 
 export default function RootLayout({
@@ -18,9 +21,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen">
+      <body className="flex flex-col min-h-screen bg-[#f5f8ff] text-[#0a0a0a] font-raleway">
+        {/* Global Navbar */}
         <Navbar />
 
+        {/* Omnipressence Header */}
         <header className="w-full py-4 bg-white flex flex-col items-center shadow-sm">
           <div className="relative w-[320px] h-[100px] mb-[20px] mt-[20px] rounded-[15px] overflow-hidden">
             <Image
@@ -37,6 +42,7 @@ export default function RootLayout({
           </h1>
         </header>
 
+        {/* Main Content */}
         <main className="flex-1">
           <FormProvider>{children}</FormProvider>
         </main>
