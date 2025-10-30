@@ -135,3 +135,8 @@ a:hover {
 .section-fade-in {
   animation: fadeIn 1s ease both;
 }
+
+.transition-opacity {
+  transition: opacity 1s ease-in-out;
+}
+
