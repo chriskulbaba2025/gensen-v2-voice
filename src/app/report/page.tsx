@@ -11,14 +11,20 @@ export default function ReportPage() {
   useEffect(() => {
     // skip cookie check and webhook call
     const timer = setInterval(() => setTimeLeft(t => (t > 0 ? t - 1 : 0)), 1000);
-    // mock HTML payload
-    setTimeout(() => {
+  
+    // 20-second delay to simulate load
+    const delay = setTimeout(() => {
       setHtml('<h1 style="color:#10284a;">Test Report</h1><p>Static preview working.</p>');
       setStatus('done');
       clearInterval(timer);
-    }, 2000);
-    return () => clearInterval(timer);
+    }, 20000);
+  
+    return () => {
+      clearInterval(timer);
+      clearTimeout(delay);
+    };
   }, []);
+  
 
   if (status === 'loading') {
     return (
