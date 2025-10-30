@@ -108,12 +108,12 @@ export default function ReportPage() {
       </div>
 
       {/* ───────── RESULT SECTION ───────── */}
-      {status === 'done' && html && (
+{status === 'done' && html && (
   <div
-    className="opacity-0 animate-fade-in bg-[#f5f8ff] text-[#0a0a0a] px-[20px] py-[60px] font-raleway flex flex-col items-center min-h-screen"
+    className="opacity-0 animate-fade-in absolute top-0 left-0 right-0 bg-[#f5f8ff] text-[#0a0a0a] px-[20px] py-[60px] font-raleway flex flex-col items-center min-h-screen z-50"
     style={{ animation: 'fadeIn 1s forwards' }}
   >
-    {/* Re-use the top logo for continuity */}
+    {/* Omnipressence / Gensen logo */}
     <Image
       src="https://omnipressence.com/wp-content/uploads/2025/09/Gensen-Logo-Final-version-lower-case-logo-and-spaces1-356x295-1.webp"
       alt="Gensen Logo"
@@ -128,6 +128,7 @@ export default function ReportPage() {
     </div>
   </div>
 )}
+
 
     </div>
   );
