@@ -4,14 +4,12 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 export default function ReportPage() {
-  const [timeLeft, setTimeLeft] = useState(20 * 60); // 20 minutes in seconds
+  const totalSeconds = 20 * 60; // 20 minutes
+  const [timeLeft, setTimeLeft] = useState(totalSeconds);
   const [html, setHtml] = useState<string | null>(null);
   const [status, setStatus] = useState<'loading' | 'done'>('loading');
 
   useEffect(() => {
-    const totalSeconds = 20 * 60;
-    setTimeLeft(totalSeconds);
-
     const timer = setInterval(() => setTimeLeft(t => (t > 0 ? t - 1 : 0)), 1000);
 
     // Simulated completion after 20 seconds
@@ -28,6 +26,8 @@ export default function ReportPage() {
   }, []);
 
   if (status === 'loading') {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
     const totalSeconds = 20 * 60;
     const progress = ((totalSeconds - timeLeft) / totalSeconds) * 100;
 
@@ -50,10 +50,16 @@ export default function ReportPage() {
           Please wait while we process your data. This takes about 4 minutes.
         </p>
 
-        {/* Spinner */}
-        <div className="w-[60px] h-[60px] border-4 border-[#d0d7f5] border-t-[#076aff] rounded-full animate-spin mb-[25px]" />
+        {/* Dual counter-rotating rings with live timer */}
+        <div className="relative w-[160px] h-[160px] flex items-center justify-center mb-[40px]">
+          <div className="absolute inset-0 rounded-full border-[8px] border-[#076aff] border-t-transparent animate-spin-slow"></div>
+          <div className="absolute inset-[12px] rounded-full border-[8px] border-[#c7d8ff] border-b-transparent animate-spin-reverse-slower"></div>
+          <div className="absolute text-center text-[#002c71] font-semibold text-[28px]">
+            {minutes}:{seconds.toString().padStart(2, '0')}
+          </div>
+        </div>
 
-        {/* Progress Bar */}
+        {/* Optional progress bar for linear indicator */}
         <div className="w-full max-w-[600px] bg-gray-200 h-3 rounded">
           <div
             className="bg-[#076aff] h-3 rounded transition-all"
@@ -61,14 +67,14 @@ export default function ReportPage() {
           ></div>
         </div>
 
-        <p className="mt-[10px] text-[16px] text-[#333]">
+        <p className="mt-[10px] text-[16px] text-[#333] text-center">
           Estimated time remaining: {(timeLeft / 60).toFixed(1)} minutes
         </p>
       </div>
     );
   }
 
-  // When complete
+  // When done
   return (
     <div className="min-h-screen bg-[#f5f8ff] text-[#0a0a0a] px-[20px] py-[40px] font-raleway flex flex-col items-center">
       <div className="bg-white rounded-[15px] shadow-md p-[20px] max-w-[950px] w-full border border-[#e0e6f5]">
