@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 
 export default function ReportPage() {
   // 4-minute countdown
@@ -64,15 +63,40 @@ export default function ReportPage() {
         {/* STATIC PLACEHOLDER */}
         <div className="max-w-[750px] bg-white shadow-soft rounded-[15px] px-[32px] py-[40px] border border-[#e0e6f5] leading-relaxed text-[17px] text-[#0b1320]">
           <h1 className="text-[32px] font-semibold text-[#002c71] mb-[20px] text-center">
-            Your Brand Voice — Powered by Gensenology
+            Your GENSEN Brand Voice Is Now Being Blended
           </h1>
-          <p className="mb-[18px] text-center">
-            Your Brand Voice is not a manual to memorize. It is momentum in written form.
-            You built it once through <strong>Gensen</strong>, and now it drives every message you share.
-            Fast. Consistent. Unmistakably yours.
+
+          <p className="mb-[16px]">
+            Gensen is synthesizing everything it knows about your brand - the data gathered from your social channels,
+            your submitted inputs, and your writing tone - to produce a unified voice framework. This isn’t a new voice;
+            it’s the clarified version of the one your audience already recognizes.
           </p>
-          <p className="mt-[40px] text-[18px] text-[#002c71] text-center">
-            ⏱ Average creation time: <strong>3 – 4 minutes</strong> to generate your personalized Brand Voice report.
+
+          <p className="mb-[16px]">
+            While you wait, Gensen is aligning your existing communication patterns with its Brand Voice model -
+            blending tone markers, phrasing preferences, and audience cues into a single adaptive system. It measures
+            how authority, warmth, and clarity balance across your current posts, then refines that pattern to strengthen
+            consistency in every message, caption, and campaign.
+          </p>
+
+          <p className="mb-[16px] text-[#002c71] font-medium text-center">
+            Every adjustment helps your future content sound instantly on-brand - confident, human, and unmistakably you.
+          </p>
+
+          <p className="mb-[16px]">
+            All processing happens securely within Gensen’s private environment. Your material is used only to model tone
+            and rhythm - no external storage, no public indexing.
+          </p>
+
+          <p className="mb-[16px]">
+            This step usually takes a few minutes. During that time, Gensen constructs your personalized Brand Voice
+            guidelines - complete with tone anchors, linguistic filters, and practical examples that show how your brand
+            should sound everywhere it speaks.
+          </p>
+
+          <p>
+            When the process finishes, your <strong>GENSEN Brand Voice Report</strong> will appear here, ready to guide
+            your next message with precision and confidence. When you want to review your report, it is always accessible on your dashabord.
           </p>
         </div>
       </div>
@@ -83,13 +107,6 @@ export default function ReportPage() {
           className="opacity-0 animate-fade-in absolute top-0 left-0 right-0 bg-[#f5f8ff] text-[#0a0a0a] px-[20px] py-[60px] font-raleway flex flex-col items-center min-h-screen z-50"
           style={{ animation: 'fadeIn 1s forwards' }}
         >
-          <Image
-            src="https://omnipressence.com/wp-content/uploads/2025/09/Omnipressence_LOGO-Email.webp"
-            alt="Gensen Logo"
-            width={250}
-            height={100}
-            className="rounded-[15px] object-contain mb-[30px]"
-          />
           <div className="bg-white rounded-[15px] shadow-md p-[20px] max-w-[950px] w-full border border-[#e0e6f5] mt-[20px]">
             <div dangerouslySetInnerHTML={{ __html: html }} />
           </div>
