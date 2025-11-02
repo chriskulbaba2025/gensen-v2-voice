@@ -16,12 +16,6 @@ interface BrandVoicePayload {
   sliderScores?: Record<string, number>;
 }
 
-interface N8nResponse {
-  success?: boolean;
-  reportUrl?: string;
-  [key: string]: unknown;
-}
-
 // ─────────────────────────────────────────────
 // Validation
 // ─────────────────────────────────────────────
@@ -46,45 +40,33 @@ export async function POST(req: NextRequest) {
     }
 
     const payload = bodyUnknown;
+
     const webhook =
       process.env.N8N_BRAND_VOICE_WEBHOOK ||
       process.env.NEXT_PUBLIC_N8N_BRAND_VOICE_WEBHOOK ||
       'https://primary-production-77e7.up.railway.app/webhook/brand-voice';
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('📤 Sending payload to n8n:', JSON.stringify(payload, null, 2));
-      console.log('🔗 Webhook URL:', webhook);
-    }
-
-    const resp = await fetch(webhook, {
+    // ─────────────────────────────────────────────
+    // Fire-and-forget call to n8n so this endpoint returns immediately
+    // ─────────────────────────────────────────────
+    fetch(webhook, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-    });
-
-    const text = await resp.text();
-    let n8nData: N8nResponse = {};
-
-    try {
-      n8nData = JSON.parse(text);
-    } catch {
-      n8nData = { raw: text };
-    }
-
-    const reportUrl =
-      typeof n8nData.reportUrl === 'string' ? n8nData.reportUrl : null;
+    }).catch((err) =>
+      console.error('❌ n8n webhook error (non-blocking):', err)
+    );
 
     if (process.env.NODE_ENV !== 'production') {
-      console.log('📥 n8n response status:', resp.status);
-      console.log('📥 n8n response data:', n8nData);
+      console.log('📤 Triggered n8n webhook:', webhook);
+      console.log('📦 Payload:', JSON.stringify(payload, null, 2));
     }
 
+    // Respond instantly so the frontend can navigate to the report screen
     return NextResponse.json(
       {
-        success: resp.ok,
-        status: resp.status,
-        reportUrl,
-        n8nResponse: n8nData,
+        success: true,
+        message: 'Brand voice generation started',
       },
       { status: 200 }
     );
