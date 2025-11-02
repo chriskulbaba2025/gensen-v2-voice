@@ -101,17 +101,17 @@ export default function ReportPage() {
         </div>
       </div>
 
-      {/* ───────── RESULT SECTION ───────── */}
-      {status === 'done' && html && (
-        <div
-          className="opacity-0 animate-fade-in absolute top-0 left-0 right-0 bg-[#f5f8ff] text-[#0a0a0a] px-[20px] py-[60px] font-raleway flex flex-col items-center min-h-screen z-50"
-          style={{ animation: 'fadeIn 1s forwards' }}
-        >
-          <div className="bg-white rounded-[15px] shadow-md p-[20px] max-w-[950px] w-full border border-[#e0e6f5] mt-[20px]">
-            <div dangerouslySetInnerHTML={{ __html: html }} />
-          </div>
-        </div>
-      )}
+ {/* ───────── RESULT SECTION ───────── */}
+{status === 'done' && html && (
+  <div
+    className="opacity-0 animate-fade-in absolute top-0 left-0 right-0 bottom-0 bg-[#f5f8ff] text-[#0a0a0a] px-[20px] py-[60px] font-raleway flex flex-col items-center min-h-screen z-50 overflow-y-auto"
+    style={{ animation: 'fadeIn 1s forwards' }}
+  >
+    <div className="bg-white rounded-[15px] shadow-md p-[20px] max-w-[950px] w-full border border-[#e0e6f5] mt-[20px] overflow-y-auto">
+      <div dangerouslySetInnerHTML={{ __html: html }} />
+    </div>
+  </div>
+)}
     </div>
   );
 }
