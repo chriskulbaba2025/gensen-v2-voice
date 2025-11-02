@@ -10,16 +10,14 @@ export default function ReportPage() {
   const [status, setStatus] = useState<'loading' | 'done'>('loading');
 
   useEffect(() => {
-    // Timer countdown display
+    // countdown timer
     const timer = setInterval(() => setTimeLeft(t => (t > 0 ? t - 1 : 0)), 1000);
 
-    // Poll every 10 seconds until report is ready
     async function checkReport() {
       try {
         const res = await fetch('/api/report-latest');
         if (res.ok) {
           const text = await res.text();
-          // Detect finished HTML
           if (text.includes('<!DOCTYPE html>')) {
             setHtml(text);
             setStatus('done');
@@ -32,10 +30,16 @@ export default function ReportPage() {
       }
     }
 
-    const poll = setInterval(checkReport, 10000); // 10-second polling interval
+    // wait 2 minutes before starting to poll
+    let poll: NodeJS.Timeout;
+    const startPolling = setTimeout(() => {
+      poll = setInterval(checkReport, 10000); // poll every 10 s
+    }, 120000); // 2 minutes
+
     return () => {
       clearInterval(timer);
       clearInterval(poll);
+      clearTimeout(startPolling);
     };
   }, []);
 
@@ -44,7 +48,6 @@ export default function ReportPage() {
 
   return (
     <div className="relative min-h-screen bg-[#f5f8ff] text-[#0a0a0a] font-raleway flex flex-col items-center px-[40px] py-[60px] overflow-hidden">
-
       {/* ───────── LOADING SECTION ───────── */}
       <div
         className={`transition-opacity duration-1000 ease-in-out ${
@@ -96,22 +99,22 @@ export default function ReportPage() {
 
           <p>
             When the process finishes, your <strong>GENSEN Brand Voice Report</strong> will appear here, ready to guide
-            your next message with precision and confidence. When you want to review your report, it is always accessible on your dashabord.
+            your next message with precision and confidence. When you want to review your report, it is always accessible on your dashboard.
           </p>
         </div>
       </div>
 
- {/* ───────── RESULT SECTION ───────── */}
-{status === 'done' && html && (
-  <div
-    className="opacity-0 animate-fade-in absolute top-0 left-0 right-0 bottom-0 bg-[#f5f8ff] text-[#0a0a0a] px-[20px] py-[60px] font-raleway flex flex-col items-center min-h-screen z-50 overflow-y-auto"
-    style={{ animation: 'fadeIn 1s forwards' }}
-  >
-    <div className="bg-white rounded-[15px] shadow-md p-[20px] max-w-[950px] w-full border border-[#e0e6f5] mt-[20px] overflow-y-auto">
-      <div dangerouslySetInnerHTML={{ __html: html }} />
-    </div>
-  </div>
-)}
+      {/* ───────── RESULT SECTION ───────── */}
+      {status === 'done' && html && (
+        <div
+          className="opacity-0 animate-fade-in absolute top-0 left-0 right-0 bottom-0 bg-[#f5f8ff] text-[#0a0a0a] px-[20px] py-[60px] font-raleway flex flex-col items-center min-h-screen z-50 overflow-y-auto"
+          style={{ animation: 'fadeIn 1s forwards' }}
+        >
+          <div className="bg-white rounded-[15px] shadow-md p-[20px] max-w-[950px] w-full border border-[#e0e6f5] mt-[20px] overflow-y-auto">
+            <div dangerouslySetInnerHTML={{ __html: html }} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
