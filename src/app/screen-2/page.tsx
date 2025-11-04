@@ -60,7 +60,7 @@ export default function Step2() {
   The message reassures before it persuades. People feel cared for, not directed.
   
   Example:
-  We don’t push for attention—we earn it.
+  We don’t push for attention - we earn it.
   Each message starts with understanding and ends with calm clarity.
   Your tone gives readers room to breathe and believe.`,
       };
@@ -81,7 +81,7 @@ export default function Step2() {
       return {
         title: "Balanced Core",
         text: `You sound like a steady professional who leads with care and finishes with conviction. 
-  The tone feels human but guided—half warmth, half authority. It shows confidence without dominance.
+  The tone feels human but guided by both warmth and authority - half warmth, half authority. It shows confidence without dominance.
   
   Example:
   You already know what matters; we help you say it clearly.
@@ -97,7 +97,7 @@ export default function Step2() {
   Example:
   We clarify before we convince.
   Each idea lands with precision and poise.
-  Your audience feels guided, not managed—led by expertise that listens.`,
+  Your audience feels guided, not managed -led by expertise that listens.`,
       };
   
     return {
@@ -106,7 +106,7 @@ export default function Step2() {
   Every word feels intentional and sharp. The tone is professional, decisive, and inspiring—built for trust and action.
   
   Example:
-  We don’t wait for clarity—we create it.
+  We don’t wait for clarity - we create it.
   Each sentence defines direction and moves work forward.
   Your message stands firm, setting pace and confidence for everyone listening.`,
     };
@@ -117,115 +117,388 @@ export default function Step2() {
   // Authority ↔ Energy
   // ─────────────────────────────────────────────
   const getAuthorityEnergyDescription = (value: number) => {
-    if (value <= 3)
+    if (value <= 2)
       return {
         title: "Measured Authority",
-        text: `You stay composed and deliberate. Your message moves with purpose, not urgency. Every statement feels grounded, intentional, and confident without pressure.\n\nExample:\nProgress comes from steady focus.\nEach plan unfolds with logic and trust.\nYou don’t rush decisions - you guide them.\nThat’s how strong direction becomes lasting momentum.`,
+        text: `You move with deliberate calm. The tone projects confidence through precision, not pace. 
+  Every line sounds composed and dependable - no urgency, just steady leadership.
+  
+  Example:
+  We plan, prepare, and deliver with purpose.
+  Each step follows logic and trust.
+  Progress comes from focus, not force.`,
       };
-    if (value <= 7)
+  
+    if (value <= 4)
+      return {
+        title: "Confident Control",
+        text: `You keep authority at the center but introduce momentum. 
+  The message feels structured and active, balancing patience with forward intent.
+  
+  Example:
+  We move when direction is clear.
+  Every choice follows reasoning, not reaction.
+  Your words set order before acceleration.`,
+      };
+  
+    if (value <= 6)
       return {
         title: "Balanced Drive",
-        text: `You stay in motion with purpose in your stride. Each plan starts clear, gains pace, and keeps its line. The tone feels alive yet measured enough to listen.\n\nExample:\nYou make progress visible, one confident decision at a time.\nPeople follow because you balance speed with sense.\nYour clarity keeps the pace productive, not frantic.`,
+        text: `You sound like a poised leader in motion - calm yet compelling. 
+  Authority and energy are equal partners: decisions come quickly, but never carelessly.
+  
+  Example:
+  You build movement through focus.
+  Each idea finds its pace naturally.
+  Energy follows clarity, never the other way around.`,
       };
+  
+    if (value <= 8)
+      return {
+        title: "Driven Authority",
+        text: `Momentum now leads. The tone feels active, direct, and clear. 
+  You’re still composed, but every sentence carries velocity and direction.
+  
+  Example:
+  We act when others wait.
+  Our plans move with purpose and precision.
+  Speed matters, but alignment matters more - and we keep both.`,
+      };
+  
     return {
       title: "Full Energy",
-      text: `You speak with visible intent. Each message sparks urgency and drive. You keep clarity high but momentum higher - pushing ideas forward with conviction and rhythm.\n\nExample:\nEvery choice signals action.\nWe move when others wait.\nEach message propels people to act - fast, clear, and focused on the next step.`,
+      text: `You speak with decisive action and conviction. 
+  The language is tight, rhythmic, and forward-leaning. Authority fuels urgency, creating a voice that mobilizes others.
+  
+  Example:
+  We start fast and stay focused.
+  Every line signals motion and intent.
+  The tone doesn’t pause - it performs.`,
     };
   };
+  
 
   // ─────────────────────────────────────────────
   // Warmth ↔ Energy (V2.1)
   // ─────────────────────────────────────────────
   const getWarmthEnergyDescription = (value: number) => {
-    if (value <= 3)
+    if (value <= 2)
       return {
-        title: "Pure Warmth",
-        text: `You speak with steady calm that earns trust before you ever make a point. The tone feels like a guide’s hand - patient, kind, always composed. You make complexity simple by slowing the pace until clarity appears.\n\nExample:\nWe take time to listen before we lead.\nThe goal isn’t speed: it’s strength that lasts.\nWhen people feel supported and understood, they move forward naturally.\nThat’s how lasting progress begins.`,
+        title: "Full Warmth",
+        text: `You speak slowly, gently, and with care. The tone prioritizes comfort and understanding over momentum. 
+  Your presence is calm and genuine - readers feel supported before inspired.
+  
+  Example:
+  We take time to listen before we lead.
+  The goal isn't speed; it's strength that lasts.
+  Clarity grows when calm leads the way.`,
       };
-    if (value <= 7)
+  
+    if (value <= 4)
+      return {
+        title: "Gentle Flow",
+        text: `Warmth still guides, but the message begins to move. 
+  The tone feels kind yet purposeful, encouraging progress without losing empathy.
+  
+  Example:
+  We lead with heart, then with motion.
+  Every idea moves forward at a human pace.
+  You bring calm energy - steady, confident, and clear.`,
+      };
+  
+    if (value <= 6)
       return {
         title: "Balanced Warm Energy",
-        text: `Your tone walks the line between warmth and motion. There’s empathy in your rhythm and confidence in your direction. You move people by showing that action can feel calm, and calm can still create change.\n\nExample:\nYou already know where you’re headed - we just help you move with purpose.\nEvery message carries balance: part encouragement, part direction.\nStep by step, clarity turns into progress.`,
+        text: `You sound approachable yet active. The voice carries empathy wrapped in momentum - soft edges with firm direction. 
+  It feels friendly and productive at once.
+  
+  Example:
+  You already know where you're headed; we help you move with intention.
+  Each line blends encouragement and drive.
+  Action feels natural, never forced.`,
       };
+  
+    if (value <= 8)
+      return {
+        title: "Active Energy",
+        text: `Energy starts leading, but warmth keeps tone human. 
+  You move quickly while staying kind - showing that urgency and empathy can coexist.
+  
+  Example:
+  We act with empathy and pace.
+  Momentum builds trust when every move feels considered.
+  Your tone inspires motion, not pressure.`,
+      };
+  
     return {
-      title: "Pure Energy",
-      text: `You sound sharp, focused, alive. The language carries weight and movement - fast but never rushed. Every word pushes forward with intent, turning clarity into drive.\n\nExample:\nMomentum doesn’t wait.\nIt starts with the next word, the next idea, the next step.\nSpeak with conviction, act with rhythm, and let motion do the talking.`,
+      title: "Full Energy",
+      text: `You communicate with vitality and speed. The tone is bright, confident, and forward. 
+  You drive action through conviction while still sounding alive and human.
+  
+  Example:
+  Momentum doesn't wait.
+  Each sentence moves with intent and rhythm.
+  People follow because they feel your energy translating into progress.`,
     };
   };
+  
 // ─────────────────────────────────────────────
 // Clarity ↔ Creativity (V2.1)
 // ─────────────────────────────────────────────
 const getClarityCreativityDescription = (value: number) => {
-  if (value <= 3)
+  if (value <= 2)
     return {
       title: "Pure Clarity",
-      text: `You write to reveal, not impress. Every sentence has purpose and calm precision. The tone builds instant trust by removing clutter and letting meaning lead. It’s confident, respectful, and easy to follow - a voice people rely on when they need direction.\n\nExample:\nStrong ideas speak plainly.\nYou don’t decorate truth: you define it.\nThe right words build understanding, one clear decision at a time.`,
+      text: `You write with surgical precision. Every word has a job; every line has logic. 
+The tone removes friction, replacing flourish with focus. You build trust through structure and calm reasoning.
+
+Example:
+Strong ideas speak plainly.
+We don't decorate truth - we define it.
+Meaning stands on its own when language stays simple.`,
     };
-  if (value <= 7)
+
+  if (value <= 4)
+    return {
+      title: "Structured Expression",
+      text: `You still lead with clarity but start to shape rhythm and tone. 
+The message reads cleanly yet has subtle cadence. The writing feels confident, not mechanical.
+
+Example:
+We explain before we impress.
+Each idea unfolds with order and ease.
+Your tone guides readers step by step until understanding feels natural.`,
+    };
+
+  if (value <= 6)
     return {
       title: "Balanced Expression",
-      text: `Your voice moves with logic and light. Structure gives your ideas shape; tone gives them life. You teach, inspire, and lead through rhythm - showing that clarity and creativity don’t compete; they collaborate.\n\nExample:\nFacts earn attention, but tone keeps it.\nYou turn explanation into engagement, turning each insight into something people can see, feel, and remember.`,
+      text: `Clarity and creativity share equal ground. The structure stays strong while imagination adds color. 
+You sound intelligent, modern, and alive - never abstract or rigid.
+
+Example:
+Facts earn trust; tone keeps it.
+We build logic into rhythm so ideas stay memorable.
+Clarity and creativity work as one voice.`,
     };
+
+  if (value <= 8)
+    return {
+      title: "Creative Logic",
+      text: `Creativity now leads but still respects order. 
+You play with phrasing, pacing, and visuals to make information breathe. Each idea feels both crafted and clear.
+
+Example:
+We paint with precision.
+Every insight becomes a story that teaches and inspires.
+Structure frames the art - it doesn't limit it.`,
+    };
+
   return {
-    title: "Pure Creativity",
-    text: `You speak in motion. The words paint, pulse, and connect instantly. Meaning becomes story; insight becomes emotion. You stretch language just enough to wake the reader - never to lose them.\n\nExample:\nAn idea isn’t finished until it moves someone.\nYou bring logic to life, adding rhythm where others stop at reason.\nThe message doesn’t just explain - it resonates.`,
+    title: "Full Creativity",
+    text: `You communicate through imagination and movement. 
+Meaning becomes experience - words carry rhythm, color, and surprise while staying intelligible.
+
+Example:
+An idea isn't finished until it moves someone.
+We turn insight into story and pattern into pulse.
+The message doesn't just inform - it resonates.`,
   };
 };
+
 // ─────────────────────────────────────────────
 // Creativity ↔ Empathy (V2.2)
 // ─────────────────────────────────────────────
 const getCreativityEmpathyDescription = (value: number) => {
-  if (value <= 3)
+  if (value <= 2)
     return {
       title: "Pure Creativity",
-      text: `You think in color and shape. Every idea arrives like a spark - surprising but deliberate. The tone inspires curiosity, turning complex thoughts into something people can see, hear, and almost feel. You write to open minds, not to impress them.\n\nExample:\nYou build bridges out of imagination.\nEach line paints movement, like a brush across water.\nYour stories expand what feels possible, while still keeping both feet on the ground.`,
+      text: `You think and write in visuals. The tone surprises, using metaphor and rhythm to awaken curiosity. 
+Your message feels original, expressive, and daring—but still grounded in meaning.
+
+Example:
+You build bridges out of imagination.
+Each line feels like movement, not repetition.
+You make ideas visible before they're explained.`,
     };
-  if (value <= 7)
+
+  if (value <= 4)
+    return {
+      title: "Creative Flow",
+      text: `Imagination leads, but connection begins to surface. 
+You sound inspired and human, turning abstract thinking into approachable insight.
+
+Example:
+You translate vision into understanding.
+Every phrase blends art with intent.
+Your creativity becomes a doorway, not a wall.`,
+    };
+
+  if (value <= 6)
     return {
       title: "Balanced Creative Empathy",
-      text: `You speak in rhythm - half insight, half heartbeat. Ideas start vivid, then soften into understanding. The tone shows awareness: bold enough to catch attention, gentle enough to keep it. People feel guided, not directed.\n\nExample:\nYou use creativity as connection.\nEvery phrase carries warmth beneath the structure.\nYou turn inspiration into belonging - showing people they are part of the idea, not the audience of it.`,
+      text: `You speak with rhythm and awareness in equal measure. 
+Your ideas start vivid, then settle into human truth. People feel guided, not dazzled.
+
+Example:
+We use creativity as connection.
+Every phrase carries warmth beneath the structure.
+Inspiration becomes belonging when readers see themselves in your story.`,
     };
+
+  if (value <= 8)
+    return {
+      title: "Empathic Imagination",
+      text: `Empathy takes the lead, but creativity still shines. 
+You express understanding through story, tone, and emotional precision.
+
+Example:
+We write like we're in the same room.
+Each story listens before it speaks.
+You show care through creativity that feels honest, not ornamental.`,
+    };
+
   return {
-    title: "Pure Empathy",
-    text: `You write like you’re in the same room as your reader. Each word lands with care, creating calm in the noise. The message doesn’t push: it invites. People listen because they feel seen, not sold to.\n\nExample:\nYou start with listening, then translate what you hear into language that feels human.\nYour writing doesn’t persuade - it understands.\nThat understanding builds trust, and trust opens doors that logic alone never could.`,
+    title: "Full Empathy",
+    text: `You communicate like a conversation between equals. 
+Every word is patient, human, and real. Creativity serves compassion - helping readers feel seen.
+
+Example:
+We don't write to impress; we write to connect.
+Each line starts with listening.
+People stay because they sense understanding in your rhythm.`,
   };
 };
 // ─────────────────────────────────────────────
-// Clarity ↔ Empathy (V2.1)
+// Clarity ↔ Empathy (5-band version)
 // ─────────────────────────────────────────────
 const getClarityEmpathyDescription = (value: number) => {
-  if (value <= 3)
+  if (value <= 2)
     return {
       title: "Pure Clarity",
-      text: `You write like an architect - deliberate, structured, exact. Every word fits its place, every line holds weight. You focus on understanding above emotion, building trust through logic and clean rhythm.\n\nExample:\nYou keep your language simple so your message feels strong.\nFacts do the work; tone stays neutral.\nYou make complex ideas sound obvious - that’s your quiet power.`,
+      text: `You write like an architect - structured, exact, and intentional. 
+Every line aims to inform with zero ambiguity. The tone builds instant trust through order and restraint.
+
+Example:
+We remove noise so meaning stands taller.
+Each word earns its place.
+Readers trust you because nothing feels accidental.`,
     };
-  if (value <= 7)
+
+  if (value <= 4)
+    return {
+      title: "Structured Awareness",
+      text: `Clarity still leads, but compassion begins to shape delivery. 
+Your tone sounds confident and rational yet lightly human. The focus is on helping readers understand easily.
+
+Example:
+We keep ideas crisp but kind.
+Each point teaches, not just tells.
+Understanding feels simple because care shapes the structure.`,
+    };
+
+  if (value <= 6)
     return {
       title: "Balanced Clarity and Empathy",
-      text: `You blend precision with awareness. The tone feels clear but not cold, thoughtful but not hesitant. You explain first, then connect. Each sentence gives people both the “what” and the “why.”\n\nExample:\nYou shape your message so it feels like conversation, not instruction.\nYou guide people through logic and care at once.\nThey finish reading with clarity - and confidence that you understand them.`,
+      text: `You blend reason with recognition. 
+The tone explains first, then connects. Readers feel guided - not corrected - through precise but approachable language.
+
+Example:
+You shape conversation, not instruction.
+Each paragraph mixes logic and care.
+People finish reading both informed and understood.`,
     };
+
+  if (value <= 8)
+    return {
+      title: "Empathic Precision",
+      text: `Empathy now shapes every clear point. 
+You still sound organized, but warmth fills the pauses. The tone feels human and deliberate—connection delivered through structure.
+
+Example:
+We explain with kindness.
+Our clarity builds comfort as much as comprehension.
+Each message proves you can be exact and human at once.`,
+    };
+
   return {
-    title: "Pure Empathy",
-    text: `You write to reach people where they are. Your words carry patience, kindness, and respect. Clarity still matters, but understanding leads. The tone feels human, like conversation between equals.\n\nExample:\nYou speak in sentences that listen.\nYou replace authority with understanding.\nReaders feel calm and seen — and that’s what keeps them engaged.`,
+    title: "Full Empathy",
+    text: `You write to understand before being understood. 
+Logic supports emotion instead of leading it. Every sentence feels like shared space and respect.
+
+Example:
+We speak in sentences that listen.
+Readers hear care between every line.
+When empathy becomes method, clarity follows naturally.`,
   };
 };
+
 // ─────────────────────────────────────────────
 // Overall Tone Balance (V3.5 — Capstone Field)
 // ─────────────────────────────────────────────
 const getOverallDescription = (value: number) => {
-  if (value <= 3)
+  if (value <= 2)
     return {
       title: "Grounded Balance",
-      text: `You write with measured pace and deliberate rhythm. Each thought feels anchored, considered, and steady. The sentences breathe; they give space for understanding. This tone removes friction and creates psychological safety - the reader never feels rushed or overwhelmed. You communicate confidence by doing less, saying only what must be said, and letting the weight of clarity speak for itself. Your words sound like focus, your rhythm like trust being built in real time.\n\nExample:\nYou open with calm assurance - short, precise sentences that sound composed.\nEach paragraph invites reflection rather than reaction.\nYou use pauses as part of persuasion, allowing people to feel the meaning before they process it.\nThis is the rhythm of expertise: the slower you speak, the faster they believe.`,
+      text: `You write with calm focus and steady rhythm. 
+Every idea feels intentional, every pause deliberate. 
+This tone builds safety and credibility - the reader never feels hurried or overwhelmed.
+
+Example:
+We speak slowly so meaning has space to land.
+Short lines. Clear points.
+The rhythm itself builds trust.`,
     };
-  if (value <= 7)
+
+  if (value <= 4)
+    return {
+      title: "Composed Flow",
+      text: `You maintain poise but add light movement. 
+Each section flows smoothly, balancing stillness with progression. 
+The writing feels confident and attentive without sounding rigid.
+
+Example:
+We move through ideas at a natural pace.
+Each sentence clears the way for the next.
+Readers feel guided - not managed.`,
+    };
+
+  if (value <= 6)
     return {
       title: "Dynamic Equilibrium",
-      text: `You balance poise with progress. The message moves forward, but each idea has room to land. This tone feels confident yet conversational - the kind of voice that can energize a team meeting or calm a stakeholder in the same breath. You use cadence as a design tool: alternating tempo, sentence length, and emphasis to keep readers mentally active while emotionally grounded. Every section feels like guidance in motion - measured, clear, alive.\n\nExample:\nYou build rhythm through variation - one short line to focus attention, one longer to expand meaning.\nYour tone rises and settles like breathing - movement without chaos.\nYou sound approachable but composed, blending expert certainty with human rhythm.\nThe result: content that feels alive, not loud; confident, not cold.`,
+      text: `Clarity and rhythm share equal space. 
+You sound calm but active, confident but approachable. 
+The tone adapts to context, energizing without losing precision.
+
+Example:
+One short sentence to focus attention.
+One longer to expand the meaning.
+Your tone breathe smoothly - measured, clear, and alive.`,
     };
+
+  if (value <= 8)
+    return {
+      title: "Driven Momentum",
+      text: `The pace quickens. 
+You speak with decisive motion while staying articulate and grounded. 
+Your writing sounds like leadership in motion - steady but forward.
+
+Example:
+We lead through movement, not volume.
+Each idea drives the next.
+The tone feels fast, but never frantic.`,
+    };
+
   return {
-    title: "Forward Momentum",
-    text: `You write with kinetic energy and clarity fused together. Each paragraph carries pulse and direction, like a well-timed stride. You use movement as meaning - verbs lead, sentences flow, ideas escalate naturally. The tone projects vision and competence: it doesn’t wait for change, it initiates it. Your writing feels awake, physical, and focused - every phrase propels understanding forward. This is where communication turns into leadership.\n\nExample:\nYou start strong, finish stronger - each sentence builds pressure toward action.\nYour verbs carry muscle: move, build, align, deliver.\nParagraphs unfold like momentum you can hear - fast enough to inspire, clear enough to trust.\nReaders don’t just follow your message; they feel themselves accelerate with it.`,
+    title: "Full Momentum",
+    text: `You write with precision and velocity fused together. 
+Each paragraph carries pulse and direction. 
+The tone inspires, commands, and drives action without noise.
+
+Example:
+We start strong, finish stronger.
+Every line propels the reader forward.
+You sound like motion turned into message - energy made clear.`,
   };
 };
 
