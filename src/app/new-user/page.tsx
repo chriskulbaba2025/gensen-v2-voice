@@ -5,39 +5,15 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useForm } from '@/context/FormContext';
 
-interface BrandDetail {
-  field: string;
-  icon: string;
-  value: string;
-}
-
-interface SocialDetail {
-  platform: string;
-  icon: string;
-  insight: string;
-  stat: string;
-}
-
-interface OpportunityDetail {
-  platform: string;
-  icon: string;
-  opportunity: string;
-}
-
 export default function NewUserPage() {
   const router = useRouter();
-  const { data, setData } = useForm();
+  const { data } = useForm();
 
   const [seconds, setSeconds] = useState(240);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState<string | null>(null);
-  const [core, setCore] = useState<BrandDetail[]>([]);
-  const [socials, setSocials] = useState<SocialDetail[]>([]);
-  const [opportunities, setOpportunities] = useState<OpportunityDetail[]>([]);
-  const [fading, setFading] = useState<'in' | 'out' | null>('in');
+  const [fading, setFading] = useState<'in' | 'out'>('in');
   const [statsFade, setStatsFade] = useState<'in' | 'out'>('in');
   const [showStats, setShowStats] = useState(false);
-
 
   // Countdown timer
   useEffect(() => {
@@ -46,7 +22,7 @@ export default function NewUserPage() {
     return () => clearInterval(timer);
   }, [seconds, loading]);
 
-  // Webhook trigger
+  // Webhook trigger + redirect
   useEffect(() => {
     const startFlow = async () => {
       try {
@@ -65,74 +41,34 @@ export default function NewUserPage() {
         const result = await res.json();
         console.log('[NEW USER RESULT]', result);
 
-        // if S3 report URL present, load it and save as static HTML
-        if (result?.result?.reportUrl) {
-          const htmlRes = await fetch(result.result.reportUrl);
-          const html = await htmlRes.text();
-          setData({ ...data, reportHtml: html });
-          setLoading(false);
+        // ✅ If webhook completed successfully, redirect to portal dashboard
+        if (result?.status === 'ok' || result?.result?.success) {
+          router.push('https://portal.omnipressence.com/dashboard/brand-voice');
           return;
         }
 
-        const r = result?.result || result;
-
-        setMessage(
-          r?.welcomeMessage ||
-            'Your Brand Voice overview is ready. Let’s see what we found.'
-        );
-
-        setCore(r?.details?.core || []);
-        setSocials(r?.details?.socials || []);
-        setOpportunities(r?.details?.opportunityMap || []);
-
-        setData({
-          ...data,
-          brandCore: {
-            'Brand Statement':
-              r?.details?.core?.find((c: BrandDetail) => c.field === 'Brand Statement')
-                ?.value || '',
-            Audience:
-              r?.details?.core?.find((c: BrandDetail) => c.field === 'Audience')
-                ?.value || '',
-            ICP:
-              r?.details?.core?.find((c: BrandDetail) => c.field === 'ICP')
-                ?.value || '',
-          },
-          socials: r?.details?.socials || [],
-        });
-
-        setStatsFade('out');
-        setTimeout(() => {
-          setFading('out');
-          setTimeout(() => {
-            setLoading(false);
-            setFading('in');
-          }, 800);
-        }, 600);
+        // Otherwise, show generic error and stop timer
+        setLoading(false);
+        console.error('Webhook did not return expected success format:', result);
       } catch (err) {
         console.error('Error running flow:', err);
-        setMessage('Something went wrong while analyzing your Brand Voice.');
         setLoading(false);
       }
     };
 
     startFlow();
-  }, [data, setData]);
+  }, [data, router]);
 
   useEffect(() => {
     if (loading) {
       const timer = setTimeout(() => setShowStats(true), 600);
       return () => clearTimeout(timer);
     }
-  }, [loading, setShowStats]);
+  }, [loading]);
 
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
 
-   // if static HTML already stored, render it immediately
-   if (data?.reportHtml) {
-    return <main dangerouslySetInnerHTML={{ __html: data.reportHtml }} />;
-  }
   // ──────────────────────────────────────────────
   // Render
   // ──────────────────────────────────────────────
@@ -146,7 +82,7 @@ export default function NewUserPage() {
         className="rounded-[20px] mb-8"
       />
 
-      {loading ? (
+      {loading && (
         <div
           className={`flex flex-col items-center max-w-xl transition-opacity duration-1000 ${
             fading === 'out' ? 'opacity-0' : 'opacity-100'
@@ -187,8 +123,7 @@ export default function NewUserPage() {
                 <ul className="space-y-3 text-gray-700 text-sm leading-relaxed">
                   <li>
                     • Brands publishing content <b>weekly</b> see <b>2.5× more
-                    organic traffic</b> than monthly posters. 
-                    <em>(HubSpot 2025)</em>
+                    organic traffic</b> than monthly posters. <em>(HubSpot 2025)</em>
                   </li>
                   <li>
                     • Consistent brand voice increases revenue by up to <b>33%</b>{' '}
@@ -203,71 +138,11 @@ export default function NewUserPage() {
             </div>
           )}
         </div>
-      ) : (
-        <div
-          className={`bg-white shadow-lg border border-[#076aff] p-10 rounded-2xl w-full max-w-3xl text-left transition-opacity duration-1000 ${
-            fading === 'in' ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          <h1 className="text-xl font-semibold mb-6 text-center">{message}</h1>
+      )}
 
-          {core.length > 0 && (
-            <>
-              <h2 className="text-lg font-bold mt-6 mb-3 text-[#076aff]">
-                Core Brand Elements
-              </h2>
-              <ul className="space-y-3 text-gray-700">
-                {core.map((item, i) => (
-                  <li key={i}>
-                    <i className={`${item.icon} text-[#076aff] mr-2`}></i>
-                    <b>{item.field}:</b> {item.value}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-
-          {socials.length > 0 && (
-            <>
-              <h2 className="text-lg font-bold mt-8 mb-3 text-[#076aff]">
-                Social Presence
-              </h2>
-              <ul className="space-y-3 text-gray-700">
-                {socials.map((item, i) => (
-                  <li key={i}>
-                    <i className={`${item.icon} text-[#076aff] mr-2`}></i>
-                    <b>{item.platform}:</b> {item.insight}{' '}
-                    <em>({item.stat})</em>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-
-          {opportunities.length > 0 && (
-            <>
-              <h2 className="text-lg font-bold mt-8 mb-3 text-[#076aff]">
-                Opportunity Map
-              </h2>
-              <ul className="space-y-3 text-gray-700">
-                {opportunities.map((item, i) => (
-                  <li key={i}>
-                    <i className={`${item.icon} text-[#076aff] mr-2`}></i>
-                    <b>{item.platform}:</b> {item.opportunity}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-
-          <div className="text-center mt-8">
-            <button
-              onClick={() => router.push('/screen-2')}
-              className="px-8 py-3 bg-[#076aff] text-white rounded-lg hover:bg-[#0558cc] transition-all duration-200"
-            >
-              Next →
-            </button>
-          </div>
+      {!loading && (
+        <div className="text-center mt-8 text-gray-600">
+          Something went wrong. Please try again later.
         </div>
       )}
 
