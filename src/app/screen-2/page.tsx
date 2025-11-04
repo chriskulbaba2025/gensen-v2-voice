@@ -53,21 +53,65 @@ export default function Step2() {
   // Warmth ↔ Authority
   // ─────────────────────────────────────────────
   const getWarmthAuthorityDescription = (value: number) => {
-    if (value <= 3)
+    if (value <= 2)
       return {
-        title: "Pure Warmth",
-        text: `You lead with care and steady intent. The tone is open, calm, and grounded in empathy. Every sentence feels like a hand on the shoulder: reassuring, not selling. It helps people slow down, understand, and feel ready to act.\n\nExample:\nWe don’t rush results.\nWe build trust first.\nWhen people see your consistency, they start believing your message without you having to repeat it.\nThat’s how strong brands grow: one quiet, honest moment at a time.`,
+        title: "Full Warmth",
+        text: `You lead entirely with empathy and trust. Every sentence feels like conversation—patient, kind, and grounded. 
+  The message reassures before it persuades. People feel cared for, not directed.
+  
+  Example:
+  We don’t push for attention—we earn it.
+  Each message starts with understanding and ends with calm clarity.
+  Your tone gives readers room to breathe and believe.`,
       };
-    if (value <= 7)
+  
+    if (value <= 4)
       return {
-        title: "Balanced Warm Authority",
-        text: `You sound like a calm expert who listens before guiding. The tone blends warmth with direction, turning insight into action. Every message feels steady, helpful, and quietly persuasive.\n\nExample:\nYou already have the knowledge.\nOur role is to make it sound clear and credible.\nWe shape content that teaches, encourages, and earns attention naturally - not by pushing, but by showing people what’s possible when they trust you.`,
+        title: "Gentle Warmth",
+        text: `You keep connection first but start to show structure. The language stays compassionate yet purposeful. 
+  You sound approachable, thoughtful, and reliable without losing softness.
+  
+  Example:
+  We listen before we guide.
+  Each plan begins with care and builds toward clarity.
+  Your voice reminds people that empathy and confidence can coexist.`,
       };
+  
+    if (value <= 6)
+      return {
+        title: "Balanced Core",
+        text: `You sound like a steady professional who leads with care and finishes with conviction. 
+  The tone feels human but guided—half warmth, half authority. It shows confidence without dominance.
+  
+  Example:
+  You already know what matters; we help you say it clearly.
+  Every line teaches through trust, blending heart and structure until the message feels both credible and kind.`,
+      };
+  
+    if (value <= 8)
+      return {
+        title: "Guided Authority",
+        text: `Direction becomes clearer now. You speak with confidence and purpose while keeping the edges smooth. 
+  The tone commands respect but never sacrifices understanding.
+  
+  Example:
+  We clarify before we convince.
+  Each idea lands with precision and poise.
+  Your audience feels guided, not managed—led by expertise that listens.`,
+      };
+  
     return {
-      title: "Pure Authority",
-      text: `You communicate with confidence that feels earned. Every line is lean, focused, and firm. There’s still warmth in the delivery, but it’s channeled through precision and purpose. The message gives clarity and direction without noise.\n\nExample:\nThe best leaders don’t chase attention.\nThey direct it.\nWe turn complex ideas into simple strategies that move people and performance forward - one clear message, perfectly timed.`,
+      title: "Full Authority",
+      text: `You communicate with total conviction and clarity. 
+  Every word feels intentional and sharp. The tone is professional, decisive, and inspiring—built for trust and action.
+  
+  Example:
+  We don’t wait for clarity—we create it.
+  Each sentence defines direction and moves work forward.
+  Your message stands firm, setting pace and confidence for everyone listening.`,
     };
   };
+  
 
   // ─────────────────────────────────────────────
   // Authority ↔ Energy
