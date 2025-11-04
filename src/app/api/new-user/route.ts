@@ -1,54 +1,41 @@
+// src/app/api/new-user/route.ts
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-  try {
-    let body = {};
-    try {
-      body = await req.json();
-    } catch {
-      console.warn('[NEW USER] Empty request body detected');
-    }
+  const data = await req.json();
 
-    if (!body || Object.keys(body).length === 0) {
-      return NextResponse.json({ error: 'Empty request body' }, { status: 400 });
-    }
-
-    console.log('[NEW USER DATA]', body);
-
-    const webhookURL = process.env.N8N_BRAND_VOICE_WEBHOOK;
-    if (!webhookURL) {
-      console.error('❌ Missing N8N_SUBMIT_WEBHOOK in env');
-      return NextResponse.json({ error: 'Server misconfiguration' }, { status: 500 });
-    }
-
-    const n8nResponse = await fetch(webhookURL, {
+  // Step 1: check-user
+  const check = await fetch(
+    'https://primary-production-77e7.up.railway.app/webhook/check-user',
+    {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
+      body: JSON.stringify({ email: data.email }),
+    }
+  );
+  const checkResult = await check.json();
 
-    const rawText = await n8nResponse.text();
-    let result = {};
-
-  try {
-  result = rawText ? JSON.parse(rawText) : {};
-} catch (err: unknown) {
-  console.error('[NEW USER] Failed to parse n8n JSON response:', err);
-  console.warn('[NEW USER] Raw response body:', rawText);
-  result = {};
-}
-
-
-    console.log('[NEW USER RESULT]', result);
-
+  // Step 2: route logic
+  if (checkResult.exists) {
     return NextResponse.json({
-      status: 'ok',
-      message: 'Brand Voice generation started',
-      n8nStatus: n8nResponse.status,
-      result,
+      status: 'exists',
+      redirect: 'https://voice.omnipressence.com/existing-user',
     });
-  } catch (err) {
-    console.error('[NEW USER ROUTE ERROR]', err);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
+
+  // Step 3: run secondary flow if not found
+  const submit = await fetch(
+    'https://primary-production-77e7.up.railway.app/webhook/submit-brand',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    }
+  );
+  const submitResult = await submit.json();
+
+  return NextResponse.json({
+    status: 'created',
+    result: submitResult,
+  });
 }

@@ -42,10 +42,16 @@ export default function NewUserPage() {
         console.log('[NEW USER RESULT]', result);
 
         // ✅ If webhook completed successfully, redirect to portal dashboard
-        if (result?.status === 'ok' || result?.result?.success) {
-          router.push('https://portal.omnipressence.com/dashboard/brand-voice');
+        if (result.status === 'exists') {
+          alert('You already have a brand voice.');
           return;
         }
+        
+        if (result.status === 'created') {
+          router.push('https://voice.omnipressence.com/generate/step-2');
+          return;
+        }
+        
 
         // Otherwise, show generic error and stop timer
         setLoading(false);
