@@ -38,6 +38,7 @@ export default function NewUserPage() {
   const [statsFade, setStatsFade] = useState<'in' | 'out'>('in');
   const [showStats, setShowStats] = useState(false);
 
+
   // Countdown timer
   useEffect(() => {
     if (!loading || seconds <= 0) return;
@@ -64,6 +65,15 @@ export default function NewUserPage() {
         const result = await res.json();
         console.log('[NEW USER RESULT]', result);
 
+        // if S3 report URL present, load it and save as static HTML
+        if (result?.result?.reportUrl) {
+          const htmlRes = await fetch(result.result.reportUrl);
+          const html = await htmlRes.text();
+          setData({ ...data, reportHtml: html });
+          setLoading(false);
+          return;
+        }
+
         const r = result?.result || result;
 
         setMessage(
@@ -71,29 +81,26 @@ export default function NewUserPage() {
             'Your Brand Voice overview is ready. Let’s see what we found.'
         );
 
-        // Update local display data
         setCore(r?.details?.core || []);
         setSocials(r?.details?.socials || []);
         setOpportunities(r?.details?.opportunityMap || []);
 
-        // ✅ Persist webhook data globally (core + socials)
         setData({
           ...data,
           brandCore: {
             'Brand Statement':
               r?.details?.core?.find((c: BrandDetail) => c.field === 'Brand Statement')
                 ?.value || '',
-            'Audience':
+            Audience:
               r?.details?.core?.find((c: BrandDetail) => c.field === 'Audience')
                 ?.value || '',
-            'ICP':
+            ICP:
               r?.details?.core?.find((c: BrandDetail) => c.field === 'ICP')
                 ?.value || '',
           },
           socials: r?.details?.socials || [],
         });
 
-        // Fade-out stat box, then fade-in message
         setStatsFade('out');
         setTimeout(() => {
           setFading('out');
@@ -110,19 +117,22 @@ export default function NewUserPage() {
     };
 
     startFlow();
-  }, []);
+  }, [data, setData]);
 
-useEffect(() => {
-  if (loading) {
-    const timer = setTimeout(() => setShowStats(true), 600);
-    return () => clearTimeout(timer);
-  }
-}, [loading, setShowStats]);
-
+  useEffect(() => {
+    if (loading) {
+      const timer = setTimeout(() => setShowStats(true), 600);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, setShowStats]);
 
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
 
+   // if static HTML already stored, render it immediately
+   if (data?.reportHtml) {
+    return <main dangerouslySetInnerHTML={{ __html: data.reportHtml }} />;
+  }
   // ──────────────────────────────────────────────
   // Render
   // ──────────────────────────────────────────────
@@ -136,16 +146,12 @@ useEffect(() => {
         className="rounded-[20px] mb-8"
       />
 
-      {/* ──────────────────────────────────────────────
-          LOADING STATE
-      ────────────────────────────────────────────── */}
       {loading ? (
         <div
           className={`flex flex-col items-center max-w-xl transition-opacity duration-1000 ${
             fading === 'out' ? 'opacity-0' : 'opacity-100'
           }`}
         >
-          {/* Rotating countdown rings */}
           <div className="relative w-24 h-24 mb-6">
             <div className="absolute inset-0 border-4 border-gray-300 border-t-[#076aff] rounded-full animate-spin-slow"></div>
             <div className="absolute inset-1 border-4 border-gray-200 border-b-[#40a9ff] rounded-full animate-spin-reverse-slower"></div>
@@ -168,7 +174,6 @@ useEffect(() => {
             Estimated completion ≈ 4 minutes · Page updates automatically
           </p>
 
-          {/* Stat box fade */}
           {showStats && (
             <div
               className={`transition-opacity duration-700 ${
@@ -199,9 +204,6 @@ useEffect(() => {
           )}
         </div>
       ) : (
-        // ──────────────────────────────────────────────
-        // POST-LOADING (Webhook complete)
-        // ──────────────────────────────────────────────
         <div
           className={`bg-white shadow-lg border border-[#076aff] p-10 rounded-2xl w-full max-w-3xl text-left transition-opacity duration-1000 ${
             fading === 'in' ? 'opacity-100' : 'opacity-0'
@@ -209,7 +211,6 @@ useEffect(() => {
         >
           <h1 className="text-xl font-semibold mb-6 text-center">{message}</h1>
 
-          {/* Core Brand Elements */}
           {core.length > 0 && (
             <>
               <h2 className="text-lg font-bold mt-6 mb-3 text-[#076aff]">
@@ -226,7 +227,6 @@ useEffect(() => {
             </>
           )}
 
-          {/* Social Presence */}
           {socials.length > 0 && (
             <>
               <h2 className="text-lg font-bold mt-8 mb-3 text-[#076aff]">
@@ -244,7 +244,6 @@ useEffect(() => {
             </>
           )}
 
-          {/* Opportunity Map (local only, not persisted) */}
           {opportunities.length > 0 && (
             <>
               <h2 className="text-lg font-bold mt-8 mb-3 text-[#076aff]">

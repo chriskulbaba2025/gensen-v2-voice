@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const LOGIN = 'https://portal.omnipressence.com/login';
-const DASH = '/report';
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

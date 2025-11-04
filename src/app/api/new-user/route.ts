@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
     console.log('[NEW USER DATA]', body);
 
-    const webhookURL = process.env.N8N_SUBMIT_WEBHOOK;
+    const webhookURL = process.env.N8N_BRAND_VOICE_WEBHOOK;
     if (!webhookURL) {
       console.error('❌ Missing N8N_SUBMIT_WEBHOOK in env');
       return NextResponse.json({ error: 'Server misconfiguration' }, { status: 500 });

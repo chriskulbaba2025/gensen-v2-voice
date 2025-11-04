@@ -60,6 +60,9 @@ export type FormData = {
   socials?: SocialDetail[];
   opportunities?: OpportunityDetail[];
 
+  // ── Stored report HTML for static rendering
+  reportHtml?: string;
+
   // ── Tone sliders (7-field model)
   sliderScores: {
     warmthAuthority: number;
@@ -112,13 +115,16 @@ export const FormProvider = ({ children }: { children: ReactNode }) => {
     core: [],
     brandCore: {
       'Brand Statement': '',
-      'Audience': '',
-      'ICP': '',
+      Audience: '',
+      ICP: '',
     },
 
     // ── Social and opportunity maps
     socials: [],
     opportunities: [],
+
+    // ── Stored HTML report
+    reportHtml: '',
 
     // ── Tone sliders (initialize mid-scale)
     sliderScores: {

@@ -187,17 +187,6 @@ const getOverallDescription = (value: number) => {
 
 
   // ─────────────────────────────────────────────
-  // Placeholder generator for other sliders
-  // ─────────────────────────────────────────────
-  const getPlaceholderDescription = (title: string) => {
-    return {
-      title: `[PLACEHOLDER: ${title}]`,
-      text: `[PLACEHOLDER: Paste description + example for "${title}" here]`,
-    };
-  };
-
-
-  // ─────────────────────────────────────────────
   // Slider Component
   // ─────────────────────────────────────────────
   interface SliderProps {
