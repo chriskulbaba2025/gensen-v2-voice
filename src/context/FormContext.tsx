@@ -56,6 +56,11 @@ export type FormData = {
     'ICP'?: string;
   };
 
+  // ✅ New high-level fields for direct access
+  icp?: string;
+  audience?: string;
+  brandStatement?: string;
+
   // ── Social + Opportunity maps
   socials?: SocialDetail[];
   opportunities?: OpportunityDetail[];
@@ -118,6 +123,11 @@ export const FormProvider = ({ children }: { children: ReactNode }) => {
       Audience: '',
       ICP: '',
     },
+
+    // ✅ New high-level defaults
+    icp: '',
+    audience: '',
+    brandStatement: '',
 
     // ── Social and opportunity maps
     socials: [],

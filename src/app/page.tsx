@@ -15,6 +15,14 @@ export default function Page1() {
     setLoading(true);
     setError('');
 
+    // ✅ Website URL validation before calling the API
+    const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/i;
+    if (!data.url || !urlPattern.test(data.url.trim())) {
+      setError('Please enter a valid website URL before continuing.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch('/api/check-user', {
         method: 'POST',
@@ -31,7 +39,6 @@ export default function Page1() {
       const result = await res.json();
       console.log('[CHECK RESULT]', result);
 
-      // Handle boolean or string/numeric truthy response
       const existsFlag =
         result?.exists === true ||
         result?.exists === 'true' ||

@@ -1,46 +1,71 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useForm } from "@/context/FormContext";
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useForm } from '@/context/FormContext';
 
 export default function NewUserPage() {
-  const router = useRouter();
-  const { data } = useForm();
-
+  const { data, setData } = useForm();
   const [seconds, setSeconds] = useState(240);
-  const [stage, setStage] = useState<"loading" | "complete">("loading");
+  const [stage, setStage] = useState<'loading' | 'complete'>('loading');
 
-  // countdown
+  const [icp, setIcp] = useState('');
+  const [audience, setAudience] = useState('');
+  const [brandStatement, setBrandStatement] = useState('');
+
+  // countdown timer
   useEffect(() => {
-    if (stage !== "loading" || seconds <= 0) return;
+    if (stage !== 'loading' || seconds <= 0) return;
     const timer = setInterval(() => setSeconds((s) => s - 1), 1000);
     return () => clearInterval(timer);
   }, [seconds, stage]);
 
-  // poll for webhook completion
+  // poll Airtable after 2 minutes
   useEffect(() => {
+    if (!data?.email) return;
     let poll: NodeJS.Timeout;
+
     const startPolling = setTimeout(() => {
       poll = setInterval(async () => {
         try {
-          const res = await fetch("/api/report-latest", { cache: "no-store" });
-          if (res.ok) {
-            setStage("complete");
+          const res = await fetch(
+            `/api/report-latest?email=${encodeURIComponent(data.email)}`,
+            { cache: 'no-store' }
+          );
+          if (!res.ok) return;
+
+          // expecting JSON metadata for this endpoint
+          const record = await res.json();
+
+          // confirm fields exist
+          if (record.icp || record.audience || record.brandStatement) {
+            setIcp(record.icp || '');
+            setAudience(record.audience || '');
+            setBrandStatement(record.brandStatement || '');
+
+            // persist to context for Flow 3
+            setData({
+              ...data,
+              icp: record.icp || '',
+              audience: record.audience || '',
+              brandStatement: record.brandStatement || '',
+            });
+
+            setStage('complete');
             clearInterval(poll);
           }
         } catch {
-          /* ignore */
+          /* ignore transient network errors */
         }
-      }, 10000);
-    }, 120000);
+      }, 10000); // poll every 10 s
+    }, 120000); // wait 2 minutes
+
     return () => {
       clearInterval(poll);
       clearTimeout(startPolling);
     };
-  }, []);
+  }, [data?.email]);
 
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
@@ -50,7 +75,7 @@ export default function NewUserPage() {
       {/* ─────────── LOADING STAGE ─────────── */}
       <div
         className={`transition-opacity duration-[1500ms] ease-in-out ${
-          stage === "complete" ? "opacity-0 pointer-events-none" : "opacity-100"
+          stage === 'complete' ? 'opacity-0 pointer-events-none' : 'opacity-100'
         } flex flex-col items-center`}
       >
         <Image
@@ -66,7 +91,7 @@ export default function NewUserPage() {
             <div className="absolute inset-0 border-4 border-gray-300 border-t-[#076aff] rounded-full animate-spin-slow"></div>
             <div className="absolute inset-1 border-4 border-gray-200 border-b-[#40a9ff] rounded-full animate-spin-reverse-slower"></div>
             <div className="absolute inset-0 flex items-center justify-center font-mono text-[#076aff] text-lg font-semibold">
-              {minutes}:{remainingSeconds.toString().padStart(2, "0")}
+              {minutes}:{remainingSeconds.toString().padStart(2, '0')}
             </div>
           </div>
 
@@ -76,8 +101,8 @@ export default function NewUserPage() {
 
           <p className="text-gray-600 max-w-lg mb-4 leading-relaxed">
             You can’t microwave maturity — and you can’t rush meaningful
-            storytelling. Give us a few minutes while we analyze how your brand
-            already speaks across your digital footprint.
+            storytelling. Give us a few minutes while we analyze who your brand
+            already speaks to across your digital footprint.
           </p>
 
           <p className="text-gray-400 text-xs mt-1">
@@ -89,7 +114,7 @@ export default function NewUserPage() {
       {/* ─────────── COMPLETE STAGE ─────────── */}
       <div
         className={`absolute inset-0 flex flex-col items-center justify-center text-center px-[40px] transition-opacity duration-[1500ms] ease-in-out ${
-          stage === "complete" ? "opacity-100" : "opacity-0 pointer-events-none"
+          stage === 'complete' ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
       >
         <img
@@ -99,13 +124,31 @@ export default function NewUserPage() {
         />
 
         <h1 className="text-3xl font-semibold text-[#002c71] mb-4">
-          Stage 1 Complete &ndash; Your Brand Voice Foundation Is Ready
+          Stage 1 Complete – Your Brand Voice Foundation Is Ready
         </h1>
 
         <p className="text-gray-700 leading-relaxed mb-4 max-w-[600px]">
-          We’ve completed the deep dive into how your brand already sounds — the
-          tone, rhythm, and intent behind every message.
+          We’ve completed the deep dive into who your brand already speaks to —
+          the tone, rhythm, and intent behind every message.
         </p>
+
+        {/* Airtable snapshot */}
+        <div className="bg-white border border-[#e0e6f5] rounded-[12px] shadow-soft p-[24px] mb-[24px] max-w-[700px] text-left">
+          <h2 className="text-xl font-semibold text-[#002c71] mb-2">
+            Ideal Client Profile
+          </h2>
+          <p className="text-gray-700 mb-4 whitespace-pre-line">{icp}</p>
+
+          <h2 className="text-xl font-semibold text-[#002c71] mb-2">
+            Target Audience
+          </h2>
+          <p className="text-gray-700 mb-4 whitespace-pre-line">{audience}</p>
+
+          <h2 className="text-xl font-semibold text-[#002c71] mb-2">
+            Brand Statement
+          </h2>
+          <p className="text-gray-700 whitespace-pre-line">{brandStatement}</p>
+        </div>
 
         <p className="text-gray-700 leading-relaxed mb-4 max-w-[600px]">
           Now, GENSEN will help you <strong>refine and develop</strong> that
@@ -117,7 +160,7 @@ export default function NewUserPage() {
         </p>
 
         <ul className="text-gray-700 text-left mb-4 max-w-[600px] mx-auto">
-          <li>1️⃣ Define your tone and personality using a few guided sliders.</li>
+          <li>1️⃣ Define your tone and personality using guided sliders.</li>
           <li>
             2️⃣ Apply that tone to your real communication style through examples
             and focus areas.
@@ -125,9 +168,9 @@ export default function NewUserPage() {
         </ul>
 
         <p className="text-gray-700 leading-relaxed mb-6 max-w-[600px]">
-          This stage shapes the precision, warmth, and rhythm of your voice —
-          the signature that will make your content instantly recognizable
-          everywhere it appears.
+          This stage shapes the precision, warmth, and rhythm of your voice — the
+          signature that will make your content instantly recognizable everywhere
+          it appears.
         </p>
 
         <Link
@@ -138,7 +181,7 @@ export default function NewUserPage() {
         </Link>
       </div>
 
-      <footer className="mt-12 text-gray-500 italic text-sm text-center">
+      <footer className="my-[50px] text-gray-500 italic text-sm text-center">
         Consistency builds credibility — and credibility builds connection.
       </footer>
 
@@ -157,7 +200,6 @@ export default function NewUserPage() {
         .animate-spin-reverse-slower {
           animation: spinReverse 5s linear infinite;
         }
-        /* ensure hover overrides global CSS */
         a:hover {
           color: #ffffff !important;
         }
