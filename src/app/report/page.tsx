@@ -45,7 +45,7 @@ export default function ReportPage() {
                       Click &ldquo;Continue&rdquo; below to begin shaping your brand voice system with precision and intent.
                     </p>
                     <button 
-                      onclick="window.location.href='https://voice.omnipressence.com/generate/step-2'" 
+                      onclick="window.location.href='https://voice.omnipressence.com/generate/screen-2'" 
                       class="mt-8 px-8 py-3 bg-[#076aff] text-white rounded-[10px] hover:bg-[#005fe0] transition">
                       Continue to Stage 2
                     </button>
