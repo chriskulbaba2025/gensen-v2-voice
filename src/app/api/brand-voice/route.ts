@@ -10,7 +10,10 @@ interface BrandVoicePayload {
   email: string;
   business?: string;
   url?: string;
-  brandCore?: string;
+  brandCore?: Record<string, string>;
+  icp?: string;
+  audience?: string;
+  brandStatement?: string;
   topic?: string;
   writingSample?: string;
   sliderScores?: Record<string, number>;
@@ -39,16 +42,63 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const payload = bodyUnknown;
+    const body = bodyUnknown as BrandVoicePayload;
 
+    // ─────────────────────────────────────────────
+    // Normalize brandCore fields (merge with ICP/Audience/Statement)
+    // ─────────────────────────────────────────────
+    const brandCore = {
+      'Brand Statement':
+        body.brandStatement ||
+        (body.brandCore && body.brandCore['Brand Statement']) ||
+        '',
+      Audience:
+        body.audience ||
+        (body.brandCore && body.brandCore['Audience']) ||
+        '',
+      ICP:
+        body.icp ||
+        (body.brandCore && body.brandCore['ICP']) ||
+        '',
+    };
+
+    // ─────────────────────────────────────────────
+    // Normalize slider scores
+    // ─────────────────────────────────────────────
+    const s = body.sliderScores || {};
+    const sliderScores = {
+      warmthAuthority: Number(s.warmthAuthority || 5),
+      authorityEnergy: Number(s.authorityEnergy || 5),
+      warmthEnergy: Number(s.warmthEnergy || 5),
+      clarityCreativity: Number(s.clarityCreativity || 5),
+      creativityEmpathy: Number(s.creativityEmpathy || 5),
+      clarityEmpathy: Number(s.clarityEmpathy || 5),
+      overall: Number(s.overall || 5),
+    };
+
+    // ─────────────────────────────────────────────
+    // Construct final payload for n8n webhook
+    // ─────────────────────────────────────────────
+    const payload = {
+      firstName: body.firstName,
+      lastName: body.lastName,
+      email: body.email,
+      business: body.business || '',
+      url: body.url || '',
+      brandCore,
+      topic: body.topic || '',
+      writingSample: body.writingSample || '',
+      sliderScores,
+    };
+
+    // ─────────────────────────────────────────────
+    // Send to n8n webhook (fire-and-forget)
+    // ─────────────────────────────────────────────
     const webhook =
       process.env.N8N_BRAND_VOICE_WEBHOOK ||
       process.env.NEXT_PUBLIC_N8N_BRAND_VOICE_WEBHOOK ||
       'https://primary-production-77e7.up.railway.app/webhook/brand-voice';
 
-    // ─────────────────────────────────────────────
-    // Fire-and-forget call to n8n so this endpoint returns immediately
-    // ─────────────────────────────────────────────
     fetch(webhook, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -62,7 +112,7 @@ export async function POST(req: NextRequest) {
       console.log('📦 Payload:', JSON.stringify(payload, null, 2));
     }
 
-    // Respond instantly so the frontend can navigate to the report screen
+    // Respond instantly so frontend can navigate immediately
     return NextResponse.json(
       {
         success: true,
