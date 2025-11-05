@@ -1,210 +1,499 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useRouter } from "next/navigation";
+import { useForm } from "../../context/FormContext";
+import { useState, useEffect } from "react";
+import ProgressBar from "@/components/ProgressBar";
 
-export default function ReportPage() {
-  // 4-minute countdown
-  const totalSeconds = 4 * 60;
-  const [timeLeft, setTimeLeft] = useState(totalSeconds);
-  const [html, setHtml] = useState<string | null>(null);
-  const [status, setStatus] = useState<'loading' | 'done'>('loading');
-
-  useEffect(() => {
-    // countdown timer
-    const timer = setInterval(() => setTimeLeft((t) => (t > 0 ? t - 1 : 0)), 1000);
-
-    async function checkReport() {
-      try {
-        const res = await fetch('/api/report-latest');
-        if (res.ok) {
-          const text = await res.text();
-          if (text.includes('<!DOCTYPE html>')) {
-            // ───── FADE OUT EXISTING SECTION ─────
-            const loadingSection = document.querySelector('.transition-opacity');
-            if (loadingSection) loadingSection.classList.add('opacity-0');
-
-            // ───── AFTER FADE, SHOW STAGE 2 INTRO MESSAGE ─────
-            setTimeout(() => {
-              const container = document.querySelector('.transition-opacity');
-              if (container) {
-                container.innerHTML = `
-                  <div class="flex flex-col items-center justify-center text-center max-w-2xl px-6 py-12 fade-in">
-                    <h1 class="text-3xl font-semibold text-[#002c71] mb-4">
-                      Stage 1 Complete &ndash; Your Brand Voice Foundation Is Ready
-                    </h1>
-
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                      We’ve completed the deep dive into how your brand already sounds — the tone,
-                      rhythm, and intent behind every message.
-                    </p>
-
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                      Now, GENSEN will help you <strong>refine and develop</strong> that foundation
-                      into a living Brand Voice Framework.
-                    </p>
-
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                      There are just <strong>two short steps</strong> ahead:
-                    </p>
-
-                    <ul class="text-gray-700 text-left mb-4">
-                      <li>1️⃣ Define your tone and personality using a few guided sliders.</li>
-                      <li>
-                        2️⃣ Apply that tone to your real communication style through examples and
-                        focus areas.
-                      </li>
-                    </ul>
-
-                    <p class="text-gray-700 leading-relaxed mb-6">
-                      This stage shapes the precision, warmth, and rhythm of your voice — the
-                      signature that will make your content instantly recognizable everywhere it
-                      appears.
-                    </p>
-
-                    <button 
-                      onclick="fadeOutAndContinue()" 
-                      class="mt-6 px-8 py-3 bg-[#076aff] text-white rounded-[10px] hover:bg-[#005fe0] transition">
-                      Continue →
-                    </button>
-                  </div>
-                `;
-
-                // Inject fade-out + redirect handler into DOM safely
-                const script = document.createElement('script');
-                script.innerHTML = `
-                  function fadeOutAndContinue() {
-                    const container = document.querySelector('.transition-opacity');
-                    if (container) {
-                      container.classList.add('fade-out');
-                      setTimeout(() => {
-                        window.location.href = 'https://voice.omnipressence.com/generate/screen-2';
-                      }, 2000);
-                    }
-                  }
-                `;
-                document.body.appendChild(script);
-
-                container.classList.remove('opacity-0');
-                container.classList.add('opacity-100');
-              }
-            }, 800); // match fade duration
-
-            clearInterval(timer);
-            clearInterval(poll);
-          }
-        }
-      } catch {
-        // ignore transient errors
-      }
-    }
-
-    // wait 2 minutes before starting to poll
-    let poll: NodeJS.Timeout;
-    const startPolling = setTimeout(() => {
-      poll = setInterval(checkReport, 10000); // poll every 10 s
-    }, 120000); // 2 minutes
-
-    return () => {
-      clearInterval(timer);
-      clearInterval(poll);
-      clearTimeout(startPolling);
-    };
-  }, []);
-
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
-
-  return (
-    <div className="relative min-h-screen bg-[#f5f8ff] text-[#0a0a0a] font-raleway flex flex-col items-center px-[40px] py-[60px] overflow-hidden">
-      {/* LOADING SECTION */}
-      <div
-        className={`transition-opacity duration-1000 ease-in-out ${
-          status === 'done' ? 'opacity-0 pointer-events-none' : 'opacity-100'
-        } relative flex flex-col items-center justify-start`}
-      >
-        {/* TIMER */}
-        <div className="relative w-[160px] h-[160px] flex items-center justify-center mb-[40px] mt-[40px]">
-          <div className="absolute inset-0 rounded-full border-[8px] border-[#076aff] border-t-transparent animate-spin-slow"></div>
-          <div className="absolute inset-[12px] rounded-full border-[8px] border-[#c7d8ff] border-b-transparent animate-spin-reverse-slower"></div>
-          <div className="absolute text-center text-[#002c71] font-semibold text-[28px]">
-            {minutes}:{seconds.toString().padStart(2, '0')}
-          </div>
-        </div>
-
-        {/* STAGE 1 MESSAGE */}
-        <div className="max-w-[750px] bg-white shadow-soft rounded-[15px] px-[32px] py-[40px] border border-[#e0e6f5] leading-relaxed text-[17px] text-[#0b1320]">
-          <h1 className="text-[32px] font-semibold text-[#002c71] mb-[20px] text-center">
-            Your GENSEN Brand Voice Is Now Being Blended
-          </h1>
-
-          <p className="mb-[16px]">
-            GENSEN is analyzing how your brand already communicates &mdash; the tone, rhythm, and
-            intent that shape your message. This process builds the foundation of your unique voice
-            framework, preparing for Stage 2: Refinement &amp; Development.
-          </p>
-
-          <p className="mb-[16px]">
-            During this scan, GENSEN identifies how warmth, authority, and clarity balance across
-            your existing material. It then models those patterns to create a consistent structure
-            your future content will build on.
-          </p>
-
-          <p className="mb-[16px] text-[#002c71] font-medium text-center">
-            Every pass strengthens your voice system &mdash; confident, human, and unmistakably
-            yours.
-          </p>
-
-          <p className="mb-[16px]">
-            This analysis usually takes a few minutes. Once complete, you&rsquo;ll move to Stage 2 to
-            refine tone, add examples, and define focus areas that make your communication framework
-            practical and actionable.
-          </p>
-
-          <p className="text-center italic text-gray-600">
-            Stay here &mdash; Stage 2 will open automatically when the scan completes.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+// ─────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────
+interface SliderScores {
+  warmthAuthority: number;
+  authorityEnergy: number;
+  warmthEnergy: number;
+  clarityCreativity: number;
+  creativityEmpathy: number;
+  clarityEmpathy: number;
+  overall: number;
 }
 
-/* Tailwind custom animations */
-<style jsx global>{`
-  .fade-in {
-    animation: fadeIn 2s ease-in forwards;
-  }
-  .fade-out {
-    animation: fadeOut 2s ease-out forwards;
-  }
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
+export default function Step2() {
+  const router = useRouter();
+  const { data, setData } = useForm();
+
+  const [sliders, setSliders] = useState<SliderScores>(
+    data.sliderScores || {
+      warmthAuthority: 5,
+      authorityEnergy: 5,
+      warmthEnergy: 5,
+      clarityCreativity: 5,
+      creativityEmpathy: 5,
+      clarityEmpathy: 5,
+      overall: 5,
     }
-    to {
-      opacity: 1;
-    }
+  );
+
+  useEffect(() => {
+    if (data.sliderScores) setSliders(data.sliderScores);
+  }, [data.sliderScores]);
+
+  const handleChange = (key: keyof SliderScores, value: number) =>
+    setSliders((prev) => ({ ...prev, [key]: value }));
+
+  const handleNext = (e: React.FormEvent) => {
+    e.preventDefault();
+    setData({ sliderScores: sliders });
+    router.push("/screen-3");
+  };
+
+  const handleBack = () => router.back();
+
+  // ─────────────────────────────────────────────
+  // Warmth ↔ Authority
+  // ─────────────────────────────────────────────
+  const getWarmthAuthorityDescription = (value: number) => {
+    if (value <= 2)
+      return {
+        title: "Full Warmth",
+        text: `You lead entirely with empathy and trust. Every sentence feels conversational and reassuring.
+Example:
+We don’t push for attention — we earn it.
+Understanding comes first; persuasion follows.`,
+      };
+    if (value <= 4)
+      return {
+        title: "Gentle Warmth",
+        text: `You keep connection first but add light structure. Calm and approachable, never forceful.
+Example:
+We listen before we guide.
+Each plan begins with care and builds toward clarity.`,
+      };
+    if (value <= 6)
+      return {
+        title: "Balanced Core",
+        text: `Warmth and authority share equal footing. Human tone with clear direction.
+Example:
+You already know what matters; we help you say it clearly.`,
+      };
+    if (value <= 8)
+      return {
+        title: "Guided Authority",
+        text: `Confidence leads, but empathy softens the tone. Precision without pressure.
+Example:
+We clarify before we convince.
+Each idea lands with poise and understanding.`,
+      };
+    return {
+      title: "Full Authority",
+      text: `You communicate with clarity and conviction. Professional, concise, and decisive.
+Example:
+We don’t wait for clarity — we create it.`,
+    };
+  };
+
+  // ─────────────────────────────────────────────
+  // Authority ↔ Energy
+  // ─────────────────────────────────────────────
+  const getAuthorityEnergyDescription = (value: number) => {
+    if (value <= 2)
+      return {
+        title: "Measured Authority",
+        text: `Steady, deliberate, composed. Confidence through precision, not pace.
+Example:
+Progress comes from focus, not force.`,
+      };
+    if (value <= 4)
+      return {
+        title: "Controlled Motion",
+        text: `Structure holds, but momentum builds. Order and movement coexist.
+Example:
+We move when direction is clear.`,
+      };
+    if (value <= 6)
+      return {
+        title: "Balanced Drive",
+        text: `Calm authority with active pacing. Direction that inspires.
+Example:
+You build movement through focus.`,
+      };
+    if (value <= 8)
+      return {
+        title: "Driven Authority",
+        text: `Momentum takes lead. Confidence turns to action.
+Example:
+We act when others wait.`,
+      };
+    return {
+      title: "Full Energy",
+      text: `Dynamic and fast. Each line signals motion and intent.
+Example:
+We start fast and stay focused.`,
+    };
+  };
+
+  // ─────────────────────────────────────────────
+  // Warmth ↔ Energy
+  // ─────────────────────────────────────────────
+  const getWarmthEnergyDescription = (value: number) => {
+    if (value <= 2)
+      return {
+        title: "Full Warmth",
+        text: `Slow, calm, supportive. Comfort over urgency.
+Example:
+We take time to listen before we lead.`,
+      };
+    if (value <= 4)
+      return {
+        title: "Gentle Flow",
+        text: `Empathy drives gentle movement.
+Example:
+We lead with heart, then with motion.`,
+      };
+    if (value <= 6)
+      return {
+        title: "Balanced Warm Energy",
+        text: `Friendly and productive. Calm energy with focus.
+Example:
+Action feels natural, never forced.`,
+      };
+    if (value <= 8)
+      return {
+        title: "Active Energy",
+        text: `Momentum with empathy intact. Fast yet considerate.
+Example:
+Momentum builds trust when each move feels considered.`,
+      };
+    return {
+      title: "Full Energy",
+      text: `Confident and bright. Energy drives persuasion.
+Example:
+Momentum doesn’t wait — it performs.`,
+    };
+  };
+
+  // ─────────────────────────────────────────────
+  // Clarity ↔ Creativity
+  // ─────────────────────────────────────────────
+  const getClarityCreativityDescription = (value: number) => {
+    if (value <= 2)
+      return {
+        title: "Pure Clarity",
+        text: `Structured, logical, clean.
+Example:
+Strong ideas speak plainly.`,
+      };
+    if (value <= 4)
+      return {
+        title: "Structured Expression",
+        text: `Clarity leads but tone softens.
+Example:
+We explain before we impress.`,
+      };
+    if (value <= 6)
+      return {
+        title: "Balanced Expression",
+        text: `Logic and creativity merge evenly.
+Example:
+Facts earn trust; tone keeps it.`,
+      };
+    if (value <= 8)
+      return {
+        title: "Creative Logic",
+        text: `Creative framing with structure beneath.
+Example:
+We paint with precision.`,
+      };
+    return {
+      title: "Full Creativity",
+      text: `Artful and rhythmic. Ideas become stories.
+Example:
+An idea isn’t finished until it moves someone.`,
+    };
+  };
+
+  // ─────────────────────────────────────────────
+  // Creativity ↔ Empathy
+  // ─────────────────────────────────────────────
+  const getCreativityEmpathyDescription = (value: number) => {
+    if (value <= 2)
+      return {
+        title: "Pure Creativity",
+        text: `Inventive and visual, yet personal.
+Example:
+You make ideas visible before they're explained.`,
+      };
+    if (value <= 4)
+      return {
+        title: "Creative Flow",
+        text: `Imagination with emerging connection.
+Example:
+Vision becomes understanding.`,
+      };
+    if (value <= 6)
+      return {
+        title: "Balanced Creative Empathy",
+        text: `Imaginative and caring equally.
+Example:
+Inspiration becomes belonging.`,
+      };
+    if (value <= 8)
+      return {
+        title: "Empathic Imagination",
+        text: `Emotional storytelling takes lead.
+Example:
+Each story listens before it speaks.`,
+      };
+    return {
+      title: "Full Empathy",
+      text: `Patient, human, real.
+Example:
+We don’t write to impress; we write to connect.`,
+    };
+  };
+
+  // ─────────────────────────────────────────────
+  // Clarity ↔ Empathy
+  // ─────────────────────────────────────────────
+  const getClarityEmpathyDescription = (value: number) => {
+    if (value <= 2)
+      return {
+        title: "Pure Clarity",
+        text: `Structured, logical, confident.
+Example:
+We remove noise so meaning stands taller.`,
+      };
+    if (value <= 4)
+      return {
+        title: "Structured Awareness",
+        text: `Clarity first, compassion close behind.
+Example:
+We keep ideas crisp but kind.`,
+      };
+    if (value <= 6)
+      return {
+        title: "Balanced Clarity and Empathy",
+        text: `Logic with warmth in delivery.
+Example:
+You guide through understanding, not correction.`,
+      };
+    if (value <= 8)
+      return {
+        title: "Empathic Precision",
+        text: `Empathy defines each clear point.
+Example:
+We explain with kindness.`,
+      };
+    return {
+      title: "Full Empathy",
+      text: `Understanding first, clarity follows.
+Example:
+We speak in sentences that listen.`,
+    };
+  };
+
+  // ─────────────────────────────────────────────
+  // Overall Tone Balance
+  // ─────────────────────────────────────────────
+  const getOverallDescription = (value: number) => {
+    if (value <= 2)
+      return {
+        title: "Grounded Balance",
+        text: `Calm and steady. Confidence through restraint.
+Example:
+Short lines. Clear points.`,
+      };
+    if (value <= 4)
+      return {
+        title: "Composed Flow",
+        text: `Measured, smooth, poised.
+Example:
+We move through ideas at a natural pace.`,
+      };
+    if (value <= 6)
+      return {
+        title: "Dynamic Equilibrium",
+        text: `Balanced rhythm and confidence.
+Example:
+Your tone breathes smoothly — measured, clear, alive.`,
+      };
+    if (value <= 8)
+      return {
+        title: "Driven Momentum",
+        text: `Leadership in motion — fast but focused.
+Example:
+We lead through movement, not volume.`,
+      };
+    return {
+      title: "Full Momentum",
+      text: `Sharp, confident, inspiring. Action in every line.
+Example:
+Every line propels the reader forward.`,
+    };
+  };
+
+  // ─────────────────────────────────────────────
+  // Slider Component
+  // ─────────────────────────────────────────────
+  interface SliderProps {
+    title: string;
+    leftLabel: string;
+    rightLabel: string;
+    value: number;
+    description: string;
+    onChange: (val: number) => void;
+    dynamicText?: { title: string; text: string } | null;
   }
-  @keyframes fadeOut {
-    from {
-      opacity: 1;
-    }
-    to {
-      opacity: 0;
-    }
-  }
-  @keyframes spinReverse {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(-360deg);
-    }
-  }
-  .animate-spin-slow {
-    animation: spin 3s linear infinite;
-  }
-  .animate-spin-reverse-slower {
-    animation: spinReverse 5s linear infinite;
-  }
-`}</style>
+
+  const Slider = ({
+    title,
+    leftLabel,
+    rightLabel,
+    value,
+    description,
+    onChange,
+    dynamicText,
+  }: SliderProps) => (
+    <section className="bg-gray-50 border rounded-lg p-6 shadow-sm w-full max-w-3xl mb-6 select-none">
+      <h2 className="text-lg font-semibold mb-1 text-gray-800">{title}</h2>
+      <p className="text-sm text-gray-600 mb-3">{description}</p>
+      <input
+        type="range"
+        min={1}
+        max={10}
+        step={1}
+        value={value}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          onChange(Number(e.target.value))
+        }
+        className="w-full h-2 bg-gray-200 rounded-lg appearance-none accent-[#076aff] cursor-grab active:cursor-grabbing"
+      />
+      <div className="flex justify-between text-sm text-gray-600 mt-1">
+        <span>{leftLabel}</span>
+        <span>{rightLabel}</span>
+      </div>
+
+      {dynamicText && (
+        <div className="mt-3 p-4 bg-white border rounded-md shadow-sm transition-all duration-200">
+          <p className="text-sm font-semibold text-[#076aff] mb-1">
+            {dynamicText.title}
+          </p>
+          <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+            {dynamicText.text}
+          </p>
+        </div>
+      )}
+    </section>
+  );
+
+  // ─────────────────────────────────────────────
+  // Render
+  // ─────────────────────────────────────────────
+  return (
+    <main className="min-h-screen flex flex-col items-center px-4 pt-12 mb-20">
+      <ProgressBar step={2} total={4} />
+      <h1 className="text-2xl font-bold mb-4 text-center">
+        Step 2: Tune Your Brand Voice
+      </h1>
+      <p className="text-gray-600 text-center max-w-2xl mb-10 leading-relaxed">
+        Adjust each slider to define how your brand feels and sounds. Each
+        control moves between two traits that shape tone, pace, and emotion.
+      </p>
+
+      <h3 className="text-xl font-semibold mb-3 text-[#076aff]">Tone Dynamics</h3>
+
+      <Slider
+        title="Warmth ↔ Authority"
+        leftLabel="Warmth"
+        rightLabel="Authority"
+        description="Sets whether your message feels gentle and human (Warmth) or confident and directive (Authority)."
+        value={sliders.warmthAuthority}
+        onChange={(val) => handleChange("warmthAuthority", val)}
+        dynamicText={getWarmthAuthorityDescription(sliders.warmthAuthority)}
+      />
+
+      <Slider
+        title="Authority ↔ Energy"
+        leftLabel="Authority"
+        rightLabel="Energy"
+        description="Controls how composed versus driven your tone is."
+        value={sliders.authorityEnergy}
+        onChange={(val) => handleChange("authorityEnergy", val)}
+        dynamicText={getAuthorityEnergyDescription(sliders.authorityEnergy)}
+      />
+
+      <Slider
+        title="Warmth ↔ Energy"
+        leftLabel="Warmth"
+        rightLabel="Energy"
+        description="Balances empathy with enthusiasm."
+        value={sliders.warmthEnergy}
+        onChange={(val) => handleChange("warmthEnergy", val)}
+        dynamicText={getWarmthEnergyDescription(sliders.warmthEnergy)}
+      />
+
+      <h3 className="text-xl font-semibold mt-8 mb-3 text-[#076aff]">
+        Expression Style
+      </h3>
+
+      <Slider
+        title="Clarity ↔ Creativity"
+        leftLabel="Clarity"
+        rightLabel="Creativity"
+        description="Defines whether writing prioritizes precision or imaginative flow."
+        value={sliders.clarityCreativity}
+        onChange={(val) => handleChange("clarityCreativity", val)}
+        dynamicText={getClarityCreativityDescription(sliders.clarityCreativity)}
+      />
+
+      <Slider
+        title="Creativity ↔ Empathy"
+        leftLabel="Creativity"
+        rightLabel="Empathy"
+        description="Determines how expressive versus emotionally aware your tone feels."
+        value={sliders.creativityEmpathy}
+        onChange={(val) => handleChange("creativityEmpathy", val)}
+        dynamicText={getCreativityEmpathyDescription(sliders.creativityEmpathy)}
+      />
+
+      <Slider
+        title="Clarity ↔ Empathy"
+        leftLabel="Clarity"
+        rightLabel="Empathy"
+        description="Controls whether messages sound direct or listener-focused."
+        value={sliders.clarityEmpathy}
+        onChange={(val) => handleChange("clarityEmpathy", val)}
+        dynamicText={getClarityEmpathyDescription(sliders.clarityEmpathy)}
+      />
+
+      <h3 className="text-xl font-semibold mt-8 mb-3 text-[#076aff]">
+        Overall Balance
+      </h3>
+
+      <Slider
+        title="Overall Tone Balance"
+        leftLabel="Grounded"
+        rightLabel="Dynamic"
+        description="Represents the general pace and confidence level of your brand’s communication style."
+        value={sliders.overall}
+        onChange={(val) => handleChange("overall", val)}
+        dynamicText={getOverallDescription(sliders.overall)}
+      />
+
+      <div className="flex justify-between w-full max-w-3xl mt-10">
+        <button
+          onClick={handleBack}
+          className="px-6 py-2 rounded border border-gray-300 bg-white text-black hover:bg-[#076aff] hover:text-white transition-colors duration-200"
+        >
+          ← Back
+        </button>
+        <button
+          onClick={handleNext}
+          className="px-6 py-2 rounded border border-gray-300 bg-white text-black hover:bg-[#f66630] hover:text-white transition-colors duration-200"
+        >
+          Next →
+        </button>
+      </div>
+    </main>
+  );
+}
