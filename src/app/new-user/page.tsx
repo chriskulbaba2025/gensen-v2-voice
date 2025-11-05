@@ -111,59 +111,60 @@ export default function NewUserPage() {
         </div>
       </div>
 
-      {/* ─────────── COMPLETE STAGE ─────────── */}
-      <div
-        className={`absolute inset-0 flex flex-col items-center justify-center text-center px-[40px] transition-opacity duration-[1500ms] ease-in-out ${
-          stage === "complete" ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
-      >
-        <img
-          src="https://omnipressence.com/wp-content/uploads/2025/09/Gensen-Logo-Final-version-lower-case-logo-and-spaces1-356x295-1.webp"
-          alt="GENSEN logo"
-          className="w-[180px] mb-[20px]"
-        />
+  {/* ─────────── COMPLETE STAGE ─────────── */}
+<div
+  className={`absolute inset-0 flex flex-col items-center justify-center text-center px-[40px] transition-opacity duration-[1500ms] ease-in-out ${
+    stage === "complete" ? "opacity-100" : "opacity-0 pointer-events-none"
+  }`}
+>
+  <img
+    src="https://omnipressence.com/wp-content/uploads/2025/09/Gensen-Logo-Final-version-lower-case-logo-and-spaces1-356x295-1.webp"
+    alt="GENSEN logo"
+    className="w-[180px] mb-[20px]"
+  />
 
-        <h1 className="text-3xl font-semibold text-[#002c71] mb-4">
-          Stage 1 Complete &ndash; Your Brand Voice Foundation Is Ready
-        </h1>
+  <h1 className="text-3xl font-semibold text-[#002c71] mb-4">
+    Stage 1 Complete &ndash; Your Brand Voice Foundation Is Ready
+  </h1>
 
-        <p className="text-gray-700 leading-relaxed mb-4 max-w-[600px]">
-          We’ve completed the deep dive into how your brand already sounds — the tone, rhythm, and
-          intent behind every message.
-        </p>
+  <p className="text-gray-700 leading-relaxed mb-4 max-w-[600px]">
+    We’ve completed the deep dive into how your brand already sounds — the tone, rhythm, and
+    intent behind every message.
+  </p>
 
-        <p className="text-gray-700 leading-relaxed mb-4 max-w-[600px]">
-          Now, GENSEN will help you <strong>refine and develop</strong> that foundation into a living
-          Brand Voice Framework.
-        </p>
+  <p className="text-gray-700 leading-relaxed mb-4 max-w-[600px]">
+    Now, GENSEN will help you <strong>refine and develop</strong> that foundation into a living
+    Brand Voice Framework.
+  </p>
 
-        <p className="text-gray-700 leading-relaxed mb-4 max-w-[600px]">
-          There are just <strong>two short steps</strong> ahead:
-        </p>
+  <p className="text-gray-700 leading-relaxed mb-4 max-w-[600px]">
+    There are just <strong>two short steps</strong> ahead:
+  </p>
 
-        <ul className="text-gray-700 text-left mb-4 max-w-[600px] mx-auto">
-          <li>1️⃣ Define your tone and personality using a few guided sliders.</li>
-          <li>
-            2️⃣ Apply that tone to your real communication style through examples and focus areas.
-          </li>
-        </ul>
+  <ul className="text-gray-700 text-left mb-4 max-w-[600px] mx-auto">
+    <li>1️⃣ Define your tone and personality using a few guided sliders.</li>
+    <li>
+      2️⃣ Apply that tone to your real communication style through examples and focus areas.
+    </li>
+  </ul>
 
-        <p className="text-gray-700 leading-relaxed mb-6 max-w-[600px]">
-          This stage shapes the precision, warmth, and rhythm of your voice — the signature that will
-          make your content instantly recognizable everywhere it appears.
-        </p>
+  <p className="text-gray-700 leading-relaxed mb-6 max-w-[600px]">
+    This stage shapes the precision, warmth, and rhythm of your voice — the signature that will
+    make your content instantly recognizable everywhere it appears.
+  </p>
 
-        <a
-          href="https://portal.omnipressence.com/dashboard/brand-voice"
-          className="mt-6 inline-block px-8 py-3 bg-[#076aff] text-white rounded-[10px] hover:bg-[#005fe0] transition-colors"
-        >
-          View Your Voice in Dashboard →
-        </a>
-      </div>
+  <a
+    href="https://voice.omnipressence.com/screen-2"
+    className="mt-6 inline-block px-8 py-3 border border-[#076aff] text-[#076aff] rounded-[10px] hover:bg-[#076aff] hover:text-white transition-colors"
+  >
+    Continue to Step 2 →
+  </a>
+</div>
 
-      <footer className="mt-12 text-gray-500 italic text-sm text-center">
-        Consistency builds credibility — and credibility builds connection.
-      </footer>
+<footer className="mt-12 text-gray-500 italic text-sm text-center">
+  Consistency builds credibility — and credibility builds connection.
+</footer>
+
 
       {/* ─────────── GLOBAL ANIMATIONS ─────────── */}
       <style jsx global>{`
