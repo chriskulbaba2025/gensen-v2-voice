@@ -48,7 +48,7 @@ export default function NewUserPage() {
         }
         
         if (result.status === 'created') {
-          router.push('https://voice.omnipressence.com/generate/step-2');
+          router.push('https://voice.omnipressence.com/generate/screen-2');
           return;
         }
         
