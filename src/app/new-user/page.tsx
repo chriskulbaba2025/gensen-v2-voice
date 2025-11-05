@@ -111,12 +111,13 @@ export default function NewUserPage() {
         </div>
       </div>
 
-      {/* ─────────── COMPLETE STAGE ─────────── */}
-      <div
-        className={`absolute inset-0 flex flex-col items-center justify-center text-center px-[40px] transition-opacity duration-[1500ms] ease-in-out ${
-          stage === 'complete' ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
-      >
+    {/* ─────────── COMPLETE STAGE ─────────── */}
+<div
+  className={`absolute inset-0 flex flex-col items-center justify-center text-center px-[40px] transition-opacity duration-[1500ms] ease-in-out ${
+    stage === 'complete' ? 'opacity-100' : 'opacity-0 pointer-events-none'
+  }`}
+>
+
         <img
           src="https://omnipressence.com/wp-content/uploads/2025/09/Gensen-Logo-Final-version-lower-case-logo-and-spaces1-356x295-1.webp"
           alt="GENSEN logo"
