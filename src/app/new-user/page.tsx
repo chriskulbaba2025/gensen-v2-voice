@@ -154,11 +154,12 @@ export default function NewUserPage() {
   </p>
 
   <a
-    href="https://voice.omnipressence.com/screen-2"
-    className="mt-6 inline-block px-8 py-3 border border-[#076aff] text-[#076aff] rounded-[10px] hover:bg-[#076aff] hover:text-white transition-colors"
-  >
-    Continue to Step 2 →
-  </a>
+  href="https://voice.omnipressence.com/screen-2"
+  className="mt-6 inline-block px-8 py-3 rounded-[10px] border border-[#076aff] text-[#076aff] bg-transparent hover:bg-[#076aff] hover:text-[#ffffff] transition-colors duration-300"
+>
+  Continue to Step 2 →
+</a>
+
 </div>
 
 <footer className="mt-12 text-gray-500 italic text-sm text-center">
