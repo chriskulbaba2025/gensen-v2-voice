@@ -30,7 +30,7 @@ export default function NewUserPage() {
       poll = setInterval(async () => {
         try {
           const res = await fetch(
-            `/api/report-latest?email=${encodeURIComponent(data.email)}`,
+            `/api/report-latest?email=${encodeURIComponent(data.email)}&meta=1`,
             { cache: 'no-store' }
           );
           if (!res.ok) return;
