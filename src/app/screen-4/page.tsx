@@ -151,26 +151,27 @@ export default function Step4() {
         </label>
 
         <div className="flex justify-between gap-4">
-          <button
-            type="button"
-            onClick={handleBack}
-            className="px-6 py-2 rounded border border-gray-300 bg-white text-black hover:bg-[#076aff] hover:text-white transition-colors duration-200"
-          >
-            ← Back
-          </button>
+  <button
+    type="button"
+    onClick={handleBack}
+    className="px-6 py-2 rounded border border-[#076aff] bg-transparent text-[#076aff] hover:bg-[#076aff] hover:text-[#ffffff] transition-colors duration-300"
+  >
+    ← Back
+  </button>
 
-          <button
-            type="submit"
-            disabled={!agreed || loading}
-            className={`px-6 py-2 rounded text-white font-medium ${
-              !agreed || loading
-                ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-[#f66630] hover:bg-[#e6551a]'
-            } transition-colors duration-200`}
-          >
-            {loading ? 'Generating…' : 'Submit →'}
-          </button>
-        </div>
+  <button
+    type="submit"
+    disabled={!agreed || loading}
+    className={`px-6 py-2 rounded text-[#ffffff] font-medium transition-colors duration-300 ${
+      !agreed || loading
+        ? 'bg-gray-300 cursor-not-allowed'
+        : 'bg-[#f66630] hover:bg-[#e6551a]'
+    }`}
+  >
+    {loading ? 'Generating…' : 'Submit →'}
+  </button>
+</div>
+
       </form>
     </main>
   );

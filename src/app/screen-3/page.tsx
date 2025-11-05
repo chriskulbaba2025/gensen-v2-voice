@@ -74,20 +74,21 @@ export default function Step3() {
       </section>
 
       <div className="flex justify-between w-full max-w-3xl">
-        <button
-          onClick={handleBack}
-          className="px-6 py-2 rounded border border-gray-300 bg-white text-black hover:bg-[#076aff] hover:text-white transition-colors duration-200"
-        >
-          ← Back
-        </button>
-        <button
-          type="submit"
-          onClick={handleNext}
-          className="px-6 py-2 rounded border border-gray-300 bg-white text-black hover:bg-[#f66630] hover:text-white transition-colors duration-200"
-        >
-          Next →
-        </button>
-      </div>
+  <button
+    onClick={handleBack}
+    className="px-6 py-2 rounded border border-[#076aff] bg-transparent text-[#076aff] hover:bg-[#076aff] hover:text-[#ffffff] transition-colors duration-300"
+  >
+    ← Back
+  </button>
+  <button
+    type="submit"
+    onClick={handleNext}
+    className="px-6 py-2 rounded border border-[#076aff] bg-transparent text-[#076aff] hover:bg-[#076aff] hover:text-[#ffffff] transition-colors duration-300"
+  >
+    Next →
+  </button>
+</div>
+
     </main>
   );
 }
