@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     const response = await fetch(webhookURL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ firstName, lastName, email, business, url }),
+      body: JSON.stringify({ email }),
     });
 
     const raw = await response.text();
