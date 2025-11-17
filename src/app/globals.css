@@ -37,21 +37,13 @@ body {
 
 /* Dual rotating countdown rings */
 @keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @keyframes spin-reverse-slower {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
 }
 
 .animate-spin-slow {
@@ -64,49 +56,28 @@ body {
 
 /* Glowing stat box — single arrival pulse only */
 @keyframes pulse-once {
-  0% {
-    box-shadow: 0 0 0 var(--glow-color);
-  }
-  50% {
-    box-shadow: 0 0 25px var(--glow-color);
-  }
-  100% {
-    box-shadow: 0 0 8px var(--glow-color);
-  }
+  0% { box-shadow: 0 0 0 var(--glow-color); }
+  50% { box-shadow: 0 0 25px var(--glow-color); }
+  100% { box-shadow: 0 0 8px var(--glow-color); }
 }
 
 .animate-pulse-once {
   animation: pulse-once 1.5s ease-out forwards;
 }
 
-/* Fade transitions for section changes */
+/* Fade transitions */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
-.fade-in {
-  animation: fadeIn 1s ease forwards;
-}
-
-.fade-out {
-  animation: fadeOut 0.8s ease forwards;
-}
+.fade-in { animation: fadeIn 1s ease forwards; }
+.fade-out { animation: fadeOut 0.8s ease forwards; }
 
 /* ──────────────────────────────────────────────
    UTILITY + ACCESSIBILITY
@@ -116,21 +87,19 @@ body {
   color: #fff;
 }
 
-/* PERMANENT FIX — Tailwind takes full control over all <a> tags */
-a,
-a:hover,
-a:focus,
-a:visited,
-a:active {
+/* FIXED ANCHOR TAGS — Tailwind utilities now work everywhere */
+a {
   all: unset;
+  display: inline-block;
+  cursor: pointer;
 }
 
-/* Soft box shadow for visual polish */
+/* Soft box shadow */
 .shadow-soft {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* Optional global container smooth entry */
+/* Smooth section entry */
 .section-fade-in {
   animation: fadeIn 1s ease both;
 }
@@ -139,7 +108,7 @@ a:active {
   transition: opacity 1s ease-in-out;
 }
 
-/* Reduce excess whitespace from injected HTML reports */
+/* Reduce excess whitespace in injected HTML reports */
 .report-container {
   margin-top: 0 !important;
   padding-top: 0 !important;
