@@ -16,57 +16,61 @@ export default function NewUserPage() {
   // ───────────────────────────────────────────────
   // POLLING LOGIC — START AFTER 2 MINUTES
   // ───────────────────────────────────────────────
-  useEffect(() => {
-    if (!data?.email) return;
+ useEffect(() => {
+  if (!data?.email) return;
 
-    const email = data.email.trim().toLowerCase();
+  const email = data.email.trim().toLowerCase();
 
-    let intervalId: NodeJS.Timeout | null = null;
-    let timeoutId: NodeJS.Timeout | null = null;
+  let intervalId: NodeJS.Timeout | null = null;
+  let timeoutId: NodeJS.Timeout | null = null;
 
-    const checkReport = async () => {
-      try {
-        const res = await fetch(
-          `/api/report-latest?email=${encodeURIComponent(email)}&meta=1`,
-          { cache: "no-store" }
-        );
+  const checkReport = async () => {
+    try {
+      const res = await fetch(
+        `/api/report-latest?email=${encodeURIComponent(email)}&meta=1`,
+        { cache: "no-store" }
+      );
 
-        if (!res.ok) return;
+      if (!res.ok) return;
 
-        const record = await res.json();
+      const record = await res.json();
 
-        if (record?.htmlContent) {
-          const wm = record.welcomeMessage || "";
-          const html = record.htmlContent || "";
+      if (record?.htmlContent) {
+        const wm = record.welcomeMessage || "";
+        const html = record.htmlContent || "";
 
-          setWelcomeMessage(wm);
-          setHtmlContent(html);
+        setWelcomeMessage(wm);
+        setHtmlContent(html);
 
-          setData({
-            ...data,
-            welcomeMessage: wm,
-            htmlContent: html,
-          });
+        setData({
+          ...data,
+          welcomeMessage: wm,
+          htmlContent: html,
+        });
 
-          setStage("complete");
+        setStage("complete");
 
-          if (intervalId) clearInterval(intervalId);
-          if (timeoutId) clearTimeout(timeoutId);
-        }
-      } catch {}
-    };
+        if (intervalId) clearInterval(intervalId);
+        if (timeoutId) clearTimeout(timeoutId);
+      }
+    } catch {}
+  };
 
-    // Delay polling for 2 minutes (120000 ms)
-    timeoutId = setTimeout(() => {
-      intervalId = setInterval(checkReport, 5000);
-      checkReport();
-    }, 120000);
+  // Start NOTHING except the timer immediately
+  // Timer is independent and already visible
 
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [data, setData]);
+  // Start polling AFTER 2 minutes
+  timeoutId = setTimeout(() => {
+    intervalId = setInterval(checkReport, 5000);
+    checkReport();
+  }, 120000);
+
+  return () => {
+    if (intervalId) clearInterval(intervalId);
+    if (timeoutId) clearTimeout(timeoutId);
+  };
+}, [data, setData]);
+
 
   // ───────────────────────────────────────────────
   // UI
