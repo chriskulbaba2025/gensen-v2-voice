@@ -140,3 +140,13 @@ a:hover {
   transition: opacity 1s ease-in-out;
 }
 
+/* Reduce excess whitespace from injected HTML reports */
+.report-container {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.report-container > *:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}

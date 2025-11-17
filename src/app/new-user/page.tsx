@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useForm } from "@/context/FormContext";
+import LoadingTimer from "@/components/LoadingTimer";
 
 export default function NewUserPage() {
   const { data, setData } = useForm();
@@ -13,12 +14,15 @@ export default function NewUserPage() {
   const [htmlContent, setHtmlContent] = useState("");
 
   // ───────────────────────────────────────────────
-  // STABLE POLLING FOR n8n REPORT
+  // POLLING LOGIC — START AFTER 2 MINUTES
   // ───────────────────────────────────────────────
   useEffect(() => {
     if (!data?.email) return;
 
     const email = data.email.trim().toLowerCase();
+
+    let intervalId: NodeJS.Timeout | null = null;
+    let timeoutId: NodeJS.Timeout | null = null;
 
     const checkReport = async () => {
       try {
@@ -45,17 +49,23 @@ export default function NewUserPage() {
           });
 
           setStage("complete");
-          clearInterval(intervalId);
+
+          if (intervalId) clearInterval(intervalId);
+          if (timeoutId) clearTimeout(timeoutId);
         }
       } catch {}
     };
 
-    // eslint fix: declare + assign in same statement
-    const intervalId = setInterval(checkReport, 5000);
+    // Delay polling for 2 minutes (120000 ms)
+    timeoutId = setTimeout(() => {
+      intervalId = setInterval(checkReport, 5000);
+      checkReport();
+    }, 120000);
 
-    checkReport();
-
-    return () => clearInterval(intervalId);
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [data, setData]);
 
   // ───────────────────────────────────────────────
@@ -93,6 +103,9 @@ export default function NewUserPage() {
         <p className="text-gray-400 text-xs mt-1">
           This page updates automatically.
         </p>
+
+        {/* RESTORED TIMER */}
+        <LoadingTimer />
       </div>
 
       {/* COMPLETE STAGE */}
@@ -119,7 +132,7 @@ export default function NewUserPage() {
 
         {htmlContent && (
           <div
-            className="bg-white border border-[#e0e6f5] rounded-[12px] shadow-soft p-[24px] mb-[40px] max-w-[760px] text-left"
+            className="report-container bg-white border border-[#e0e6f5] rounded-[12px] shadow-soft p-[24px] mb-[40px] max-w-[760px] text-left"
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
         )}
