@@ -3,7 +3,7 @@
 import { useEffect, useState, memo } from "react";
 
 const messages = [
-  "Microwaving maturity…",
+  "Measuring maturity in your messaging…",
   "Sharpening your signal…",
   "Tuning your digital presence…",
   "Aligning your brand fundamentals…",
@@ -37,7 +37,7 @@ function LoadingTimer() {
         setIndex((prev) => (prev + 1) % messages.length);
         setFade(true);
       }, 1500); // fade duration
-    }, 7000); // total duration per message
+    }, 12000); // total duration per message
 
     return () => clearInterval(msgInterval);
   }, []);

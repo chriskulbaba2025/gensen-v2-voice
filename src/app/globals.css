@@ -26,40 +26,65 @@ body {
   transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* ANIMATIONS */
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+/* ───────────────────────────────────────────────
+   TAILWIND-SAFE ANIMATION LAYER
+   (Prevents the rings + fades from being purged)
+────────────────────────────────────────────── */
+@layer utilities {
+
+  /* ROTATING RINGS */
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes spin-reverse-slower {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 3s linear infinite;
+  }
+
+  .animate-spin-reverse-slower {
+    animation: spin-reverse-slower 6s linear infinite;
+  }
+
+  /* PULSE */
+  @keyframes pulse-once {
+    0% { box-shadow: 0 0 0 var(--glow-color); }
+    50% { box-shadow: 0 0 25px var(--glow-color); }
+    100% { box-shadow: 0 0 8px var(--glow-color); }
+  }
+
+  .animate-pulse-once {
+    animation: pulse-once 1.5s ease-out forwards;
+  }
+
+  /* FADE ANIMATION */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  .fade-in {
+    animation: fadeIn 1s ease forwards;
+  }
+
+  .fade-out {
+    animation: fadeOut 0.8s ease forwards;
+  }
+
+  .transition-opacity {
+    transition: opacity 1s ease-in-out;
+  }
 }
-
-@keyframes spin-reverse-slower {
-  from { transform: rotate(360deg); }
-  to { transform: rotate(0deg); }
-}
-
-.animate-spin-slow { animation: spin-slow 3s linear infinite; }
-.animate-spin-reverse-slower { animation: spin-reverse-slower 6s linear infinite; }
-
-@keyframes pulse-once {
-  0% { box-shadow: 0 0 0 var(--glow-color); }
-  50% { box-shadow: 0 0 25px var(--glow-color); }
-  100% { box-shadow: 0 0 8px var(--glow-color); }
-}
-
-.animate-pulse-once { animation: pulse-once 1.5s ease-out forwards; }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-.fade-in { animation: fadeIn 1s ease forwards; }
-.fade-out { animation: fadeOut 0.8s ease forwards; }
 
 /* UTILITIES */
 ::selection {
@@ -77,13 +102,15 @@ a:hover {
   text-decoration: none !important;
 }
 
+/* SOFT SHADOW */
 .shadow-soft {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.section-fade-in { animation: fadeIn 1s ease both; }
-
-.transition-opacity { transition: opacity 1s ease-in-out; }
+/* GLOBAL FADE-IN SECTION */
+.section-fade-in {
+  animation: fadeIn 1s ease both;
+}
 
 /* REPORT CLEANUP */
 .report-container {
