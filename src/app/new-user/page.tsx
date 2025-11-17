@@ -19,7 +19,6 @@ export default function NewUserPage() {
     if (!data?.email) return;
 
     const email = data.email.trim().toLowerCase();
-    let intervalId: NodeJS.Timeout;
 
     const checkReport = async () => {
       try {
@@ -29,10 +28,9 @@ export default function NewUserPage() {
         );
 
         if (!res.ok) return;
+
         const record = await res.json();
 
-        // expected response:
-        // { htmlContent: "...", welcomeMessage: "..." }
         if (record?.htmlContent) {
           const wm = record.welcomeMessage || "";
           const html = record.htmlContent || "";
@@ -47,17 +45,15 @@ export default function NewUserPage() {
           });
 
           setStage("complete");
-
           clearInterval(intervalId);
         }
-      } catch (err) {
-        // ignore errors and continue polling
-      }
+      } catch {}
     };
 
-    // start polling immediately
+    // eslint fix: declare + assign in same statement
+    const intervalId = setInterval(checkReport, 5000);
+
     checkReport();
-    intervalId = setInterval(checkReport, 5000);
 
     return () => clearInterval(intervalId);
   }, [data, setData]);
@@ -90,7 +86,7 @@ export default function NewUserPage() {
         </h1>
 
         <p className="text-gray-600 max-w-lg mb-4 leading-relaxed">
-          You can’t microwave maturity — and you can’t rush meaningful storytelling.
+          You can’t rush meaningful storytelling.
           Give us a moment while we analyze your digital presence.
         </p>
 
