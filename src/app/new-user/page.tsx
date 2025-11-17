@@ -76,7 +76,7 @@ export default function NewUserPage() {
   // UI
   // ───────────────────────────────────────────────
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-8 text-center bg-gray-50 transition-all duration-700 relative overflow-hidden">
+    <main className="flex flex-col items-center justify-start p-8 text-center bg-gray-50 transition-all duration-700 relative overflow-hidden">
 
       {/* LOADING STAGE */}
       <div

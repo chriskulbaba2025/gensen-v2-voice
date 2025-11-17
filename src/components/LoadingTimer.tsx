@@ -20,39 +20,55 @@ const messages = [
 ];
 
 export default function LoadingTimer() {
+  const TOTAL_SECONDS = 240; // 4 minutes
+  const [timeLeft, setTimeLeft] = useState(TOTAL_SECONDS);
+
   const [index, setIndex] = useState(0);
   const [fade, setFade] = useState(true);
 
+  // Rotate messages every 7 seconds with 1.5s crossfade
   useEffect(() => {
     const interval = setInterval(() => {
-      // fade out
-      setFade(false);
+      setFade(false); // fade out
 
-      // wait for fade duration
       setTimeout(() => {
-        // switch message
         setIndex((prev) => (prev + 1) % messages.length);
-
-        // fade in
-        setFade(true);
-      }, 600); // must match fade-out duration
-    }, 10000); // EXACT 10 seconds
+        setFade(true); // fade in
+      }, 1500); // fade duration (1.5s)
+    }, 7000); // 7 seconds per message
 
     return () => clearInterval(interval);
   }, []);
 
+  // Countdown
+  useEffect(() => {
+    const t = setInterval(() => {
+      setTimeLeft((prev) => Math.max(prev - 1, 0));
+    }, 1000);
+
+    return () => clearInterval(t);
+  }, []);
+
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = String(timeLeft % 60).padStart(2, "0");
+
   return (
-    <div className="flex flex-col items-center mt-8">
+    <div className="flex flex-col items-center mt-8 space-y-4">
 
       {/* Rotating Rings */}
-      <div className="relative w-24 h-24 mb-4">
+      <div className="relative w-24 h-24">
         <div className="absolute inset-0 rounded-full border-4 border-[#076aff] opacity-40 animate-spin-slow"></div>
         <div className="absolute inset-2 rounded-full border-4 border-[#40a9ff] opacity-40 animate-spin-reverse-slower"></div>
       </div>
 
-      {/* Fading Message */}
+      {/* Countdown */}
+      <p className="text-[#444444] text-base font-semibold tracking-wide">
+        {minutes}:{seconds}
+      </p>
+
+      {/* Fading Script */}
       <p
-        className={`text-[#666666] text-sm italic transition-opacity duration-700 ${
+        className={`text-[#666666] text-[18px] italic transition-opacity duration-[1500ms] ${
           fade ? "opacity-100" : "opacity-0"
         }`}
       >
