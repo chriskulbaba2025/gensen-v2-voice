@@ -1,56 +1,61 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useForm } from '@/context/FormContext';
+import { useState } from "react";
+import { useForm } from "@/context/FormContext";
 
 export default function StartPage() {
   const { setData } = useForm();
 
-  const [firstName, setFirstName] = useState('');
-  const [email, setEmail] = useState('');
-  const [business, setBusiness] = useState('');
-  const [website, setWebsite] = useState('');
-  const [facebook, setFacebook] = useState('');
-  const [instagram, setInstagram] = useState('');
-  const [linkedin, setLinkedin] = useState('');
-  const [youtube, setYoutube] = useState('');
+  const [firstName, setFirstName] = useState("");
+  const [email, setEmail] = useState("");
+  const [business, setBusiness] = useState("");
+  const [website, setWebsite] = useState("");
+  const [facebook, setFacebook] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [linkedin, setLinkedin] = useState("");
+  const [youtube, setYoutube] = useState("");
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
+  // ───────────────────────────────────────────────
+  // MAIN SUBMIT HANDLER
+  // ───────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     if (loading) return;
-    setError('');
+    setError("");
     setLoading(true);
 
     const cleanEmail = email.trim().toLowerCase();
 
     try {
-      // 1. CHECK USER
-      const checkRes = await fetch('/api/check-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      // 1) CHECK USER (only email)
+      const checkRes = await fetch("/api/check-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: cleanEmail }),
       });
 
-      const checkData = await checkRes.json();
-      console.log('CHECK USER RESPONSE:', checkData);
+      const checkData: { exists: boolean } = await checkRes.json();
+      console.log("CHECK USER RESPONSE:", checkData);
 
+      // 2) EXISTING USER → redirect immediately
       if (checkData.exists === true) {
-        // Write user to context BEFORE routing
         setData({
           firstName,
           email: cleanEmail,
         });
 
-        window.location.href = `/existing-user?name=${encodeURIComponent(firstName)}`;
+        window.location.href = `/existing-user?name=${encodeURIComponent(
+          firstName
+        )}`;
         return;
       }
 
-      // 2. Save all values into global context BEFORE API calls
+      // 3) NEW USER → store ALL fields in global context
       setData({
         firstName,
         email: cleanEmail,
@@ -62,12 +67,12 @@ export default function StartPage() {
         youtube,
       });
 
-      // 3. SEND TO N8N (new user)
+      // 4) FIRE n8n submit webhook
       const payload = {
         firstName,
         email: cleanEmail,
         business,
-        website,
+        url: website,
         facebook,
         instagram,
         linkedin,
@@ -75,30 +80,33 @@ export default function StartPage() {
       };
 
       const submitRes = await fetch(
-        'https://primary-production-77e7.up.railway.app/webhook/submit-brand',
+        "https://primary-production-77e7.up.railway.app/webhook/submit-brand",
         {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         }
       );
 
       if (!submitRes.ok) {
-        setError('Unable to submit your information. Please try again.');
+        setError("Unable to submit your information. Please try again.");
         setLoading(false);
         return;
       }
 
-      // 4. NOW that context is populated, route forward
-      window.location.href = '/new-user';
-
+      // 5) NEW USER → route to loading screen
+      window.location.href = "/new-user";
     } catch (err) {
       console.error(err);
-      setError('Submission failed. Please try again.');
+      setError("Submission failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
+  // ───────────────────────────────────────────────
+  // UI
+  // ───────────────────────────────────────────────
 
   return (
     <main className="min-h-screen flex flex-col items-center px-4 py-12 bg-[#f5f8ff]">
@@ -206,7 +214,7 @@ export default function StartPage() {
           disabled={loading}
           className="w-full px-6 py-2 rounded bg-[#076aff] text-white hover:bg-[#002c71] transition"
         >
-          {loading ? 'Submitting…' : 'Continue'}
+          {loading ? "Submitting…" : "Continue"}
         </button>
 
         {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
