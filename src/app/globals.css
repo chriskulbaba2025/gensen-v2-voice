@@ -1,9 +1,7 @@
 @import "tailwindcss";
 @import "@fortawesome/fontawesome-free/css/all.min.css";
 
-/* ──────────────────────────────────────────────
-   THEME VARIABLES
-────────────────────────────────────────────── */
+/* THEME VARIABLES */
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -12,7 +10,6 @@
   --glow-color: rgba(7, 106, 255, 0.25);
 }
 
-/* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -21,9 +18,7 @@
   }
 }
 
-/* ──────────────────────────────────────────────
-   GLOBAL STYLES
-────────────────────────────────────────────── */
+/* GLOBAL STYLES */
 body {
   background: var(--background);
   color: var(--foreground);
@@ -31,11 +26,7 @@ body {
   transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* ──────────────────────────────────────────────
-   CUSTOM ANIMATIONS
-────────────────────────────────────────────── */
-
-/* Dual rotating countdown rings */
+/* ANIMATIONS */
 @keyframes spin-slow {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
@@ -46,26 +37,17 @@ body {
   to { transform: rotate(0deg); }
 }
 
-.animate-spin-slow {
-  animation: spin-slow 3s linear infinite;
-}
+.animate-spin-slow { animation: spin-slow 3s linear infinite; }
+.animate-spin-reverse-slower { animation: spin-reverse-slower 6s linear infinite; }
 
-.animate-spin-reverse-slower {
-  animation: spin-reverse-slower 6s linear infinite;
-}
-
-/* Glowing stat box — single arrival pulse only */
 @keyframes pulse-once {
   0% { box-shadow: 0 0 0 var(--glow-color); }
   50% { box-shadow: 0 0 25px var(--glow-color); }
   100% { box-shadow: 0 0 8px var(--glow-color); }
 }
 
-.animate-pulse-once {
-  animation: pulse-once 1.5s ease-out forwards;
-}
+.animate-pulse-once { animation: pulse-once 1.5s ease-out forwards; }
 
-/* Fade transitions */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -79,36 +61,31 @@ body {
 .fade-in { animation: fadeIn 1s ease forwards; }
 .fade-out { animation: fadeOut 0.8s ease forwards; }
 
-/* ──────────────────────────────────────────────
-   UTILITY + ACCESSIBILITY
-────────────────────────────────────────────── */
+/* UTILITIES */
 ::selection {
   background: var(--brand-blue);
   color: #fff;
 }
 
-/* FIXED ANCHOR TAGS — Tailwind utilities now work everywhere */
+/* FIXED ANCHOR TAGS */
 a {
-  all: unset;
-  display: inline-block;
-  cursor: pointer;
+  color: inherit !important;
+  text-decoration: none !important;
 }
 
-/* Soft box shadow */
+a:hover {
+  text-decoration: none !important;
+}
+
 .shadow-soft {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* Smooth section entry */
-.section-fade-in {
-  animation: fadeIn 1s ease both;
-}
+.section-fade-in { animation: fadeIn 1s ease both; }
 
-.transition-opacity {
-  transition: opacity 1s ease-in-out;
-}
+.transition-opacity { transition: opacity 1s ease-in-out; }
 
-/* Reduce excess whitespace in injected HTML reports */
+/* REPORT CLEANUP */
 .report-container {
   margin-top: 0 !important;
   padding-top: 0 !important;
