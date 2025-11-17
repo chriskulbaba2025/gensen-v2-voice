@@ -1,70 +1,79 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useForm } from '@/context/FormContext';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useForm } from "@/context/FormContext";
 
 export default function NewUserPage() {
   const { data, setData } = useForm();
 
-  const [stage, setStage] = useState<'loading' | 'complete'>('loading');
-  const [welcomeMessage, setWelcomeMessage] = useState('');
-  const [htmlContent, setHtmlContent] = useState('');
+  const [stage, setStage] = useState<"loading" | "complete">("loading");
+  const [welcomeMessage, setWelcomeMessage] = useState("");
+  const [htmlContent, setHtmlContent] = useState("");
 
-  // -------------------------------------------------------
-  // Poll n8n IMMEDIATELY (no delay, no timer)
-  // -------------------------------------------------------
+  // ───────────────────────────────────────────────
+  // STABLE POLLING FOR n8n REPORT
+  // ───────────────────────────────────────────────
   useEffect(() => {
     if (!data?.email) return;
 
-    let poll: NodeJS.Timeout | null = null;
+    const email = data.email.trim().toLowerCase();
+    let intervalId: NodeJS.Timeout;
 
-    poll = setInterval(async () => {
+    const checkReport = async () => {
       try {
         const res = await fetch(
-          `/api/report-latest?email=${encodeURIComponent(data.email)}&meta=1`,
-          { cache: 'no-store' }
+          `/api/report-latest?email=${encodeURIComponent(email)}&meta=1`,
+          { cache: "no-store" }
         );
 
         if (!res.ok) return;
-
         const record = await res.json();
 
-        if (record.htmlContent) {
-          setWelcomeMessage(record.welcomeMessage || '');
-          setHtmlContent(record.htmlContent || '');
+        // expected response:
+        // { htmlContent: "...", welcomeMessage: "..." }
+        if (record?.htmlContent) {
+          const wm = record.welcomeMessage || "";
+          const html = record.htmlContent || "";
+
+          setWelcomeMessage(wm);
+          setHtmlContent(html);
 
           setData({
             ...data,
-            welcomeMessage: record.welcomeMessage || '',
-            htmlContent: record.htmlContent || '',
+            welcomeMessage: wm,
+            htmlContent: html,
           });
 
-          setStage('complete');
+          setStage("complete");
 
-          if (poll) clearInterval(poll);
+          clearInterval(intervalId);
         }
-      } catch {
-        // ignore polling failures
+      } catch (err) {
+        // ignore errors and continue polling
       }
-    }, 5000); // check every 5 seconds
-
-    return () => {
-      if (poll) clearInterval(poll);
     };
+
+    // start polling immediately
+    checkReport();
+    intervalId = setInterval(checkReport, 5000);
+
+    return () => clearInterval(intervalId);
   }, [data, setData]);
 
-  // -------------------------------------------------------
+  // ───────────────────────────────────────────────
   // UI
-  // -------------------------------------------------------
+  // ───────────────────────────────────────────────
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8 text-center bg-gray-50 transition-all duration-700 relative overflow-hidden">
 
       {/* LOADING STAGE */}
       <div
         className={`transition-opacity duration-[1500ms] ease-in-out ${
-          stage === 'complete' ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          stage === "complete"
+            ? "opacity-0 pointer-events-none"
+            : "opacity-100"
         } flex flex-col items-center`}
       >
         <Image
@@ -93,7 +102,9 @@ export default function NewUserPage() {
       {/* COMPLETE STAGE */}
       <div
         className={`flex flex-col items-center justify-start text-center px-[40px] py-[80px] transition-opacity duration-[1500ms] ease-in-out ${
-          stage === 'complete' ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          stage === "complete"
+            ? "opacity-100"
+            : "opacity-0 pointer-events-none"
         }`}
       >
         <Image

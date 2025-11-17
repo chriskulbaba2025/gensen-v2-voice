@@ -29,6 +29,7 @@ export async function GET(request: Request) {
     });
 
     const raw = await response.text();
+    console.log("N8N RAW:", raw);
 
     if (!response.ok) {
       console.error("[report-latest] n8n error:", raw);

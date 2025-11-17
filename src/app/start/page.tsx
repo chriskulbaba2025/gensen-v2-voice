@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "@/context/FormContext";
 
 export default function StartPage() {
+  const router = useRouter();
   const { setData } = useForm();
 
   const [firstName, setFirstName] = useState("");
@@ -49,9 +51,7 @@ export default function StartPage() {
           email: cleanEmail,
         });
 
-        window.location.href = `/existing-user?name=${encodeURIComponent(
-          firstName
-        )}`;
+        router.push(`/existing-user?name=${encodeURIComponent(firstName)}`);
         return;
       }
 
@@ -94,8 +94,8 @@ export default function StartPage() {
         return;
       }
 
-      // 5) NEW USER → route to loading screen
-      window.location.href = "/new-user";
+      // 5) NEW USER → route to loading screen (router.push preserves context)
+      router.push("/new-user");
     } catch (err) {
       console.error(err);
       setError("Submission failed. Please try again.");
