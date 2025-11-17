@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 
 const messages = [
-  // Original set (curated)
   "Microwaving maturity…",
   "Sharpening your signal…",
   "Tuning your digital presence…",
@@ -11,8 +10,6 @@ const messages = [
   "Mapping what your audience actually sees…",
   "Adjusting the narrative threads…",
   "Refining your voice texture…",
-
-  // Added set (GENSEN-voice curated)
   "Pulling clarity out of the static…",
   "Spotlighting the signals that make you unmistakable…",
   "Surfacing the language people trust instinctively…",
@@ -28,12 +25,18 @@ export default function LoadingTimer() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setFade(false); // fade out
+      // fade out
+      setFade(false);
+
+      // wait for fade duration
       setTimeout(() => {
+        // switch message
         setIndex((prev) => (prev + 1) % messages.length);
-        setFade(true); // fade in
-      }, 500); // fade-out duration
-    }, 10000); // 10 seconds per message
+
+        // fade in
+        setFade(true);
+      }, 600); // must match fade-out duration
+    }, 10000); // EXACT 10 seconds
 
     return () => clearInterval(interval);
   }, []);
@@ -49,7 +52,7 @@ export default function LoadingTimer() {
 
       {/* Fading Message */}
       <p
-        className={`text-[#666666] text-sm italic transition-opacity duration-500 ${
+        className={`text-[#666666] text-sm italic transition-opacity duration-700 ${
           fade ? "opacity-100" : "opacity-0"
         }`}
       >

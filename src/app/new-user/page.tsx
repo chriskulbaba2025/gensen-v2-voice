@@ -112,43 +112,44 @@ export default function NewUserPage() {
         <LoadingTimer />
       </div>
 
-      {/* COMPLETE STAGE */}
+{/* COMPLETE STAGE */}
 <div
-  className={`flex flex-col items-center justify-start text-center px-[40px] pt-[20px] pb-[40px] transition-opacity duration-[1500ms] ease-in-out ${
+  className={`flex flex-col items-center justify-start text-center px-[20px] pt-[5px] pb-[20px] transition-opacity duration-[1500ms] ease-in-out ${
     stage === "complete"
       ? "opacity-100"
       : "opacity-0 pointer-events-none"
   }`}
 >
+
   <Image
     src="https://omnipressence.com/wp-content/uploads/2025/09/Gensen-Logo-Final-version-lower-case-logo-and-spaces1-356x295-1.webp"
     alt="GENSEN logo"
-    width={220}
-    height={180}
-    className="w-[180px] mb-[20px] rounded-[20px]"
+    width={180}
+    height={130}
+    className="w-[140px] mb-[10px] rounded-[12px]"
   />
 
   {welcomeMessage && (
-    <p className="text-gray-700 mb-6 max-w-[700px] whitespace-pre-line leading-relaxed text-left">
+    <p className="text-gray-700 mb-4 max-w-[700px] whitespace-pre-line leading-relaxed text-left">
       {welcomeMessage}
     </p>
   )}
 
   {htmlContent && (
     <div
-      className="report-container bg-white border border-[#e0e6f5] rounded-[12px] shadow-soft p-[24px] mb-[40px] max-w-[760px] text-left opacity-0 animate-[fadeIn_1.2s_ease_forwards]"
+      className="report-container bg-white border border-[#e0e6f5] rounded-[12px] shadow-soft p-[24px] mb-[24px] max-w-[760px] text-left opacity-0 animate-[fadeIn_1.0s_ease_forwards]"
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   )}
 
   <Link
     href="/screen-2"
-    className="mt-6 inline-block px-8 py-3 rounded-[10px] border border-[#076aff] text-[#076aff] bg-transparent hover:bg-[#076aff] hover:text-white transition-colors duration-300"
+    className="mt-4 inline-block px-8 py-3 rounded-[10px] border border-[#076aff] text-[#076aff] bg-transparent hover:bg-[#076aff] hover:text-white transition-colors duration-300"
   >
     Continue to Step 2 →
   </Link>
-</div>
 
+</div>
 
       <footer className="my-[50px] text-gray-500 italic text-sm text-center">
         Consistency builds credibility — and credibility builds connection.
