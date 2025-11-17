@@ -117,14 +117,16 @@ body {
   color: #fff;
 }
 
+/* Default links are styled via Tailwind, not globally */
 a {
-  color: var(--brand-blue);
+  color: inherit;
   text-decoration: none;
 }
 
 a:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
+
 
 /* Soft box shadow for visual polish */
 .shadow-soft {
