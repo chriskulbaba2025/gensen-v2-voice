@@ -7,72 +7,57 @@ import { useForm } from '@/context/FormContext';
 
 export default function NewUserPage() {
   const { data, setData } = useForm();
-  const [seconds, setSeconds] = useState(240);
-  const [stage, setStage] = useState<'loading' | 'complete'>('loading');
 
+  const [stage, setStage] = useState<'loading' | 'complete'>('loading');
   const [welcomeMessage, setWelcomeMessage] = useState('');
   const [htmlContent, setHtmlContent] = useState('');
 
   // -------------------------------------------------------
-  // Countdown Timer
-  // -------------------------------------------------------
-  useEffect(() => {
-    if (stage !== 'loading' || seconds <= 0) return;
-    const timer = setInterval(() => setSeconds((s) => s - 1), 1000);
-    return () => clearInterval(timer);
-  }, [seconds, stage]);
-
-  // -------------------------------------------------------
-  // Poll n8n for HTML report
+  // Poll n8n IMMEDIATELY (no delay, no timer)
   // -------------------------------------------------------
   useEffect(() => {
     if (!data?.email) return;
 
-    let poll: NodeJS.Timeout;
+    let poll: NodeJS.Timeout | null = null;
 
-    const startPolling = setTimeout(() => {
-      poll = setInterval(async () => {
-        try {
-          const res = await fetch(
-            `/api/report-latest?email=${encodeURIComponent(data.email)}&meta=1`,
-            { cache: 'no-store' }
-          );
+    poll = setInterval(async () => {
+      try {
+        const res = await fetch(
+          `/api/report-latest?email=${encodeURIComponent(data.email)}&meta=1`,
+          { cache: 'no-store' }
+        );
 
-          if (!res.ok) return;
+        if (!res.ok) return;
 
-          const record = await res.json();
+        const record = await res.json();
 
-          if (record.htmlContent) {
-            setWelcomeMessage(record.welcomeMessage || '');
-            setHtmlContent(record.htmlContent || '');
+        if (record.htmlContent) {
+          setWelcomeMessage(record.welcomeMessage || '');
+          setHtmlContent(record.htmlContent || '');
 
-            setData({
-              ...data,
-              welcomeMessage: record.welcomeMessage || '',
-              htmlContent: record.htmlContent || '',
-            });
+          setData({
+            ...data,
+            welcomeMessage: record.welcomeMessage || '',
+            htmlContent: record.htmlContent || '',
+          });
 
-            setStage('complete');
-            clearInterval(poll);
-          }
-        } catch {
-          // ignore
+          setStage('complete');
+
+          if (poll) clearInterval(poll);
         }
-      }, 10000);
-    }, 120000);
+      } catch {
+        // ignore polling failures
+      }
+    }, 5000); // check every 5 seconds
 
     return () => {
-      clearInterval(poll);
-      clearTimeout(startPolling);
+      if (poll) clearInterval(poll);
     };
-  }, [data, setData]); // eslint satisfied
+  }, [data, setData]);
 
   // -------------------------------------------------------
-  // Countdown display
+  // UI
   // -------------------------------------------------------
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8 text-center bg-gray-50 transition-all duration-700 relative overflow-hidden">
 
@@ -91,28 +76,18 @@ export default function NewUserPage() {
           priority
         />
 
-        <div className="flex flex-col items-center max-w-xl transition-opacity duration-1000">
-          <div className="relative w-24 h-24 mb-6">
-            <div className="absolute inset-0 border-4 border-gray-300 border-t-[#076aff] rounded-full animate-spin-slow"></div>
-            <div className="absolute inset-1 border-4 border-gray-200 border-b-[#40a9ff] rounded-full animate-spin-reverse-slower"></div>
-            <div className="absolute inset-0 flex items-center justify-center font-mono text-[#076aff] text-lg font-semibold">
-              {minutes}:{remainingSeconds.toString().padStart(2, '0')}
-            </div>
-          </div>
+        <h1 className="text-2xl font-semibold mb-3">
+          Mapping Your Voice Before Amplifying It…
+        </h1>
 
-          <h1 className="text-2xl font-semibold mb-3">
-            Mapping Your Voice Before Amplifying It…
-          </h1>
+        <p className="text-gray-600 max-w-lg mb-4 leading-relaxed">
+          You can’t microwave maturity — and you can’t rush meaningful storytelling.
+          Give us a moment while we analyze your digital presence.
+        </p>
 
-          <p className="text-gray-600 max-w-lg mb-4 leading-relaxed">
-            You can’t microwave maturity — and you can’t rush meaningful
-            storytelling. Give us a few minutes while we analyze your current digital presence.
-          </p>
-
-          <p className="text-gray-400 text-xs mt-1">
-            Estimated completion ≈ 4 minutes · Page updates automatically
-          </p>
-        </div>
+        <p className="text-gray-400 text-xs mt-1">
+          This page updates automatically.
+        </p>
       </div>
 
       {/* COMPLETE STAGE */}
@@ -121,7 +96,6 @@ export default function NewUserPage() {
           stage === 'complete' ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
       >
-
         <Image
           src="https://omnipressence.com/wp-content/uploads/2025/09/Gensen-Logo-Final-version-lower-case-logo-and-spaces1-356x295-1.webp"
           alt="GENSEN logo"
@@ -154,23 +128,6 @@ export default function NewUserPage() {
       <footer className="my-[50px] text-gray-500 italic text-sm text-center">
         Consistency builds credibility — and credibility builds connection.
       </footer>
-
-      <style jsx global>{`
-        @keyframes spinReverse {
-          0% {
-            transform: rotate(0deg);
-          }
-          100% {
-            transform: rotate(-360deg);
-          }
-        }
-        .animate-spin-slow {
-          animation: spin 3s linear infinite;
-        }
-        .animate-spin-reverse-slower {
-          animation: spinReverse 5s linear infinite;
-        }
-      `}</style>
     </main>
   );
 }
