@@ -1,56 +1,64 @@
-// src/app/api/report-latest/route.ts
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+
+interface N8NReportResponse {
+  welcomeMessage?: string;
+  htmlContent?: string;
+}
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const email = searchParams.get('email');
-    const meta = searchParams.get('meta'); // ?meta=1 means JSON mode
-    if (!email) return new NextResponse('Missing email', { status: 400 });
+    const email = searchParams.get("email");
+    const meta = searchParams.get("meta");
 
-    // Airtable query by Clean Email
-    const formula = `LOWER({Clean Email})='${email.toLowerCase()}'`;
-    const airtableUrl =
-      `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/${process.env.AIRTABLE_TABLE_ID}` +
-      `?filterByFormula=${encodeURIComponent(formula)}&maxRecords=1`;
+    if (!email) {
+      return NextResponse.json({ error: "Missing email" }, { status: 400 });
+    }
 
-    const atRes = await fetch(airtableUrl, {
-      headers: { Authorization: `Bearer ${process.env.AIRTABLE_TOKEN}` },
-      cache: 'no-store',
+    const webhookURL = process.env.N8N_REPORT_FETCH_WEBHOOK;
+    if (!webhookURL) {
+      console.error("❌ Missing N8N_REPORT_FETCH_WEBHOOK");
+      return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
+    }
+
+    const response = await fetch(webhookURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+      cache: "no-store",
     });
-    if (!atRes.ok) {
-      console.error('[report-latest] Airtable fetch failed:', atRes.status);
-      return new NextResponse('Airtable fetch failed', { status: 500 });
+
+    const raw = await response.text();
+
+    if (!response.ok) {
+      console.error("[report-latest] n8n error:", raw);
+      return NextResponse.json({ status: "processing" }, { status: 202 });
     }
 
-    const data = await atRes.json();
-    const record = data.records?.[0];
-    if (!record) return new NextResponse('Not found', { status: 404 });
-
-    const fields = record.fields || {};
-
-    // ───────────── META BRANCH ─────────────
-    if (meta === '1') {
-      return NextResponse.json({
-        icp: fields['ICP'] || '',
-        audience: fields['Audience'] || '',
-        brandStatement: fields['Brand Statement'] || '',
-      });
+    let result: N8NReportResponse;
+    try {
+      result = JSON.parse(raw) as N8NReportResponse;
+    } catch {
+      console.error("[report-latest] invalid JSON:", raw);
+      return NextResponse.json({ status: "processing" }, { status: 202 });
     }
 
-    // ───────────── REPORT BRANCH ─────────────
-    const reportUrl: string | undefined = fields['Cognito Report URL'];
-    if (!reportUrl) return new NextResponse('Report not ready', { status: 202 });
+    const welcomeMessage = result.welcomeMessage ?? "";
+    const htmlContent = result.htmlContent ?? "";
 
-    const htmlRes = await fetch(reportUrl, { cache: 'no-store' });
-    if (!htmlRes.ok) return new NextResponse('Report not ready', { status: 202 });
+    if (!htmlContent || htmlContent.length < 20) {
+      return NextResponse.json({ status: "processing" }, { status: 202 });
+    }
 
-    const html = await htmlRes.text();
-    return new NextResponse(html, {
-      headers: { 'Content-Type': 'text/html' },
+    if (meta === "1") {
+      return NextResponse.json({ welcomeMessage, htmlContent });
+    }
+
+    return new NextResponse(htmlContent, {
+      headers: { "Content-Type": "text/html; charset=utf-8" },
     });
   } catch (err) {
-    console.error('[report-latest] Error:', err);
-    return new NextResponse('Report not ready', { status: 202 });
+    console.error("[report-latest] Error:", err);
+    return NextResponse.json({ status: "processing" }, { status: 202 });
   }
 }

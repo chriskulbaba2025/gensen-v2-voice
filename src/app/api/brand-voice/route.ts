@@ -1,5 +1,5 @@
 // src/app/api/brand-voice/route.ts
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse, NextRequest } from "next/server";
 
 // ─────────────────────────────────────────────
 // Types
@@ -10,10 +10,20 @@ interface BrandVoicePayload {
   email: string;
   business?: string;
   url?: string;
+
+  // Social URLs
+  facebook?: string;
+  instagram?: string;
+  linkedin?: string;
+  youtube?: string;
+
+  // Brand data
   brandCore?: Record<string, string>;
   icp?: string;
   audience?: string;
   brandStatement?: string;
+
+  // User inputs
   topic?: string;
   writingSample?: string;
   sliderScores?: Record<string, number>;
@@ -23,9 +33,9 @@ interface BrandVoicePayload {
 // Validation
 // ─────────────────────────────────────────────
 function isValidPayload(x: unknown): x is BrandVoicePayload {
-  if (typeof x !== 'object' || x === null) return false;
+  if (typeof x !== "object" || x === null) return false;
   const o = x as Record<string, unknown>;
-  return typeof o.email === 'string' && o.email.includes('@');
+  return typeof o.email === "string" && o.email.includes("@");
 }
 
 // ─────────────────────────────────────────────
@@ -37,7 +47,7 @@ export async function POST(req: NextRequest) {
 
     if (!isValidPayload(bodyUnknown)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid brand voice payload' },
+        { success: false, error: "Invalid brand voice payload" },
         { status: 400 }
       );
     }
@@ -45,21 +55,19 @@ export async function POST(req: NextRequest) {
     const body = bodyUnknown as BrandVoicePayload;
 
     // ─────────────────────────────────────────────
-    // Normalize brandCore fields (merge with ICP/Audience/Statement)
+    // Normalize brandCore (merge flattened values)
     // ─────────────────────────────────────────────
     const brandCore = {
-      'Brand Statement':
+      "Brand Statement":
         body.brandStatement ||
-        (body.brandCore && body.brandCore['Brand Statement']) ||
-        '',
+        (body.brandCore && body.brandCore["Brand Statement"]) ||
+        "",
       Audience:
         body.audience ||
-        (body.brandCore && body.brandCore['Audience']) ||
-        '',
+        (body.brandCore && body.brandCore["Audience"]) ||
+        "",
       ICP:
-        body.icp ||
-        (body.brandCore && body.brandCore['ICP']) ||
-        '',
+        body.icp || (body.brandCore && body.brandCore["ICP"]) || "",
     };
 
     // ─────────────────────────────────────────────
@@ -77,53 +85,64 @@ export async function POST(req: NextRequest) {
     };
 
     // ─────────────────────────────────────────────
-    // Construct final payload for n8n webhook
+    // FINAL PAYLOAD SENT TO n8n
+    // (now includes icp, audience, brandStatement)
     // ─────────────────────────────────────────────
     const payload = {
       firstName: body.firstName,
       lastName: body.lastName,
       email: body.email,
-      business: body.business || '',
-      url: body.url || '',
+
+      business: body.business || "",
+      url: body.url || "",
+
+      facebook: body.facebook || "",
+      instagram: body.instagram || "",
+      linkedin: body.linkedin || "",
+      youtube: body.youtube || "",
+
+      icp: body.icp || "",
+      audience: body.audience || "",
+      brandStatement: body.brandStatement || "",
+
       brandCore,
-      topic: body.topic || '',
-      writingSample: body.writingSample || '',
+      topic: body.topic || "",
+      writingSample: body.writingSample || "",
       sliderScores,
     };
 
     // ─────────────────────────────────────────────
-    // Send to n8n webhook (fire-and-forget)
+    // Fire webhook (non-blocking)
     // ─────────────────────────────────────────────
     const webhook =
       process.env.N8N_BRAND_VOICE_WEBHOOK ||
       process.env.NEXT_PUBLIC_N8N_BRAND_VOICE_WEBHOOK ||
-      'https://primary-production-77e7.up.railway.app/webhook/brand-voice';
+      "https://primary-production-77e7.up.railway.app/webhook/brand-voice";
 
     fetch(webhook, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     }).catch((err) =>
-      console.error('❌ n8n webhook error (non-blocking):', err)
+      console.error("❌ n8n webhook error (non-blocking):", err)
     );
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('📤 Triggered n8n webhook:', webhook);
-      console.log('📦 Payload:', JSON.stringify(payload, null, 2));
+    if (process.env.NODE_ENV !== "production") {
+      console.log("📤 Triggered n8n webhook:", webhook);
+      console.log("📦 Payload:", JSON.stringify(payload, null, 2));
     }
 
-    // Respond instantly so frontend can navigate immediately
     return NextResponse.json(
       {
         success: true,
-        message: 'Brand voice generation started',
+        message: "Brand voice generation started",
       },
       { status: 200 }
     );
   } catch (err) {
-    console.error('❌ Error in /api/brand-voice:', err);
+    console.error("❌ Error in /api/brand-voice:", err);
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
+      { success: false, error: "Internal server error" },
       { status: 500 }
     );
   }

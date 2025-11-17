@@ -1,8 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useForm } from '@/context/FormContext';
 
 export default function StartPage() {
+  const { setData } = useForm();
+
   const [firstName, setFirstName] = useState('');
   const [email, setEmail] = useState('');
   const [business, setBusiness] = useState('');
@@ -15,40 +18,51 @@ export default function StartPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // -------------------------------------------------------------------
-  // MAIN SUBMIT HANDLER
-  // -------------------------------------------------------------------
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+
+    if (loading) return;
     setError('');
     setLoading(true);
 
     const cleanEmail = email.trim().toLowerCase();
 
     try {
-      // 1. CALL YOUR NEXT.JS API ROUTE (FIXED)
+      // 1. CHECK USER
       const checkRes = await fetch('/api/check-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          firstName,
-          lastName: '',
-          email: cleanEmail,
-          business,
-          url: website, // REQUIRED BY YOUR ROUTE
-        }),
+        body: JSON.stringify({ email: cleanEmail }),
       });
 
       const checkData = await checkRes.json();
       console.log('CHECK USER RESPONSE:', checkData);
 
-      // 2. IF EXISTS → redirect to existing-user
       if (checkData.exists === true) {
+        // Write user to context BEFORE routing
+        setData({
+          firstName,
+          email: cleanEmail,
+        });
+
         window.location.href = `/existing-user?name=${encodeURIComponent(firstName)}`;
         return;
       }
 
-      // 3. OTHERWISE → SUBMIT FULL BRAND DATA TO SUBMIT-BRAND (same as before)
+      // 2. Save all values into global context BEFORE API calls
+      setData({
+        firstName,
+        email: cleanEmail,
+        business,
+        url: website,
+        facebook,
+        instagram,
+        linkedin,
+        youtube,
+      });
+
+      // 3. SEND TO N8N (new user)
       const payload = {
         firstName,
         email: cleanEmail,
@@ -75,7 +89,7 @@ export default function StartPage() {
         return;
       }
 
-      // 4. NEW USERS → move to next screen
+      // 4. NOW that context is populated, route forward
       window.location.href = '/new-user';
 
     } catch (err) {
@@ -86,9 +100,6 @@ export default function StartPage() {
     }
   };
 
-  // -------------------------------------------------------------------
-  // UI
-  // -------------------------------------------------------------------
   return (
     <main className="min-h-screen flex flex-col items-center px-4 py-12 bg-[#f5f8ff]">
       <form

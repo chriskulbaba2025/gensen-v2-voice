@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from "react";
 
 // ──────────────────────────────────────────────
 // Type definitions
@@ -29,14 +29,20 @@ export type OpportunityDetail = {
 // ──────────────────────────────────────────────
 
 export type FormData = {
-  // ── Basic info
+  // Basic info
   firstName: string;
   lastName: string;
   email: string;
   business: string;
   url: string;
 
-  // ── Additional metadata
+  // Social URLs
+  facebook?: string;
+  instagram?: string;
+  linkedin?: string;
+  youtube?: string;
+
+  // Metadata
   message: string;
   persona: string;
   customAudience?: string;
@@ -44,31 +50,33 @@ export type FormData = {
   tagline: string;
   voiceTone: string;
 
-  // ── Brand-Voice inputs
+  // Brand-Voice inputs
   topic: string;
   writingSample: string;
 
-  // ── Webhook-derived data
+  // n8n interim report fields — ADDED
+  welcomeMessage?: string;
+  htmlContent?: string;
+
+  // Webhook-derived data
   core?: BrandCoreField[];
   brandCore?: {
-    'Brand Statement'?: string;
-    'Audience'?: string;
-    'ICP'?: string;
+    "Brand Statement"?: string;
+    Audience?: string;
+    ICP?: string;
   };
 
-  // ✅ New high-level fields for direct access
+  // Flattened high-level fields
   icp?: string;
   audience?: string;
   brandStatement?: string;
 
-  // ── Social + Opportunity maps
   socials?: SocialDetail[];
   opportunities?: OpportunityDetail[];
 
-  // ── Stored report HTML for static rendering
   reportHtml?: string;
 
-  // ── Tone sliders (7-field model)
+  // Sliders
   sliderScores: {
     warmthAuthority: number;
     authorityEnergy: number;
@@ -81,7 +89,7 @@ export type FormData = {
 };
 
 // ──────────────────────────────────────────────
-// Context definition
+// Context interface
 // ──────────────────────────────────────────────
 
 type FormContextType = {
@@ -101,42 +109,53 @@ const FormContext = createContext<FormContextType | null>(null);
 
 export const FormProvider = ({ children }: { children: ReactNode }) => {
   const [data, setDataState] = useState<FormData>({
-    // ── Defaults for basic fields
-    firstName: '',
-    lastName: '',
-    email: '',
-    business: '',
-    url: '',
-    message: '',
-    persona: '',
-    customAudience: '',
-    brandValues: {},
-    tagline: '',
-    voiceTone: '',
-    topic: '',
-    writingSample: '',
+    // Basic defaults
+    firstName: "",
+    lastName: "",
+    email: "",
+    business: "",
+    url: "",
 
-    // ── Webhook and brand data
+    // Socials
+    facebook: "",
+    instagram: "",
+    linkedin: "",
+    youtube: "",
+
+    // Metadata
+    message: "",
+    persona: "",
+    customAudience: "",
+    brandValues: {},
+    tagline: "",
+    voiceTone: "",
+
+    // Inputs
+    topic: "",
+    writingSample: "",
+
+    // n8n interim HTML — ADDED
+    welcomeMessage: "",
+    htmlContent: "",
+
+    // Brand data
     core: [],
     brandCore: {
-      'Brand Statement': '',
-      Audience: '',
-      ICP: '',
+      "Brand Statement": "",
+      Audience: "",
+      ICP: "",
     },
 
-    // ✅ New high-level defaults
-    icp: '',
-    audience: '',
-    brandStatement: '',
+    icp: "",
+    audience: "",
+    brandStatement: "",
 
-    // ── Social and opportunity maps
     socials: [],
     opportunities: [],
 
-    // ── Stored HTML report
-    reportHtml: '',
+    reportHtml: "",
 
-    // ── Tone sliders (initialize mid-scale)
+    // Sliders
     sliderScores: {
       warmthAuthority: 5,
       authorityEnergy: 5,
@@ -148,7 +167,6 @@ export const FormProvider = ({ children }: { children: ReactNode }) => {
     },
   });
 
-  // Global setter for merging new data
   const setData = (values: Partial<FormData>) => {
     setDataState((prev) => ({
       ...prev,
@@ -170,7 +188,7 @@ export const FormProvider = ({ children }: { children: ReactNode }) => {
 export const useForm = () => {
   const context = useContext(FormContext);
   if (!context) {
-    throw new Error('useForm must be used within a FormProvider');
+    throw new Error("useForm must be used within a FormProvider");
   }
   return context;
 };

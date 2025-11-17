@@ -10,20 +10,24 @@ export default function NewUserPage() {
   const [seconds, setSeconds] = useState(240);
   const [stage, setStage] = useState<'loading' | 'complete'>('loading');
 
-  const [icp, setIcp] = useState('');
-  const [audience, setAudience] = useState('');
-  const [brandStatement, setBrandStatement] = useState('');
+  const [welcomeMessage, setWelcomeMessage] = useState('');
+  const [htmlContent, setHtmlContent] = useState('');
 
-  // countdown timer
+  // -------------------------------------------------------
+  // Countdown Timer
+  // -------------------------------------------------------
   useEffect(() => {
     if (stage !== 'loading' || seconds <= 0) return;
     const timer = setInterval(() => setSeconds((s) => s - 1), 1000);
     return () => clearInterval(timer);
   }, [seconds, stage]);
 
-  // poll Airtable after 2 minutes
+  // -------------------------------------------------------
+  // Poll n8n for HTML report
+  // -------------------------------------------------------
   useEffect(() => {
     if (!data?.email) return;
+
     let poll: NodeJS.Timeout;
 
     const startPolling = setTimeout(() => {
@@ -33,46 +37,46 @@ export default function NewUserPage() {
             `/api/report-latest?email=${encodeURIComponent(data.email)}&meta=1`,
             { cache: 'no-store' }
           );
+
           if (!res.ok) return;
 
-          // expecting JSON metadata for this endpoint
           const record = await res.json();
 
-          // confirm fields exist
-          if (record.icp || record.audience || record.brandStatement) {
-            setIcp(record.icp || '');
-            setAudience(record.audience || '');
-            setBrandStatement(record.brandStatement || '');
+          if (record.htmlContent) {
+            setWelcomeMessage(record.welcomeMessage || '');
+            setHtmlContent(record.htmlContent || '');
 
-            // persist to context for Flow 3
             setData({
               ...data,
-              icp: record.icp || '',
-              audience: record.audience || '',
-              brandStatement: record.brandStatement || '',
+              welcomeMessage: record.welcomeMessage || '',
+              htmlContent: record.htmlContent || '',
             });
 
             setStage('complete');
             clearInterval(poll);
           }
         } catch {
-          /* ignore transient network errors */
+          // ignore
         }
-      }, 10000); // poll every 10 s
-    }, 120000); // wait 2 minutes
+      }, 10000);
+    }, 120000);
 
     return () => {
       clearInterval(poll);
       clearTimeout(startPolling);
     };
-  }, [data?.email]);
+  }, [data, setData]); // eslint satisfied
 
+  // -------------------------------------------------------
+  // Countdown display
+  // -------------------------------------------------------
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8 text-center bg-gray-50 transition-all duration-700 relative overflow-hidden">
-      {/* ─────────── LOADING STAGE ─────────── */}
+
+      {/* LOADING STAGE */}
       <div
         className={`transition-opacity duration-[1500ms] ease-in-out ${
           stage === 'complete' ? 'opacity-0 pointer-events-none' : 'opacity-100'
@@ -84,6 +88,7 @@ export default function NewUserPage() {
           width={220}
           height={180}
           className="rounded-[20px] mb-8"
+          priority
         />
 
         <div className="flex flex-col items-center max-w-xl transition-opacity duration-1000">
@@ -101,8 +106,7 @@ export default function NewUserPage() {
 
           <p className="text-gray-600 max-w-lg mb-4 leading-relaxed">
             You can’t microwave maturity — and you can’t rush meaningful
-            storytelling. Give us a few minutes while we analyze who your brand
-            already speaks to across your digital footprint.
+            storytelling. Give us a few minutes while we analyze your current digital presence.
           </p>
 
           <p className="text-gray-400 text-xs mt-1">
@@ -111,73 +115,37 @@ export default function NewUserPage() {
         </div>
       </div>
 
- {/* ─────────── COMPLETE STAGE ─────────── */}
-<div
-  className={`flex flex-col items-center justify-start text-center px-[40px] py-[80px] transition-opacity duration-[1500ms] ease-in-out ${
-    stage === 'complete' ? 'opacity-100' : 'opacity-0 pointer-events-none'
-  }`}
->
+      {/* COMPLETE STAGE */}
+      <div
+        className={`flex flex-col items-center justify-start text-center px-[40px] py-[80px] transition-opacity duration-[1500ms] ease-in-out ${
+          stage === 'complete' ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+      >
 
-
-        <img
+        <Image
           src="https://omnipressence.com/wp-content/uploads/2025/09/Gensen-Logo-Final-version-lower-case-logo-and-spaces1-356x295-1.webp"
           alt="GENSEN logo"
-          className="w-[180px] mb-[20px]"
+          width={220}
+          height={180}
+          className="w-[180px] mb-[20px] rounded-[20px]"
         />
 
-        <h1 className="text-3xl font-semibold text-[#002c71] mb-4">
-          Stage 1 Complete – Your Brand Voice Foundation Is Ready
-        </h1>
+        {welcomeMessage && (
+          <p className="text-gray-700 mb-6 max-w-[700px] whitespace-pre-line leading-relaxed text-left">
+            {welcomeMessage}
+          </p>
+        )}
 
-        <p className="text-gray-700 leading-relaxed mb-4 max-w-[600px]">
-          We’ve completed the deep dive into who your brand already speaks to —
-          the tone, rhythm, and intent behind every message.
-        </p>
-
-        {/* Airtable snapshot */}
-        <div className="bg-white border border-[#e0e6f5] rounded-[12px] shadow-soft p-[24px] mb-[24px] max-w-[700px] text-left">
-          <h2 className="text-xl font-semibold text-[#002c71] mb-2">
-            Ideal Client Profile
-          </h2>
-          <p className="text-gray-700 mb-4 whitespace-pre-line">{icp}</p>
-
-          <h2 className="text-xl font-semibold text-[#002c71] mb-2">
-            Target Audience
-          </h2>
-          <p className="text-gray-700 mb-4 whitespace-pre-line">{audience}</p>
-
-          <h2 className="text-xl font-semibold text-[#002c71] mb-2">
-            Brand Statement
-          </h2>
-          <p className="text-gray-700 whitespace-pre-line">{brandStatement}</p>
-        </div>
-
-        <p className="text-gray-700 leading-relaxed mb-4 max-w-[600px]">
-          Now, GENSEN will help you <strong>refine and develop</strong> that
-          foundation into a living Brand Voice Framework.
-        </p>
-
-        <p className="text-gray-700 leading-relaxed mb-4 max-w-[600px]">
-          There are just <strong>two short steps</strong> ahead:
-        </p>
-
-        <ul className="text-gray-700 text-left mb-4 max-w-[600px] mx-auto">
-          <li>1️⃣ Define your tone and personality using guided sliders.</li>
-          <li>
-            2️⃣ Apply that tone to your real communication style through examples
-            and focus areas.
-          </li>
-        </ul>
-
-        <p className="text-gray-700 leading-relaxed mb-6 max-w-[600px]">
-          This stage shapes the precision, warmth, and rhythm of your voice — the
-          signature that will make your content instantly recognizable everywhere
-          it appears.
-        </p>
+        {htmlContent && (
+          <div
+            className="bg-white border border-[#e0e6f5] rounded-[12px] shadow-soft p-[24px] mb-[40px] max-w-[760px] text-left"
+            dangerouslySetInnerHTML={{ __html: htmlContent }}
+          />
+        )}
 
         <Link
           href="/screen-2"
-          className="mt-6 inline-block px-8 py-3 rounded-[10px] border border-[#076aff] text-[#076aff] bg-transparent hover:bg-[#076aff] hover:text-[#ffffff] transition-colors duration-300"
+          className="mt-6 inline-block px-8 py-3 rounded-[10px] border border-[#076aff] text-[#076aff] bg-transparent hover:bg-[#076aff] hover:text-white transition-colors duration-300"
         >
           Continue to Step 2 →
         </Link>
@@ -201,9 +169,6 @@ export default function NewUserPage() {
         }
         .animate-spin-reverse-slower {
           animation: spinReverse 5s linear infinite;
-        }
-        a:hover {
-          color: #ffffff !important;
         }
       `}</style>
     </main>

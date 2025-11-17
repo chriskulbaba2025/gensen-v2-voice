@@ -1,58 +1,61 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+
+interface N8NCheckResponse {
+  exists?: boolean;
+}
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { firstName, lastName, email, business, url } = body || {};
+    const body = (await req.json().catch(() => null)) as { email?: string } | null;
 
-    // basic validation
-    if (!email || !url) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    if (!body?.email || typeof body.email !== "string") {
+      return NextResponse.json(
+        { error: "Missing or invalid email" },
+        { status: 400 }
+      );
     }
 
-    // check-user webhook
+    const email = body.email.trim().toLowerCase();
+
     const webhookURL = process.env.N8N_CHECK_WEBHOOK;
     if (!webhookURL) {
-      console.error('❌ Missing N8N_CHECK_WEBHOOK in environment');
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+      console.error("❌ Missing N8N_CHECK_WEBHOOK");
+      return NextResponse.json(
+        { error: "Server misconfigured" },
+        { status: 500 }
+      );
     }
 
-    // send to n8n check-user
     const response = await fetch(webhookURL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
     });
 
     const raw = await response.text();
+
     if (!response.ok) {
-      console.error('[n8n Error Response]', raw);
-      return NextResponse.json({ error: 'n8n lookup failed' }, { status: 502 });
+      console.error("[n8n Error]", raw);
+      return NextResponse.json({ exists: false }, { status: 200 });
     }
 
-    let result;
+    let result: N8NCheckResponse;
     try {
-      result = JSON.parse(raw);
+      result = JSON.parse(raw) as N8NCheckResponse;
     } catch {
-      console.error('[n8n Invalid JSON]', raw);
-      return NextResponse.json({ error: 'Invalid JSON returned from n8n' }, { status: 502 });
+      console.error("[Invalid n8n JSON]", raw);
+      return NextResponse.json({ exists: false }, { status: 200 });
     }
 
-    console.log('[CHECK USER RESULT]', result);
+    return NextResponse.json(
+      { exists: result.exists === true },
+      { status: 200 }
+    );
 
-    // main logic
-    if (result.exists === false) {
-      console.log('[NEW USER] Sending to submit-brand webhook');
-      await fetch('https://primary-production-77e7.up.railway.app/webhook/submit-brand', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstName, lastName, email, business, url }),
-      });
-    }
-
-    return NextResponse.json(result, { status: 200 });
-  } catch (err) {
-    console.error('check-user route error:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } catch {
+    return NextResponse.json(
+      { exists: false },
+      { status: 200 }
+    );
   }
 }

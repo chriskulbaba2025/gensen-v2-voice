@@ -25,6 +25,7 @@ export default function Step2() {
   const router = useRouter();
   const { data, setData } = useForm();
 
+  // Local state for sliders
   const [sliders, setSliders] = useState<SliderScores>(
     data.sliderScores || {
       warmthAuthority: 5,
@@ -37,6 +38,7 @@ export default function Step2() {
     }
   );
 
+  // Sync context → local state
   useEffect(() => {
     if (data.sliderScores) setSliders(data.sliderScores);
   }, [data.sliderScores]);
@@ -53,8 +55,9 @@ export default function Step2() {
   const handleBack = () => router.back();
 
   // ─────────────────────────────────────────────
-  // Description Functions (GENSEN voice, 3 bullets each)
+  // Description Generators
   // ─────────────────────────────────────────────
+
   const getWarmthAuthorityDescription = (v: number) => {
     if (v <= 2)
       return {
@@ -380,9 +383,7 @@ export default function Step2() {
         max={10}
         step={1}
         value={value}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          onChange(Number(e.target.value))
-        }
+        onChange={(e) => onChange(Number(e.target.value))}
         className="w-full h-2 bg-gray-200 rounded-lg appearance-none accent-[#076aff] cursor-grab active:cursor-grabbing"
       />
       <div className="flex justify-between text-sm text-gray-600 mt-1">
@@ -408,15 +409,19 @@ export default function Step2() {
   return (
     <main className="min-h-screen flex flex-col items-center px-4 pt-12 mb-20">
       <ProgressBar step={2} total={4} />
+
       <h1 className="text-2xl font-bold mb-4 text-center">
         Step 2: Tune Your Brand Voice
       </h1>
+
       <p className="text-gray-600 text-center max-w-2xl mb-10 leading-relaxed">
-        Adjust each slider to define how your brand feels and sounds. Each
-        control moves between two traits that shape tone, pace, and emotion.
+        Adjust each slider to define how your brand feels and sounds. Each control
+        moves between two traits that shape tone, pace, and emotion.
       </p>
 
-      <h3 className="text-xl font-semibold mb-3 text-[#076aff]">Tone Dynamics</h3>
+      <h3 className="text-xl font-semibold mb-3 text-[#076aff]">
+        Tone Dynamics
+      </h3>
 
       <Slider
         title="Warmth ↔ Authority"
@@ -503,6 +508,7 @@ export default function Step2() {
         >
           ← Back
         </button>
+
         <button
           onClick={handleNext}
           className="px-6 py-2 rounded border border-[#076aff] bg-transparent text-[#076aff] hover:bg-[#076aff] hover:text-white transition-colors duration-300"
