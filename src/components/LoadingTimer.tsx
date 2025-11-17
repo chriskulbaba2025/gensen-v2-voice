@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 
 const messages = [
   "Microwaving maturity…",
@@ -19,28 +19,32 @@ const messages = [
   "Locating the tension that makes stories memorable…"
 ];
 
-export default function LoadingTimer() {
+function LoadingTimer() {
   const TOTAL_SECONDS = 240; // 4 minutes
   const [timeLeft, setTimeLeft] = useState(TOTAL_SECONDS);
 
   const [index, setIndex] = useState(0);
   const [fade, setFade] = useState(true);
 
-  // Rotate messages every 7 seconds with 1.5s crossfade
+  // ───────────────────────────────────────────────
+  // MESSAGE ROTATION — 7 seconds, fade 1.5 seconds
+  // ───────────────────────────────────────────────
   useEffect(() => {
-    const interval = setInterval(() => {
-      setFade(false); // fade out
+    const msgInterval = setInterval(() => {
+      setFade(false);
 
       setTimeout(() => {
         setIndex((prev) => (prev + 1) % messages.length);
-        setFade(true); // fade in
-      }, 1500); // fade duration (1.5s)
-    }, 7000); // 7 seconds per message
+        setFade(true);
+      }, 1500); // fade duration
+    }, 7000); // total duration per message
 
-    return () => clearInterval(interval);
+    return () => clearInterval(msgInterval);
   }, []);
 
-  // Countdown
+  // ───────────────────────────────────────────────
+  // COUNTDOWN TIMER — 4 minutes
+  // ───────────────────────────────────────────────
   useEffect(() => {
     const t = setInterval(() => {
       setTimeLeft((prev) => Math.max(prev - 1, 0));
@@ -66,7 +70,7 @@ export default function LoadingTimer() {
         {minutes}:{seconds}
       </p>
 
-      {/* Fading Script */}
+      {/* Rotating Script */}
       <p
         className={`text-[#666666] text-[18px] italic transition-opacity duration-[1500ms] ${
           fade ? "opacity-100" : "opacity-0"
@@ -77,3 +81,5 @@ export default function LoadingTimer() {
     </div>
   );
 }
+
+export default memo(LoadingTimer);

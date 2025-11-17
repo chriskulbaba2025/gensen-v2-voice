@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useForm } from "@/context/FormContext";
@@ -14,7 +14,7 @@ export default function NewUserPage() {
   const [htmlContent, setHtmlContent] = useState("");
 
   // ───────────────────────────────────────────────
-  // POLLING — starts AFTER timer begins
+  // POLLING — DELAY UNTIL AFTER USER SEES TIMER
   // ───────────────────────────────────────────────
   useEffect(() => {
     if (!data?.email) return;
@@ -36,27 +36,24 @@ export default function NewUserPage() {
         const record = await res.json();
 
         if (record?.htmlContent) {
-          const wm = record.welcomeMessage || "";
-          const html = record.htmlContent || "";
-
-          setWelcomeMessage(wm);
-          setHtmlContent(html);
+          setWelcomeMessage(record.welcomeMessage || "");
+          setHtmlContent(record.htmlContent || "");
 
           setData({
             ...data,
-            welcomeMessage: wm,
-            htmlContent: html,
+            welcomeMessage: record.welcomeMessage || "",
+            htmlContent: record.htmlContent || "",
           });
 
           setStage("complete");
 
-          if (intervalId) clearInterval(intervalId);
-          if (timeoutId) clearTimeout(timeoutId);
+          intervalId && clearInterval(intervalId);
+          timeoutId && clearTimeout(timeoutId);
         }
       } catch {}
     };
 
-    // delay for 2 min before polling
+    // Start polling AFTER 2 minutes
     timeoutId = setTimeout(() => {
       intervalId = setInterval(checkReport, 5000);
       checkReport();
@@ -104,8 +101,8 @@ export default function NewUserPage() {
           This page updates automatically.
         </p>
 
-        {/* TIMER + RINGS */}
-        <LoadingTimer />
+        {/* TIMER + RINGS (stable instance) */}
+        <LoadingTimer key="gensen-loading-timer" />
       </div>
 
       {/* COMPLETE STAGE */}
