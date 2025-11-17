@@ -76,7 +76,7 @@ export default function StartPage() {
       }
 
       // 4. NEW USERS → move to next screen
-      window.location.href = '/screen-2';
+      window.location.href = '/new-user';
 
     } catch (err) {
       console.error(err);
