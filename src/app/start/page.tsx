@@ -26,26 +26,29 @@ export default function StartPage() {
     const cleanEmail = email.trim().toLowerCase();
 
     try {
-      // 1. CALL CHECK-USER WEBHOOK
-      const checkRes = await fetch(
-        'https://primary-production-77e7.up.railway.app/webhook/check-user',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: cleanEmail }),
-        }
-      );
+      // 1. CALL YOUR NEXT.JS API ROUTE (FIXED)
+      const checkRes = await fetch('/api/check-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName,
+          lastName: '',
+          email: cleanEmail,
+          business,
+          url: website, // REQUIRED BY YOUR ROUTE
+        }),
+      });
 
       const checkData = await checkRes.json();
       console.log('CHECK USER RESPONSE:', checkData);
 
-      // 2. IF EXISTS → redirect to existing-user (NO friction)
+      // 2. IF EXISTS → redirect to existing-user
       if (checkData.exists === true) {
         window.location.href = `/existing-user?name=${encodeURIComponent(firstName)}`;
         return;
       }
 
-      // 3. OTHERWISE: SUBMIT TO BRAND-VOICE GENERATOR
+      // 3. OTHERWISE → SUBMIT FULL BRAND DATA TO SUBMIT-BRAND (same as before)
       const payload = {
         firstName,
         email: cleanEmail,
@@ -72,7 +75,7 @@ export default function StartPage() {
         return;
       }
 
-      // 4. MOVE TO NEXT STEP OF NEW FLOW
+      // 4. NEW USERS → move to next screen
       window.location.href = '/screen-2';
 
     } catch (err) {
@@ -142,13 +145,12 @@ export default function StartPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-
           <div>
             <span className="font-medium">Facebook</span>
             <input
               type="url"
               value={facebook}
-              placeholder="https://www.facebook.com/profile.php?id=11111111111111"
+              placeholder="https://facebook.com/profile"
               onChange={(e) => setFacebook(e.target.value)}
               className="mt-1 w-full p-2 border rounded"
             />
@@ -159,7 +161,7 @@ export default function StartPage() {
             <input
               type="url"
               value={instagram}
-              placeholder="https://www.instagram.com/handle"
+              placeholder="https://instagram.com/handle"
               onChange={(e) => setInstagram(e.target.value)}
               className="mt-1 w-full p-2 border rounded"
             />
@@ -170,7 +172,7 @@ export default function StartPage() {
             <input
               type="url"
               value={linkedin}
-              placeholder="https://www.linkedin.com/in/url"
+              placeholder="https://linkedin.com/in/url"
               onChange={(e) => setLinkedin(e.target.value)}
               className="mt-1 w-full p-2 border rounded"
             />
@@ -181,12 +183,11 @@ export default function StartPage() {
             <input
               type="url"
               value={youtube}
-              placeholder="https://www.youtube.com/@handle"
+              placeholder="https://youtube.com/@handle"
               onChange={(e) => setYoutube(e.target.value)}
               className="mt-1 w-full p-2 border rounded"
             />
           </div>
-
         </div>
 
         <button
