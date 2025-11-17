@@ -3,29 +3,58 @@
 import { useEffect, useState } from "react";
 
 const messages = [
+  // Original set (curated)
   "Microwaving maturity…",
   "Sharpening your signal…",
   "Tuning your digital presence…",
   "Aligning your brand fundamentals…",
   "Mapping what your audience actually sees…",
   "Adjusting the narrative threads…",
-  "Refining your voice texture…"
+  "Refining your voice texture…",
+
+  // Added set (GENSEN-voice curated)
+  "Pulling clarity out of the static…",
+  "Spotlighting the signals that make you unmistakable…",
+  "Surfacing the language people trust instinctively…",
+  "Separating substance from the scroll-by moments…",
+  "Extracting the moments where your brand actually connects…",
+  "Smoothing the edges so your voice lands clean…",
+  "Locating the tension that makes stories memorable…"
 ];
 
 export default function LoadingTimer() {
   const [index, setIndex] = useState(0);
+  const [fade, setFade] = useState(true);
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setIndex((prev) => (prev + 1) % messages.length);
-    }, 2500);
+    const interval = setInterval(() => {
+      setFade(false); // fade out
+      setTimeout(() => {
+        setIndex((prev) => (prev + 1) % messages.length);
+        setFade(true); // fade in
+      }, 500); // fade-out duration
+    }, 10000); // 10 seconds per message
 
-    return () => clearInterval(id);
+    return () => clearInterval(interval);
   }, []);
 
   return (
-    <p className="text-gray-500 text-sm mt-6 italic transition-opacity duration-500">
-      {messages[index]}
-    </p>
+    <div className="flex flex-col items-center mt-8">
+
+      {/* Rotating Rings */}
+      <div className="relative w-24 h-24 mb-4">
+        <div className="absolute inset-0 rounded-full border-4 border-[#076aff] opacity-40 animate-spin-slow"></div>
+        <div className="absolute inset-2 rounded-full border-4 border-[#40a9ff] opacity-40 animate-spin-reverse-slower"></div>
+      </div>
+
+      {/* Fading Message */}
+      <p
+        className={`text-[#666666] text-sm italic transition-opacity duration-500 ${
+          fade ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        {messages[index]}
+      </p>
+    </div>
   );
 }
