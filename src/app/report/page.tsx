@@ -3,17 +3,18 @@
 import { useEffect, useState } from 'react';
 
 export default function ReportPage() {
-  // 4-minute countdown for UX (visual only)
+  const [welcome, setWelcome] = useState<string | null>(null);
+  const [interimHtml, setInterimHtml] = useState<string | null>(null);
+  const [finalHtml, setFinalHtml] = useState<string | null>(null);
+  const [error, setError] = useState(false);
+
+  const MAX_TIME = 5 * 60 * 1000; // 5 minutes
+  const POLL_INTERVAL = 5000; // 5 seconds
+
+  // TIMER (visual only)
   const totalSeconds = 4 * 60;
   const [timeLeft, setTimeLeft] = useState(totalSeconds);
 
-  // final report data (from webhook POST)
-  const [welcome, setWelcome] = useState<string | null>(null);
-  const [finalHtml, setFinalHtml] = useState<string | null>(null);
-
-  // ---------------------------------------------
-  // TIMER (visual only)
-  // ---------------------------------------------
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((t) => (t > 0 ? t - 1 : 0));
@@ -22,14 +23,12 @@ export default function ReportPage() {
     return () => clearInterval(timer);
   }, []);
 
-  // ---------------------------------------------
-  // FETCH FINAL REPORT ONCE AFTER 3 MINUTES
-  // ---------------------------------------------
+  // POLLING LOGIC — fetch every 5 seconds, stop after 5 minutes
   useEffect(() => {
-    const MIN_WAIT_MS = 3 * 60 * 1000; // 3 minutes
     let cancelled = false;
+    let elapsed = 0;
 
-    async function fetchReport() {
+    async function poll() {
       if (cancelled) return;
 
       try {
@@ -38,29 +37,33 @@ export default function ReportPage() {
 
         const json = await res.json();
 
-        if (json.htmlContent) {
+        if (json?.htmlContent && json.htmlContent.length > 20) {
           setFinalHtml(json.htmlContent);
-        }
-        if (json.welcomeMessage) {
-          setWelcome(json.welcomeMessage);
+          setWelcome(json.welcomeMessage || null);
+          clearInterval(interval);
         }
       } catch {}
+
+      elapsed += POLL_INTERVAL;
+
+      if (elapsed >= MAX_TIME && !finalHtml) {
+        setError(true);
+        clearInterval(interval);
+      }
     }
 
-    const timeoutId = setTimeout(fetchReport, MIN_WAIT_MS);
+    const interval = setInterval(poll, POLL_INTERVAL);
 
     return () => {
       cancelled = true;
-      clearTimeout(timeoutId);
+      clearInterval(interval);
     };
   }, []);
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
-  // ---------------------------------------------
-  // IF FINAL REPORT READY
-  // ---------------------------------------------
+  // FINAL REPORT READY
   if (finalHtml) {
     return (
       <div className="min-h-screen bg-[#f5f8ff] p-[40px] flex justify-center">
@@ -73,11 +76,35 @@ export default function ReportPage() {
     );
   }
 
-  // ---------------------------------------------
-  // WAITING STATE
-  // ---------------------------------------------
+  // ERROR AFTER 5 MINUTES
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-[#0b1320] px-6">
+        <h2 className="text-[28px] font-semibold mb-4 text-[#002c71]">
+          Your GENSEN Report Hit a Technical Delay
+        </h2>
+
+        <p className="text-[17px] text-center max-w-[600px] mb-4 text-gray-700">
+          It looks like your report is taking longer than expected to generate, which
+          means we’ve likely hit a technical issue on our side.
+        </p>
+
+        <p className="text-[17px] text-center max-w-[600px] mb-6 text-gray-700">
+          Please connect with Brad Grant, Chief Client Officer, at{' '}
+          <a href="mailto:brad@omnipressence.com" className="text-[#076aff] underline">
+            brad@omnipressence.com
+          </a>{' '}
+          and let us know that your GENSEN report did not complete so we can diagnose
+          the issue and get you a fresh link as quickly as possible.
+        </p>
+      </div>
+    );
+  }
+
+  // ORIGINAL FULL LOADING UI RESTORED
   return (
     <div className="relative min-h-screen bg-[#f5f8ff] text-[#0a0a0a] font-raleway flex flex-col items-center px-[40px] py-[60px] overflow-hidden fade-in">
+
       {/* TIMER */}
       <div className="relative w-[160px] h-[160px] flex items-center justify-center mb-[40px] mt-[40px]">
         <div className="absolute inset-0 rounded-full border-[8px] border-[#076aff] border-t-transparent animate-spin-slow"></div>
@@ -87,7 +114,8 @@ export default function ReportPage() {
         </div>
       </div>
 
-      <div className="bg-white shadow-soft rounded-[15px] px-[32px] py-[40px] border border-[#e0e6f5] leading-relaxed text-[17px] text-[#0b1320]">
+      {/* ORIGINAL FULL LOADING MESSAGE */}
+      <div className="bg-white shadow-soft rounded-[15px] px-[32px] py-[40px] border border-[#e0e6f5] leading-relaxed text-[17px] text-[#0b1320] max-w-[750px]">
         <h1 className="text-[32px] font-semibold text-[#002c71] mb-[20px] text-center">
           Your GENSEN Brand Intelligence Report Is Now in Development
         </h1>
@@ -113,23 +141,11 @@ export default function ReportPage() {
 
       {/* Animations */}
       <style jsx global>{`
-        .fade-in {
-          animation: fadeIn 0.8s ease-in forwards;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes spinReverse {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(-360deg); }
-        }
-        .animate-spin-slow {
-          animation: spin 3s linear infinite;
-        }
-        .animate-spin-reverse-slower {
-          animation: spinReverse 5s linear infinite;
-        }
+        .fade-in { animation: fadeIn 0.8s ease-in forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes spinReverse { 0% { transform: rotate(0deg); } 100% { transform: rotate(-360deg); } }
+        .animate-spin-slow { animation: spin 3s linear infinite; }
+        .animate-spin-reverse-slower { animation: spinReverse 5s linear infinite; }
       `}</style>
     </div>
   );
