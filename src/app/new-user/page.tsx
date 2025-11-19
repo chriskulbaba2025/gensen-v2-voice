@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, memo } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useForm } from "@/context/FormContext";
@@ -14,54 +14,44 @@ export default function NewUserPage() {
   const [htmlContent, setHtmlContent] = useState("");
 
   // ───────────────────────────────────────────────
-  // POLLING — DELAY UNTIL AFTER USER SEES TIMER
+  // POLLING — IMMEDIATE CHECK + EVERY 5 SECONDS
   // ───────────────────────────────────────────────
   useEffect(() => {
-    if (!data?.email) return;
-
-    const email = data.email.trim().toLowerCase();
-
     let intervalId: NodeJS.Timeout | null = null;
-    let timeoutId: NodeJS.Timeout | null = null;
 
     const checkReport = async () => {
       try {
-        const res = await fetch(
-          `/api/report-latest?email=${encodeURIComponent(email)}&meta=1`,
-          { cache: "no-store" }
-        );
+        const res = await fetch("/api/report-complete", {
+          cache: "no-store",
+        });
 
         if (!res.ok) return;
 
-        const record = await res.json();
+        const json = await res.json();
 
-        if (record?.htmlContent) {
-          setWelcomeMessage(record.welcomeMessage || "");
-          setHtmlContent(record.htmlContent || "");
+        if (json?.htmlContent) {
+          setWelcomeMessage(json.welcomeMessage || "");
+          setHtmlContent(json.htmlContent || "");
 
           setData({
             ...data,
-            welcomeMessage: record.welcomeMessage || "",
-            htmlContent: record.htmlContent || "",
+            welcomeMessage: json.welcomeMessage || "",
+            htmlContent: json.htmlContent || "",
           });
 
           setStage("complete");
 
           intervalId && clearInterval(intervalId);
-          timeoutId && clearTimeout(timeoutId);
         }
       } catch {}
     };
 
-    // Start polling AFTER 2 minutes
-    timeoutId = setTimeout(() => {
-      intervalId = setInterval(checkReport, 5000);
-      checkReport();
-    }, 120000);
+    // Start immediately + every 5 sec
+    intervalId = setInterval(checkReport, 5000);
+    checkReport();
 
     return () => {
       intervalId && clearInterval(intervalId);
-      timeoutId && clearTimeout(timeoutId);
     };
   }, [data, setData]);
 
@@ -101,7 +91,6 @@ export default function NewUserPage() {
           This page updates automatically.
         </p>
 
-        {/* TIMER + RINGS (stable instance) */}
         <LoadingTimer key="gensen-loading-timer" />
       </div>
 
