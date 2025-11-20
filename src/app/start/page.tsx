@@ -9,32 +9,33 @@ export default function StartPage() {
   const { setData } = useForm();
 
   const [firstName, setFirstName] = useState("");
-  const [email, setEmail] = useState("");
   const [business, setBusiness] = useState("");
+  const [email, setEmail] = useState("");
   const [website, setWebsite] = useState("");
+
   const [facebook, setFacebook] = useState("");
   const [instagram, setInstagram] = useState("");
-  const [linkedin, setLinkedin] = useState("");
+
+  const [linkedinPersonal, setLinkedinPersonal] = useState("");
+  const [linkedinBusiness, setLinkedinBusiness] = useState("");
+
   const [youtube, setYoutube] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // ───────────────────────────────────────────────
-  // MAIN SUBMIT HANDLER
-  // ───────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
     if (loading) return;
+
     setError("");
     setLoading(true);
 
     const cleanEmail = email.trim().toLowerCase();
 
     try {
-      // 1) CHECK USER (only email)
+      // CHECK USER
       const checkRes = await fetch("/api/check-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -42,9 +43,7 @@ export default function StartPage() {
       });
 
       const checkData: { exists: boolean } = await checkRes.json();
-      console.log("CHECK USER RESPONSE:", checkData);
 
-      // 2) EXISTING USER → redirect immediately
       if (checkData.exists === true) {
         setData({
           firstName,
@@ -55,7 +54,7 @@ export default function StartPage() {
         return;
       }
 
-      // 3) NEW USER → store ALL fields in global context
+      // NEW USER → store all fields
       setData({
         firstName,
         email: cleanEmail,
@@ -63,11 +62,11 @@ export default function StartPage() {
         url: website,
         facebook,
         instagram,
-        linkedin,
+        linkedinPersonal,
+        linkedinBusiness,
         youtube,
       });
 
-      // 4) FIRE n8n submit webhook
       const payload = {
         firstName,
         email: cleanEmail,
@@ -75,7 +74,8 @@ export default function StartPage() {
         url: website,
         facebook,
         instagram,
-        linkedin,
+        linkedinPersonal,
+        linkedinBusiness,
         youtube,
       };
 
@@ -94,7 +94,6 @@ export default function StartPage() {
         return;
       }
 
-      // 5) NEW USER → route to loading screen (router.push preserves context)
       router.push("/new-user");
     } catch (err) {
       console.error(err);
@@ -103,10 +102,6 @@ export default function StartPage() {
       setLoading(false);
     }
   };
-
-  // ───────────────────────────────────────────────
-  // UI
-  // ───────────────────────────────────────────────
 
   return (
     <main className="min-h-screen flex flex-col items-center px-4 py-12 bg-[#f5f8ff]">
@@ -118,51 +113,58 @@ export default function StartPage() {
           Start Your Brand Voice
         </h1>
 
-        <div className="mb-4">
-          <span className="font-medium">First Name</span>
-          <input
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-            className="mt-1 w-full p-2 border rounded"
-          />
+        {/* Row 1: First Name + Business Name */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <span className="font-medium">First Name</span>
+            <input
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+              className="mt-1 w-full p-2 border rounded"
+            />
+          </div>
+
+          <div>
+            <span className="font-medium">Business Name</span>
+            <input
+              type="text"
+              value={business}
+              onChange={(e) => setBusiness(e.target.value)}
+              required
+              className="mt-1 w-full p-2 border rounded"
+            />
+          </div>
         </div>
 
-        <div className="mb-4">
-          <span className="font-medium">Business Name</span>
-          <input
-            type="text"
-            value={business}
-            onChange={(e) => setBusiness(e.target.value)}
-            required
-            className="mt-1 w-full p-2 border rounded"
-          />
+        {/* Row 2: Email + Website */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <span className="font-medium">Email</span>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="mt-1 w-full p-2 border rounded"
+            />
+          </div>
+
+          <div>
+            <span className="font-medium">Website</span>
+            <input
+              type="url"
+              value={website}
+              placeholder="https://website.com"
+              onChange={(e) => setWebsite(e.target.value)}
+              required
+              className="mt-1 w-full p-2 border rounded"
+            />
+          </div>
         </div>
 
-        <div className="mb-4">
-          <span className="font-medium">Email</span>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="mt-1 w-full p-2 border rounded"
-          />
-        </div>
-
-        <div className="mb-4">
-          <span className="font-medium">Website</span>
-          <input
-            type="url"
-            value={website}
-            placeholder="https://website.com"
-            onChange={(e) => setWebsite(e.target.value)}
-            required
-            className="mt-1 w-full p-2 border rounded"
-          />
-        </div>
-
+        {/* Row 3: Facebook + Instagram */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <span className="font-medium">Facebook</span>
@@ -185,18 +187,35 @@ export default function StartPage() {
               className="mt-1 w-full p-2 border rounded"
             />
           </div>
+        </div>
 
+        {/* NEW Row 4: LinkedIn Personal + LinkedIn Business */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
-            <span className="font-medium">LinkedIn</span>
+            <span className="font-medium">LinkedIn Personal</span>
             <input
               type="url"
-              value={linkedin}
-              placeholder="https://linkedin.com/in/url"
-              onChange={(e) => setLinkedin(e.target.value)}
+              value={linkedinPersonal}
+              placeholder="https://linkedin.com/in/username"
+              onChange={(e) => setLinkedinPersonal(e.target.value)}
               className="mt-1 w-full p-2 border rounded"
             />
           </div>
 
+          <div>
+            <span className="font-medium">LinkedIn Business Page</span>
+            <input
+              type="url"
+              value={linkedinBusiness}
+              placeholder="https://linkedin.com/company/company-name"
+              onChange={(e) => setLinkedinBusiness(e.target.value)}
+              className="mt-1 w-full p-2 border rounded"
+            />
+          </div>
+        </div>
+
+        {/* Row 5: YouTube (keeps layout aligned) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <span className="font-medium">YouTube</span>
             <input
@@ -207,6 +226,9 @@ export default function StartPage() {
               className="mt-1 w-full p-2 border rounded"
             />
           </div>
+
+          {/* EMPTY COLUMN for alignment */}
+          <div></div>
         </div>
 
         <button

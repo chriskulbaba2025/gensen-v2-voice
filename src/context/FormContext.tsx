@@ -37,10 +37,13 @@ export type FormData = {
   url: string;
 
   // Social URLs
-  facebook?: string;
-  instagram?: string;
-  linkedin?: string;
-  youtube?: string;
+facebook?: string;
+instagram?: string;
+linkedin?: string;
+youtube?: string;
+linkedinPersonal?: string;
+linkedinBusiness?: string;
+
 
   // Metadata
   message: string;
@@ -117,10 +120,13 @@ export const FormProvider = ({ children }: { children: ReactNode }) => {
     url: "",
 
     // Socials
-    facebook: "",
-    instagram: "",
-    linkedin: "",
-    youtube: "",
+facebook: "",
+instagram: "",
+linkedin: "",
+youtube: "",
+linkedinPersonal: "",
+linkedinBusiness: "",
+
 
     // Metadata
     message: "",
