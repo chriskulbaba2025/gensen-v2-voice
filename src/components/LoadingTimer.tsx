@@ -26,7 +26,7 @@ function LoadingTimer() {
     "Locating the tension that makes stories memorable…"
   ];
 
-  // Rotate messages every 7s w/ 1.5s fade
+  // ROTATE MESSAGES — add messages.length as dependency
   useEffect(() => {
     const interval = setInterval(() => {
       setFade(false);
@@ -38,15 +38,15 @@ function LoadingTimer() {
     }, 7000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [messages.length]);
 
-  // Countdown timer
+  // COUNTDOWN TIMER
   useEffect(() => {
-    const t = setInterval(() => {
+    const timer = setInterval(() => {
       setTimeLeft((prev) => Math.max(prev - 1, 0));
     }, 1000);
 
-    return () => clearInterval(t);
+    return () => clearInterval(timer);
   }, []);
 
   const minutes = Math.floor(timeLeft / 60);

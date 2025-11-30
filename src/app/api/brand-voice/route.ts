@@ -11,19 +11,16 @@ interface BrandVoicePayload {
   business?: string;
   url?: string;
 
-  // Social URLs
   facebook?: string;
   instagram?: string;
   linkedin?: string;
   youtube?: string;
 
-  // Brand data
   brandCore?: Record<string, string>;
   icp?: string;
   audience?: string;
   brandStatement?: string;
 
-  // User inputs
   topic?: string;
   writingSample?: string;
   sliderScores?: Record<string, number>;
@@ -54,9 +51,6 @@ export async function POST(req: NextRequest) {
 
     const body = bodyUnknown as BrandVoicePayload;
 
-    // ─────────────────────────────────────────────
-    // Normalize brandCore (merge flattened values)
-    // ─────────────────────────────────────────────
     const brandCore = {
       "Brand Statement":
         body.brandStatement ||
@@ -70,9 +64,6 @@ export async function POST(req: NextRequest) {
         body.icp || (body.brandCore && body.brandCore["ICP"]) || "",
     };
 
-    // ─────────────────────────────────────────────
-    // Normalize slider scores
-    // ─────────────────────────────────────────────
     const s = body.sliderScores || {};
     const sliderScores = {
       warmthAuthority: Number(s.warmthAuthority || 5),
@@ -84,58 +75,57 @@ export async function POST(req: NextRequest) {
       overall: Number(s.overall || 5),
     };
 
-    // ─────────────────────────────────────────────
-    // FINAL PAYLOAD SENT TO n8n
-    // (now includes icp, audience, brandStatement)
-    // ─────────────────────────────────────────────
     const payload = {
       firstName: body.firstName,
       lastName: body.lastName,
       email: body.email,
-
       business: body.business || "",
       url: body.url || "",
-
       facebook: body.facebook || "",
       instagram: body.instagram || "",
       linkedin: body.linkedin || "",
       youtube: body.youtube || "",
-
       icp: body.icp || "",
       audience: body.audience || "",
       brandStatement: body.brandStatement || "",
-
       brandCore,
       topic: body.topic || "",
       writingSample: body.writingSample || "",
       sliderScores,
     };
 
-    // ─────────────────────────────────────────────
-    // Fire webhook (non-blocking)
-    // ─────────────────────────────────────────────
     const webhook =
       process.env.N8N_BRAND_VOICE_WEBHOOK ||
-      process.env.NEXT_PUBLIC_N8N_BRAND_VOICE_WEBHOOK ||
       "https://primary-production-77e7.up.railway.app/webhook/brand-voice";
 
-    fetch(webhook, {
+    const webhookRes = await fetch(webhook, {
       method: "POST",
+      mode: "cors",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
-    }).catch((err) =>
-      console.error("❌ n8n webhook error (non-blocking):", err)
-    );
+    });
 
-    if (process.env.NODE_ENV !== "production") {
-      console.log("📤 Triggered n8n webhook:", webhook);
-      console.log("📦 Payload:", JSON.stringify(payload, null, 2));
+    if (!webhookRes.ok) {
+      console.error("❌ n8n webhook failed:", await webhookRes.text());
+      return NextResponse.json(
+        { success: false, error: "Webhook failed" },
+        { status: 500 }
+      );
+    }
+
+    // FIXED LINT ERROR
+    let n8nJson: Record<string, unknown> = {};
+    try {
+      n8nJson = await webhookRes.json();
+    } catch {
+      n8nJson = {};
     }
 
     return NextResponse.json(
       {
         success: true,
-        message: "Brand voice generation started",
+        reportUrl: n8nJson.reportUrl || null,
+        message: "Brand voice generated",
       },
       { status: 200 }
     );

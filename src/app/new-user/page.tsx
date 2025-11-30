@@ -35,13 +35,13 @@ export default function NewUserPage() {
 
           setData({
             ...data,
-            welcomeMessage: json.welcomeMessage || "",
-            htmlContent: json.htmlContent || "",
           });
 
           setStage("complete");
 
-          intervalId && clearInterval(intervalId);
+          if (intervalId) {
+            clearInterval(intervalId);
+          }
         }
       } catch {}
     };
@@ -51,7 +51,9 @@ export default function NewUserPage() {
     checkReport();
 
     return () => {
-      intervalId && clearInterval(intervalId);
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
     };
   }, [data, setData]);
 
@@ -60,7 +62,6 @@ export default function NewUserPage() {
   // ───────────────────────────────────────────────
   return (
     <main className="flex flex-col items-center justify-start p-8 text-center bg-gray-50 transition-all duration-700 relative">
-
       {/* LOADING STAGE */}
       <div
         className={`flex flex-col items-center transition-opacity duration-[1500ms] ease-in-out ${

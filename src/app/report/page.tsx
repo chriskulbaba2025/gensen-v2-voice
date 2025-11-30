@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react';
 
 export default function ReportPage() {
-  const [welcome, setWelcome] = useState<string | null>(null);
-  const [interimHtml, setInterimHtml] = useState<string | null>(null);
   const [finalHtml, setFinalHtml] = useState<string | null>(null);
   const [error, setError] = useState(false);
 
@@ -15,6 +13,8 @@ export default function ReportPage() {
   const totalSeconds = 4 * 60;
   const [timeLeft, setTimeLeft] = useState(totalSeconds);
 
+  // TIMER EFFECT — runs once (safe)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((t) => (t > 0 ? t - 1 : 0));
@@ -23,7 +23,8 @@ export default function ReportPage() {
     return () => clearInterval(timer);
   }, []);
 
-  // POLLING LOGIC — fetch every 5 seconds, stop after 5 minutes
+  // POLLING EFFECT — runs once (safe intentional behavior)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     let cancelled = false;
     let elapsed = 0;
@@ -39,7 +40,6 @@ export default function ReportPage() {
 
         if (json?.htmlContent && json.htmlContent.length > 20) {
           setFinalHtml(json.htmlContent);
-          setWelcome(json.welcomeMessage || null);
           clearInterval(interval);
         }
       } catch {}
@@ -94,14 +94,13 @@ export default function ReportPage() {
           <a href="mailto:brad@omnipressence.com" className="text-[#076aff] underline">
             brad@omnipressence.com
           </a>{' '}
-          and let us know that your GENSEN report did not complete so we can diagnose
-          the issue and get you a fresh link as quickly as possible.
+          so we can investigate the issue and get you a fresh link quickly.
         </p>
       </div>
     );
   }
 
-  // ORIGINAL FULL LOADING UI RESTORED
+  // ORIGINAL FULL LOADING UI
   return (
     <div className="relative min-h-screen bg-[#f5f8ff] text-[#0a0a0a] font-raleway flex flex-col items-center px-[40px] py-[60px] overflow-hidden fade-in">
 
@@ -114,7 +113,7 @@ export default function ReportPage() {
         </div>
       </div>
 
-      {/* ORIGINAL FULL LOADING MESSAGE */}
+      {/* LOADING MESSAGE */}
       <div className="bg-white shadow-soft rounded-[15px] px-[32px] py-[40px] border border-[#e0e6f5] leading-relaxed text-[17px] text-[#0b1320] max-w-[750px]">
         <h1 className="text-[32px] font-semibold text-[#002c71] mb-[20px] text-center">
           Your GENSEN Brand Intelligence Report Is Now in Development
@@ -139,7 +138,6 @@ export default function ReportPage() {
         </p>
       </div>
 
-      {/* Animations */}
       <style jsx global>{`
         .fade-in { animation: fadeIn 0.8s ease-in forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
