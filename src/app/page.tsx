@@ -2,5 +2,5 @@
 import { redirect } from 'next/navigation';
 
 export default function Home() {
-  redirect('https://portal.omnipressence.com/dashboard/brand-voice');
+  return redirect("https://portal.omnipressence.com/dashboard/brand-voice");
 }
