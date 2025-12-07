@@ -13,7 +13,7 @@
     "firebase": "^12.0.0",
     "jose": "^6.1.0",
     "lucide-react": "^0.536.0",
-    "next": "15.1.6",
+    "next": "15.1.7",
     "react": "^19.2.1",
     "react-dom": "^19.2.1"
   },
@@ -23,7 +23,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "8.57.1",
-    "eslint-config-next": "15.1.6",
+    "eslint-config-next": "15.1.7",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
