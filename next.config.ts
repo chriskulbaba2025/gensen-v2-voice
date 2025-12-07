@@ -5,20 +5,10 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "omnipressence.com",
-        port: "",
-        pathname: "/**",
-      },
-    ],
-  },
-
-  webpack(config: any) {
-    config.module.rules.push({
-      test: /\.svg$/i,
-      issuer: /\.[jt]sx?$/,
-      use: ["@svgr/webpack"],
-    });
-    return config;
-  },
+        pathname: "/**"
+      }
+    ]
+  }
 };
 
 export default nextConfig;
