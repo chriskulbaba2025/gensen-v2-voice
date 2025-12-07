@@ -1,8 +1,25 @@
-import { NextConfig } from 'next';
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  turbopack: {},
 
-const nextConfig: NextConfig = {
   images: {
-    domains: ['omnipressence.com'],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "omnipressence.com",
+        port: "",
+        pathname: "/**",
+      },
+    ],
+  },
+
+  webpack(config: any) {
+    config.module.rules.push({
+      test: /\.svg$/i,
+      issuer: /\.[jt]sx?$/,
+      use: ["@svgr/webpack"],
+    });
+    return config;
   },
 };
 
