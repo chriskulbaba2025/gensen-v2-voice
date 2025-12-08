@@ -4,12 +4,10 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
 
-  // If no code → go back to login
   if (!code) {
     return NextResponse.redirect("https://voice.omnipressence.com/login");
   }
 
-  // Token endpoint
   const tokenUrl = "https://gensen.omnipressence.com/oauth2/token";
 
   const params = new URLSearchParams();
@@ -21,7 +19,6 @@ export async function GET(req: Request) {
   );
   params.append("code", code);
 
-  // Exchange code for tokens
   const tokenRes = await fetch(tokenUrl, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -39,14 +36,15 @@ export async function GET(req: Request) {
     return NextResponse.redirect("https://voice.omnipressence.com/login");
   }
 
-  // SUCCESS → set cookie + send user to the start page
-  const response = NextResponse.redirect("https://voice.omnipressence.com/start");
+  const response = NextResponse.redirect(
+    "https://voice.omnipressence.com/start"
+  );
 
   response.cookies.set("gensen_session", idToken, {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
-    domain: ".omnipressence.com", // allows voice.omnipressence.com to read it
+    domain: ".omnipressence.com",
     path: "/",
   });
 
