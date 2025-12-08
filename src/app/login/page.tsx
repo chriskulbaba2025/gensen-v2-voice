@@ -7,16 +7,27 @@ export default function Login() {
     "&response_type=code" +
     "&redirect_uri=https://voice.omnipressence.com/api/auth/callback";
 
+  const handleLogin = () => {
+    window.location.href = loginUrl;
+  };
+
   return (
-    <div style={{ padding: "40px" }}>
+    <div
+      style={{
+        padding: "40px",
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
       <button
-        onClick={() => (window.location.href = loginUrl)}
+        onClick={handleLogin}
         style={{
           padding: "14px 22px",
           background: "#076aff",
           color: "#fff",
           borderRadius: "8px",
           fontSize: "16px",
+          cursor: "pointer",
         }}
       >
         Sign in to continue
@@ -24,4 +35,3 @@ export default function Login() {
     </div>
   );
 }
-

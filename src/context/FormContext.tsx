@@ -37,13 +37,12 @@ export type FormData = {
   url: string;
 
   // Social URLs
-facebook?: string;
-instagram?: string;
-linkedin?: string;
-youtube?: string;
-linkedinPersonal?: string;
-linkedinBusiness?: string;
-
+  facebook?: string;
+  instagram?: string;
+  linkedin?: string;
+  youtube?: string;
+  linkedinPersonal?: string;
+  linkedinBusiness?: string;
 
   // Metadata
   message: string;
@@ -57,7 +56,7 @@ linkedinBusiness?: string;
   topic: string;
   writingSample: string;
 
-  // n8n interim report fields — ADDED
+  // n8n interim report fields
   welcomeMessage?: string;
   htmlContent?: string;
 
@@ -78,6 +77,9 @@ linkedinBusiness?: string;
   opportunities?: OpportunityDetail[];
 
   reportHtml?: string;
+
+  // NEW: Cognito client ID
+  clientId?: string | null;
 
   // Sliders
   sliderScores: {
@@ -120,13 +122,12 @@ export const FormProvider = ({ children }: { children: ReactNode }) => {
     url: "",
 
     // Socials
-facebook: "",
-instagram: "",
-linkedin: "",
-youtube: "",
-linkedinPersonal: "",
-linkedinBusiness: "",
-
+    facebook: "",
+    instagram: "",
+    linkedin: "",
+    youtube: "",
+    linkedinPersonal: "",
+    linkedinBusiness: "",
 
     // Metadata
     message: "",
@@ -140,7 +141,7 @@ linkedinBusiness: "",
     topic: "",
     writingSample: "",
 
-    // n8n interim HTML — ADDED
+    // n8n interim HTML
     welcomeMessage: "",
     htmlContent: "",
 
@@ -160,6 +161,9 @@ linkedinBusiness: "",
     opportunities: [],
 
     reportHtml: "",
+
+    // NEW default clientId
+    clientId: null,
 
     // Sliders
     sliderScores: {

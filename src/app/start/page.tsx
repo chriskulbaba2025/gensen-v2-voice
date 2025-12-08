@@ -1,12 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { decodeJwt } from "jose";
 import { useForm } from "@/context/FormContext";
 
 export default function StartPage() {
   const router = useRouter();
   const { setData } = useForm();
+
+  const [userId, setUserId] = useState<string | null>(null);
+  const [initializing, setInitializing] = useState(true);
 
   const [firstName, setFirstName] = useState("");
   const [business, setBusiness] = useState("");
@@ -23,6 +28,38 @@ export default function StartPage() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // NEW: read Cognito id_token from cookie, enforce login, prefill email
+  useEffect(() => {
+    try {
+      const raw = document.cookie
+        .split(";")
+        .find((c) => c.trim().startsWith("gensen_session="))
+        ?.split("=")[1];
+
+      if (!raw) {
+        router.replace("/login");
+        return;
+      }
+
+      const decoded: any = decodeJwt(raw);
+      const sub = decoded.sub ?? null;
+      const tokenEmail = decoded.email ?? "";
+
+      if (!sub) {
+        router.replace("/login");
+        return;
+      }
+
+      setUserId(sub);
+      if (tokenEmail) setEmail(tokenEmail.toLowerCase());
+    } catch {
+      router.replace("/login");
+      return;
+    } finally {
+      setInitializing(false);
+    }
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,6 +85,7 @@ export default function StartPage() {
         setData({
           firstName,
           email: cleanEmail,
+          clientId: userId ?? undefined,
         });
 
         router.push(`/existing-user?name=${encodeURIComponent(firstName)}`);
@@ -65,6 +103,7 @@ export default function StartPage() {
         linkedinPersonal,
         linkedinBusiness,
         youtube,
+        clientId: userId ?? undefined,
       });
 
       const payload = {
@@ -77,6 +116,7 @@ export default function StartPage() {
         linkedinPersonal,
         linkedinBusiness,
         youtube,
+        clientId: userId, // pass Cognito sub through to n8n
       };
 
       const submitRes = await fetch(
@@ -102,6 +142,14 @@ export default function StartPage() {
       setLoading(false);
     }
   };
+
+  if (initializing) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-[#f5f8ff]">
+        <div className="text-lg text-[#10284a]">Checking your session…</div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen flex flex-col items-center px-4 py-12 bg-[#f5f8ff]">
@@ -189,7 +237,7 @@ export default function StartPage() {
           </div>
         </div>
 
-        {/* NEW Row 4: LinkedIn Personal + LinkedIn Business */}
+        {/* Row 4: LinkedIn Personal + LinkedIn Business */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <span className="font-medium">LinkedIn Personal</span>
@@ -227,7 +275,6 @@ export default function StartPage() {
             />
           </div>
 
-          {/* EMPTY COLUMN for alignment */}
           <div></div>
         </div>
 
