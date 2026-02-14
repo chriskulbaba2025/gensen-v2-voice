@@ -1,0 +1,124 @@
+@import "tailwindcss";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+/* THEME VARIABLES */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --brand-blue: #076aff;
+  --brand-lightblue: #40a9ff;
+  --glow-color: rgba(7, 106, 255, 0.25);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --glow-color: rgba(64, 169, 255, 0.35);
+  }
+}
+
+/* GLOBAL STYLES */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Raleway", Arial, Helvetica, sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ───────────────────────────────────────────────
+   TAILWIND-SAFE ANIMATION LAYER
+   (Prevents the rings + fades from being purged)
+────────────────────────────────────────────── */
+@layer utilities {
+
+  /* ROTATING RINGS */
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes spin-reverse-slower {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 3s linear infinite;
+  }
+
+  .animate-spin-reverse-slower {
+    animation: spin-reverse-slower 6s linear infinite;
+  }
+
+  /* PULSE */
+  @keyframes pulse-once {
+    0% { box-shadow: 0 0 0 var(--glow-color); }
+    50% { box-shadow: 0 0 25px var(--glow-color); }
+    100% { box-shadow: 0 0 8px var(--glow-color); }
+  }
+
+  .animate-pulse-once {
+    animation: pulse-once 1.5s ease-out forwards;
+  }
+
+  /* FADE ANIMATION */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  .fade-in {
+    animation: fadeIn 1s ease forwards;
+  }
+
+  .fade-out {
+    animation: fadeOut 0.8s ease forwards;
+  }
+
+  .transition-opacity {
+    transition: opacity 1s ease-in-out;
+  }
+}
+
+/* UTILITIES */
+::selection {
+  background: var(--brand-blue);
+  color: #fff;
+}
+
+/* FIXED ANCHOR TAGS */
+a {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+a:hover {
+  text-decoration: none !important;
+}
+
+/* SOFT SHADOW */
+.shadow-soft {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* GLOBAL FADE-IN SECTION */
+.section-fade-in {
+  animation: fadeIn 1s ease both;
+}
+
+/* REPORT CLEANUP */
+.report-container {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.report-container > *:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
