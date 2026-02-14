@@ -5,7 +5,7 @@ import React from 'react';
 
 export default function Navbar() {
   return (
-    <nav className="flex justify-between items-center px-[40px] py-[20px] border-b border-[#00000020] bg-white z-50">
+    <nav className="flex justify-between items-center px-10 py-5 border-b border-[#00000020] bg-white z-50">
 
       {/* Logo → back to voice.omnipressence.com */}
       <a
@@ -18,16 +18,16 @@ export default function Navbar() {
           alt="Gensen Logo"
           width={80}
           height={80}
-          className="rounded-[8px]"
+          className="rounded-lg"
         />
 
-        <span className="ml-[40px] text-[24px] font-semibold text-black">
+        <span className="ml-10 text-[24px] font-semibold text-black">
           GENSEN
         </span>
       </a>
 
       {/* No nav items */}
-      <div className="flex items-center space-x-[40px]"></div>
+      <div className="flex items-center space-x-10"></div>
     </nav>
   );
 }
