@@ -1,12 +1,17 @@
 "use client";
 
 export default function Login() {
+  const cognitoDomain = "https://gensen.omnipressence.com";
+  const clientId = "68etr6fo3tjs4r9q7a6k8dk9m8";
+  const redirectUri = "https://voice.omnipressence.com/api/auth/callback";
+  const scope = "openid email profile";
+
   const loginUrl =
-    "https://gensen.omnipressence.com/oauth2/authorize" +
-    "?client_id=68etr6fo3tjs4r9q7a6k8dk9m8" +
-    "&response_type=code" +
-    "&scope=openid+email+profile" +
-    "&redirect_uri=https://voice.omnipressence.com/api/auth/callback";
+    `${cognitoDomain}/oauth2/authorize` +
+    `?client_id=${clientId}` +
+    `&response_type=code` +
+    `&scope=${encodeURIComponent(scope)}` +
+    `&redirect_uri=${encodeURIComponent(redirectUri)}`;
 
   return (
     <div
