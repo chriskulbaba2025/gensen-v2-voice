@@ -9,13 +9,19 @@ export default function Login() {
     "&redirect_uri=https://voice.omnipressence.com/api/auth/callback";
 
   return (
-    <div style={{ padding: "40px" }}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        marginTop: "80px",
+      }}
+    >
       <button
         onClick={() => (window.location.href = loginUrl)}
         style={{
-          padding: "14px 22px",
+          padding: "14px 28px",
           background: "#076aff",
-          color: "#fff",
+          color: "#ffffff",
           borderRadius: "8px",
           fontSize: "16px",
           border: "none",
