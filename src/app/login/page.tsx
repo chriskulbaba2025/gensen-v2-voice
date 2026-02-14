@@ -2,7 +2,7 @@
 
 export default function Login() {
   const cognitoDomain = "https://gensen.omnipressence.com";
-  const clientId = "68etr6fo3tjs4r9q7a6k8dk9m8";
+  const clientId = "32qheda7uvt0fmsrdqtuff0ocq";
   const redirectUri = "https://voice.omnipressence.com/api/auth/callback";
   const scope = "openid email profile";
 
