@@ -10,57 +10,15 @@ export default function Login() {
     const cognitoDomain = "https://gensen.omnipressence.com";
     const redirectUri =
       "https://voice.omnipressence.com/api/auth/callback";
-    const scope = "openid email profile";
 
-    // --- PKCE generation ---
-    const generateRandomString = (length: number) => {
-      const charset =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
-      let result = "";
-      const randomValues = crypto.getRandomValues(
-        new Uint8Array(length)
-      );
-      for (let i = 0; i < length; i++) {
-        result += charset[randomValues[i] % charset.length];
-      }
-      return result;
-    };
+    const url =
+      `${cognitoDomain}/oauth2/authorize` +
+      `?client_id=${clientId}` +
+      `&response_type=code` +
+      `&scope=${encodeURIComponent("openid email profile")}` +
+      `&redirect_uri=${encodeURIComponent(redirectUri)}`;
 
-    const base64UrlEncode = (buffer: ArrayBuffer) => {
-      return btoa(
-        String.fromCharCode(...new Uint8Array(buffer))
-      )
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=+$/, "");
-    };
-
-    const createCodeChallenge = async (verifier: string) => {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(verifier);
-      const digest = await crypto.subtle.digest("SHA-256", data);
-      return base64UrlEncode(digest);
-    };
-
-    const initAuth = async () => {
-      const codeVerifier = generateRandomString(64);
-      sessionStorage.setItem("pkce_verifier", codeVerifier);
-
-      const codeChallenge = await createCodeChallenge(codeVerifier);
-
-      const url =
-        `${cognitoDomain}/oauth2/authorize` +
-        `?client_id=${clientId}` +
-        `&response_type=code` +
-        `&scope=${encodeURIComponent(scope)}` +
-        `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-        `&code_challenge=${codeChallenge}` +
-        `&code_challenge_method=S256`;
-
-      setLoginUrl(url);
-    };
-
-    initAuth();
+    setLoginUrl(url);
   }, []);
 
   return (
