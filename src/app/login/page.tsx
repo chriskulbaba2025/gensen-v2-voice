@@ -2,30 +2,21 @@
 
 export default function Login() {
   const loginUrl =
-  "https://gensen.omnipressence.com/oauth2/authorize" +
-  "?client_id=68etr6fo3tjs4r9q7a6k8dk9m8" +
-  "&response_type=code" +
-  "&scope=openid+email+profile" +
-  "&redirect_uri=https://voice.omnipressence.com/api/auth/callback";
+    "https://gensen.omnipressence.com/login" +
+    "?client_id=68etr6fo3tjs4r9q7a6k8dk9m8" +
+    "&response_type=code" +
+    "&redirect_uri=https://voice.omnipressence.com/api/auth/callback";
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        paddingTop: "80px",
-      }}
-    >
+    <div style={{ padding: "40px" }}>
       <button
         onClick={() => (window.location.href = loginUrl)}
         style={{
-          padding: "14px 28px",
+          padding: "14px 22px",
           background: "#076aff",
-          color: "#ffffff",
+          color: "#fff",
           borderRadius: "8px",
           fontSize: "16px",
-          border: "none",
-          cursor: "pointer",
         }}
       >
         Sign in to continue
