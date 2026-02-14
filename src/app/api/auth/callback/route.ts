@@ -19,21 +19,35 @@ export async function GET(req: Request) {
   );
   params.append("code", code);
 
+  // PKCE verifier
+  const codeVerifier = req.headers.get("cookie")
+    ?.split("; ")
+    .find((c) => c.startsWith("pkce_verifier="))
+    ?.split("=")[1];
+
+  if (codeVerifier) {
+    params.append("code_verifier", codeVerifier);
+  }
+
   const tokenRes = await fetch(tokenUrl, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
     body: params,
   });
 
   if (!tokenRes.ok) {
-    return NextResponse.redirect("https://voice.omnipressence.com/login");
+    const errorText = await tokenRes.text();
+    console.error("TOKEN ERROR:", errorText);
+    return new Response(errorText, { status: 500 });
   }
 
   const data = await tokenRes.json();
   const idToken = data.id_token;
 
   if (!idToken) {
-    return NextResponse.redirect("https://voice.omnipressence.com/login");
+    return new Response("No ID token returned", { status: 500 });
   }
 
   const response = NextResponse.redirect(
