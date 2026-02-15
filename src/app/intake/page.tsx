@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "@/context/FormContext";
 
@@ -8,23 +8,32 @@ export default function IntakePage() {
   const router = useRouter();
   const { data } = useForm();
 
-  const [businessName, setBusinessName] = useState("");
-  const [businessURL, setBusinessURL] = useState("");
-  const [facebook, setFacebook] = useState("");
-  const [instagram, setInstagram] = useState("");
-  const [linkedinPersonal, setLinkedinPersonal] = useState("");
-  const [linkedinBusiness, setLinkedinBusiness] = useState("");
-  const [youtube, setYoutube] = useState("");
-  const [x, setX] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [businessName, setBusinessName] = useState<string>("");
+  const [businessURL, setBusinessURL] = useState<string>("");
+  const [facebook, setFacebook] = useState<string>("");
+  const [instagram, setInstagram] = useState<string>("");
+  const [linkedinPersonal, setLinkedinPersonal] = useState<string>("");
+  const [linkedinBusiness, setLinkedinBusiness] = useState<string>("");
+  const [youtube, setYoutube] = useState<string>("");
+  const [x, setX] = useState<string>("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (loading) return;
 
+    if (!data?.clientId) {
+      setError("Missing ClientID.");
+      return;
+    }
+
     setLoading(true);
     setError("");
+
+    const normalizedSub = data.clientId.replace("#SUB", "").trim();
+    const finalClientID = `sub#${normalizedSub}`;
 
     try {
       const res = await fetch(
@@ -33,32 +42,36 @@ export default function IntakePage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            email: data.email,
-            firstName: data.firstName,
-            businessName,
-            businessURL,
-            social: {
+            ClientID: finalClientID,
+            SortKey: "PROFILE",
+
+            Email: data.email,
+            FirstName: data.firstName,
+
+            BusinessName: businessName,
+            BusinessURL: businessURL,
+
+            Social: {
               facebook,
               instagram,
               linkedinPersonal,
               linkedinBusiness,
               youtube,
-              x
-            }
+              x,
+            },
           }),
         }
       );
 
       if (!res.ok) {
         setError("Submission failed.");
+        setLoading(false);
         return;
       }
 
       router.push("/processing");
-
     } catch {
       setError("Submission failed.");
-    } finally {
       setLoading(false);
     }
   };
