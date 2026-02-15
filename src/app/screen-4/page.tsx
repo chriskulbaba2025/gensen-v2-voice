@@ -195,17 +195,19 @@ export default function Step4() {
             ← Back
           </button>
 
-          <button
-            type="submit"
-            disabled={!agreed || loading}
-            className={`px-6 py-2 rounded text-white font-medium transition-colors duration-300 ${
-              !agreed || loading
-                ? "bg-gray-300 cursor-not-allowed"
-                : "bg-[#f66630] hover:bg-[#e6551a]"
-            }`}
-          >
-            {loading ? "Generating…" : "Submit →"}
-          </button>
+         <button
+  type="submit"
+  onClick={() => console.log("Button clicked!")}  // <-- This log is for testing the button click
+  disabled={!agreed || loading}
+  className={`px-6 py-2 rounded text-white font-medium transition-colors duration-300 ${
+    !agreed || loading
+      ? "bg-gray-300 cursor-not-allowed"
+      : "bg-[#f66630] hover:bg-[#e6551a]"
+  }`}
+>
+  {loading ? "Generating…" : "Submit →"}
+</button>
+
         </div>
       </form>
     </main>
