@@ -29,76 +29,73 @@ export default function Step4() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  console.log("Submit triggered");
+    e.preventDefault();
+    console.log("Submit button clicked");
 
-  if (!agreed) {
-    console.log("User has not agreed");
-    return;
-  }
+    if (!agreed) return;
 
-  if (loading) {
-    console.log("Submission already in progress");
-    return;
-  }
-
-  setLoading(true);
-  console.log("Submission started");
-
-  try {
-    const payload = {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      business: data.business,
-      url: data.url,
-      facebook: data.facebook ?? "",
-      instagram: data.instagram ?? "",
-      linkedin: data.linkedin ?? "",
-      youtube: data.youtube ?? "",
-      icp: data.icp,
-      audience: data.audience,
-      brandStatement: data.brandStatement,
-      brandCore: data.brandCore,
-      sliderScores: data.sliderScores,
-      topic: data.topic,
-      writingSample: data.writingSample,
-    };
-
-    console.log("Payload to send:", payload);
-
-    const res = await fetch("/api/brand-voice", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    console.log("Fetch response:", res);
-
-    if (!res.ok) {
-      console.log("Webhook failed with status:", res.status);
-      throw new Error("Webhook failed");
+    if (loading) {
+      console.log("Submission already in progress");
+      return;
     }
 
-    const result = await res.json();
-    console.log("Response from webhook:", result);
+    setLoading(true);
+    console.log("Submission started");
 
-    if (result.reportUrl) {
-      localStorage.setItem("reportUrl", result.reportUrl);
-      console.log("Navigating to report:", result.reportUrl);
-      navigateWithFade(`/report?url=${encodeURIComponent(result.reportUrl)}`);
-    } else {
-      console.log("No report URL, navigating to default report page");
-      navigateWithFade("/report");
+    try {
+      const payload = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        business: data.business,
+        url: data.url,
+        facebook: data.facebook ?? "",
+        instagram: data.instagram ?? "",
+        linkedin: data.linkedin ?? "",
+        youtube: data.youtube ?? "",
+        icp: data.icp,
+        audience: data.audience,
+        brandStatement: data.brandStatement,
+        brandCore: data.brandCore,
+        sliderScores: data.sliderScores,
+        topic: data.topic,
+        writingSample: data.writingSample,
+      };
+
+      console.log("Payload to send:", payload);
+
+      const res = await fetch("/api/brand-voice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      console.log("Fetch response:", res);
+
+      if (!res.ok) {
+        console.log("Webhook failed with status:", res.status);
+        throw new Error("Webhook failed");
+      }
+
+      const result = await res.json();
+      console.log("Response from webhook:", result);
+
+      if (result.reportUrl) {
+        localStorage.setItem("reportUrl", result.reportUrl);
+        console.log("Navigating to report:", result.reportUrl);
+        navigateWithFade(`/report?url=${encodeURIComponent(result.reportUrl)}`);
+      } else {
+        console.log("No report URL, navigating to default report page");
+        navigateWithFade("/report");
+      }
+    } catch (err) {
+      console.error("Submission error:", err);
+      alert("Submission failed. Try again.");
+    } finally {
+      console.log("Submission complete");
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Submission error:", err);
-    alert("Submission failed. Try again.");
-  } finally {
-    console.log("Submission complete");
-    setLoading(false);
-  }
-};
+  };
 
   const renderToneSummary = () => {
     const s = data.sliderScores || {};
