@@ -60,6 +60,7 @@ export default function Step4() {
         sliderScores: data.sliderScores,
         topic: data.topic,
         writingSample: data.writingSample,
+        clientId: data.clientId || "default-client-id",  // Add Client ID to the payload
       };
 
       console.log("Payload to send:", payload);
@@ -119,9 +120,7 @@ export default function Step4() {
 
   return (
     <main
-      className={`min-h-screen flex flex-col px-4 pt-12 transition-opacity duration-500 ${
-        isExiting ? "opacity-0" : "opacity-100"
-      }`}
+      className={`min-h-screen flex flex-col px-4 pt-12 transition-opacity duration-500 ${isExiting ? "opacity-0" : "opacity-100"}`}
     >
       <ProgressBar step={4} total={4} />
 
@@ -196,18 +195,16 @@ export default function Step4() {
           </button>
 
          <button
-  type="submit"
-  onClick={() => console.log("Button clicked!")}  // <-- This log is for testing the button click
-  disabled={!agreed || loading}
-  className={`px-6 py-2 rounded text-white font-medium transition-colors duration-300 ${
-    !agreed || loading
-      ? "bg-gray-300 cursor-not-allowed"
-      : "bg-[#f66630] hover:bg-[#e6551a]"
-  }`}
->
-  {loading ? "Generating…" : "Submit →"}
-</button>
-
+            type="submit"
+            disabled={!agreed || loading}
+            className={`px-6 py-2 rounded text-white font-medium transition-colors duration-300 ${
+              !agreed || loading
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-[#f66630] hover:bg-[#e6551a]"
+            }`}
+          >
+            {loading ? "Generating…" : "Submit →"}
+          </button>
         </div>
       </form>
     </main>
