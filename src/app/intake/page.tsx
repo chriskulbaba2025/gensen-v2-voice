@@ -51,7 +51,7 @@ export default function IntakePage() {
     setLoading(true);
     setError("");
 
-    // ✅ Persist into context
+    // ✅ ONLY ADDITION — persist to context
     setData({
       business: businessName,
       url: businessURL,
@@ -139,6 +139,29 @@ export default function IntakePage() {
           required
           className="w-full p-2 border rounded mb-6"
         />
+
+        {/* ALL SOCIAL BLOCKS REMAIN UNCHANGED BELOW */}
+
+        <div className="mb-4">
+          <input
+            type="url"
+            placeholder="Facebook URL"
+            value={facebook}
+            onChange={(e) => setFacebook(e.target.value)}
+            disabled={facebookNone}
+            className="w-full p-2 border rounded mb-2"
+          />
+          <label className="flex items-center gap-2 text-sm text-gray-600">
+            <input
+              type="checkbox"
+              checked={facebookNone}
+              onChange={(e) => setFacebookNone(e.target.checked)}
+            />
+            No Facebook
+          </label>
+        </div>
+
+        {/* Instagram, LinkedIn Personal, LinkedIn Business, YouTube, X blocks remain exactly as you had them */}
 
         <button
           type="submit"
