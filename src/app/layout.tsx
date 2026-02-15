@@ -1,16 +1,18 @@
+"use client";
+
 // src/app/layout.tsx
-import './globals.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
-import { ReactNode } from 'react';
-import { FormProvider } from '@/context/FormContext';
-import Navbar from '@/components/Navbar';
-import Image from 'next/image';
+import "./globals.css";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import { ReactNode } from "react";
+import { FormProvider } from "@/context/FormContext";
+import Navbar from "@/components/Navbar";
+import Image from "next/image";
 
 export const metadata = {
-  title: 'GENSEN Voice Forge',
-  description: 'MVP wizard for agency brand voice creation',
+  title: "GENSEN Voice Forge",
+  description: "MVP wizard for agency brand voice creation",
   icons: {
-    icon: '/op-favicon.ico',
+    icon: "/op-favicon.ico",
   },
 };
 
