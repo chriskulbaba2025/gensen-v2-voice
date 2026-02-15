@@ -3,15 +3,28 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "@/context/FormContext";
 import LoadingTimer from "@/components/LoadingTimer";
 
 export default function NewUserPage() {
   const { data, setData } = useForm();
+  const router = useRouter();
 
   const [stage, setStage] = useState<"loading" | "complete">("loading");
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [htmlContent, setHtmlContent] = useState("");
+
+  // ───────────────────────────────────────────────
+  // HARD AUTO-ADVANCE AFTER 3 MINUTES + 5 SECONDS
+  // ───────────────────────────────────────────────
+  useEffect(() => {
+    const redirectTimer = setTimeout(() => {
+      router.push("/screen-2");
+    }, 20000); // 3 minutes 5 seconds
+
+    return () => clearTimeout(redirectTimer);
+  }, [router]);
 
   // ───────────────────────────────────────────────
   // POLLING — IMMEDIATE CHECK + EVERY 5 SECONDS
@@ -32,37 +45,26 @@ export default function NewUserPage() {
         if (json?.htmlContent) {
           setWelcomeMessage(json.welcomeMessage || "");
           setHtmlContent(json.htmlContent || "");
-
-          setData({
-            ...data,
-          });
-
+          setData({ ...data });
           setStage("complete");
 
-          if (intervalId) {
-            clearInterval(intervalId);
-          }
+          if (intervalId) clearInterval(intervalId);
+
+          router.push("/screen-2");
         }
       } catch {}
     };
 
-    // Start immediately + every 5 sec
     intervalId = setInterval(checkReport, 5000);
     checkReport();
 
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
+      if (intervalId) clearInterval(intervalId);
     };
-  }, [data, setData]);
+  }, [data, setData, router]);
 
-  // ───────────────────────────────────────────────
-  // UI
-  // ───────────────────────────────────────────────
   return (
     <main className="flex flex-col items-center justify-start p-8 text-center bg-gray-50 transition-all duration-700 relative">
-      {/* LOADING STAGE */}
       <div
         className={`flex flex-col items-center transition-opacity duration-1500 ease-in-out ${
           stage === "complete"
@@ -70,14 +72,14 @@ export default function NewUserPage() {
             : "opacity-100"
         }`}
       >
-       <Image
-  src="/gensen-logo.webp"
-  alt="GENSEN logo"
-  width={220}
-  height={180}
-  className="rounded-[20px] mb-8"
-  priority
-  />
+        <Image
+          src="/gensen-logo.webp"
+          alt="GENSEN logo"
+          width={220}
+          height={180}
+          className="rounded-[20px] mb-8"
+          priority
+        />
 
         <h1 className="text-2xl font-semibold mb-3">
           Mapping Your Voice Before Amplifying It…
@@ -95,7 +97,6 @@ export default function NewUserPage() {
         <LoadingTimer key="gensen-loading-timer" />
       </div>
 
-      {/* COMPLETE STAGE */}
       <div
         className={`flex flex-col items-center justify-start text-center px-5 pt-[5px] pb-5 transition-opacity duration-1500 ease-in-out ${
           stage === "complete"
@@ -104,12 +105,13 @@ export default function NewUserPage() {
         }`}
       >
         <Image
-          src="https://omnipressence.com/wp-content/uploads/2025/09/Gensen-Logo-Final-version-lower-case-logo-and-spaces1-356x295-1.webp"
-          alt="GENSEN logo"
-          width={180}
-          height={130}
-          className="w-[140px] mb-2.5 rounded-xl"
-        />
+  src="/gensen-logo.webp"
+  alt="GENSEN logo"
+  width={180}
+  height={130}
+  className="w-[140px] mb-2.5 rounded-xl"
+/>
+
 
         {welcomeMessage && (
           <p className="text-gray-700 mb-4 max-w-[700px] whitespace-pre-line leading-relaxed text-left">
