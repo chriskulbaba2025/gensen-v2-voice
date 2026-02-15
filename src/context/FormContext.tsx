@@ -106,7 +106,6 @@ const defaultState: FormData = {
 
   topic: "",
   writingSample: "",
-
   welcomeMessage: "",
   htmlContent: "",
 
@@ -125,7 +124,7 @@ const defaultState: FormData = {
   opportunities: [],
 
   reportHtml: "",
-  clientId: null,
+  clientId: null,  // default to null
 
   sliderScores: {
     warmthAuthority: 5,
@@ -145,6 +144,7 @@ const defaultState: FormData = {
 type FormContextType = {
   data: FormData;
   setData: (values: Partial<FormData>) => void;
+  clearData: () => void;  // Function to clear all data
 };
 
 const FormContext = createContext<FormContextType | null>(null);
@@ -175,8 +175,13 @@ export const FormProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const clearData = () => {
+    setDataState(defaultState); // Reset the form data to the default state
+    localStorage.removeItem("gensen_user");  // Optionally clear localStorage as well
+  };
+
   return (
-    <FormContext.Provider value={{ data, setData }}>
+    <FormContext.Provider value={{ data, setData, clearData }}>
       {children}
     </FormContext.Provider>
   );
