@@ -56,7 +56,7 @@ export default function Login() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        minHeight: "70vh",
+        minHeight: "70px",
       }}
     >
       <button
