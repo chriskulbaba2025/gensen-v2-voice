@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "@/context/FormContext";
 import ProgressBar from "@/components/ProgressBar";
@@ -11,7 +11,6 @@ export default function Step3() {
 
   const [contentFocus, setContentFocus] = useState(data.topic || "");
   const [writingSample, setWritingSample] = useState(data.writingSample || "");
-  const [loading, setLoading] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
 
   const navigateWithFade = (path?: string, isBack?: boolean) => {
@@ -25,42 +24,6 @@ export default function Step3() {
     }, 500);
   };
 
-  // ───────────────────────────────────────────────
-  // AUTO-LOAD Topic
-  // ───────────────────────────────────────────────
-  useEffect(() => {
-    async function loadTopic() {
-      try {
-        const res = await fetch("/api/get-brand-data", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: data.email }),
-        });
-
-        if (!res.ok) {
-          setLoading(false);
-          return;
-        }
-
-        const json = await res.json();
-
-        if (json.topic) {
-          setContentFocus(json.topic);
-          setData({ topic: json.topic });
-        }
-      } catch (err) {
-        console.error("Topic fetch failed:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadTopic();
-  }, [data.email, setData]);
-
-  // ───────────────────────────────────────────────
-  // NEXT
-  // ───────────────────────────────────────────────
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -76,20 +39,6 @@ export default function Step3() {
     navigateWithFade(undefined, true);
   };
 
-  // ───────────────────────────────────────────────
-  // LOADING STATE
-  // ───────────────────────────────────────────────
-  if (loading) {
-    return (
-      <main className="min-h-screen flex items-center justify-center text-gray-500">
-        Loading your Topic…
-      </main>
-    );
-  }
-
-  // ───────────────────────────────────────────────
-  // UI
-  // ───────────────────────────────────────────────
   return (
     <main
       className={`min-h-screen flex flex-col items-center px-4 pt-12 mb-20 transition-opacity duration-500 ${
@@ -104,7 +53,6 @@ export default function Step3() {
 
       <p className="text-gray-600 text-center max-w-2xl mb-10 leading-relaxed">
         GENSEN reads how you write and what your brand prioritizes.
-        We’ve auto-filled your Topic based on your onboarding data.
       </p>
 
       <section className="bg-gray-50 border rounded-lg p-6 shadow-sm w-full max-w-3xl mb-8">
