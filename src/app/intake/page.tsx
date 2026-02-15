@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "@/context/FormContext";
-import Image from "next/image";
 
 export default function IntakePage() {
   const router = useRouter();
@@ -19,11 +18,20 @@ export default function IntakePage() {
   const [youtube, setYoutube] = useState("");
   const [x, setX] = useState("");
 
+  const [facebookNone, setFacebookNone] = useState(false);
+  const [instagramNone, setInstagramNone] = useState(false);
+  const [linkedinPersonalNone, setLinkedinPersonalNone] = useState(false);
+  const [linkedinBusinessNone, setLinkedinBusinessNone] = useState(false);
+  const [youtubeNone, setYoutubeNone] = useState(false);
+  const [xNone, setXNone] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const buildSocialValue = (value: string) => {
-    return value.trim() !== "" ? value.trim() : "no_social";
+  const socialValue = (value: string, none: boolean) => {
+    if (none) return "no_social";
+    const v = value.trim();
+    return v !== "" ? v : "no_social";
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -60,12 +68,12 @@ export default function IntakePage() {
             BusinessName: businessName,
             BusinessURL: businessURL,
             Social: {
-              facebook: buildSocialValue(facebook),
-              instagram: buildSocialValue(instagram),
-              linkedinPersonal: buildSocialValue(linkedinPersonal),
-              linkedinBusiness: buildSocialValue(linkedinBusiness),
-              youtube: buildSocialValue(youtube),
-              x: buildSocialValue(x),
+              facebook: socialValue(facebook, facebookNone),
+              instagram: socialValue(instagram, instagramNone),
+              linkedinPersonal: socialValue(linkedinPersonal, linkedinPersonalNone),
+              linkedinBusiness: socialValue(linkedinBusiness, linkedinBusinessNone),
+              youtube: socialValue(youtube, youtubeNone),
+              x: socialValue(x, xNone),
             },
           }),
         }
@@ -86,16 +94,6 @@ export default function IntakePage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center px-4 py-12 bg-[#f5f8ff]">
-      <div className="relative w-60 h-20 mb-6">
-        <Image
-          src="/oplogo.webp"
-          alt="Omnipressence Logo"
-          fill
-          className="object-contain"
-          priority
-        />
-      </div>
-
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-lg shadow w-full max-w-3xl border border-[#e0e6f5]"
@@ -128,56 +126,122 @@ export default function IntakePage() {
           value={businessURL}
           onChange={(e) => setBusinessURL(e.target.value)}
           required
-          className="w-full p-2 border rounded mb-4"
+          className="w-full p-2 border rounded mb-6"
         />
 
-        <input
-          type="url"
-          placeholder="Facebook URL"
-          value={facebook}
-          onChange={(e) => setFacebook(e.target.value)}
-          className="w-full p-2 border rounded mb-4"
-        />
+        <div className="mb-4">
+          <input
+            type="url"
+            placeholder="Facebook URL"
+            value={facebook}
+            onChange={(e) => setFacebook(e.target.value)}
+            disabled={facebookNone}
+            className="w-full p-2 border rounded mb-2"
+          />
+          <label className="flex items-center gap-2 text-sm text-gray-600">
+            <input
+              type="checkbox"
+              checked={facebookNone}
+              onChange={(e) => setFacebookNone(e.target.checked)}
+            />
+            No Facebook
+          </label>
+        </div>
 
-        <input
-          type="url"
-          placeholder="Instagram URL"
-          value={instagram}
-          onChange={(e) => setInstagram(e.target.value)}
-          className="w-full p-2 border rounded mb-4"
-        />
+        <div className="mb-4">
+          <input
+            type="url"
+            placeholder="Instagram URL"
+            value={instagram}
+            onChange={(e) => setInstagram(e.target.value)}
+            disabled={instagramNone}
+            className="w-full p-2 border rounded mb-2"
+          />
+          <label className="flex items-center gap-2 text-sm text-gray-600">
+            <input
+              type="checkbox"
+              checked={instagramNone}
+              onChange={(e) => setInstagramNone(e.target.checked)}
+            />
+            No Instagram
+          </label>
+        </div>
 
-        <input
-          type="url"
-          placeholder="LinkedIn Personal URL"
-          value={linkedinPersonal}
-          onChange={(e) => setLinkedinPersonal(e.target.value)}
-          className="w-full p-2 border rounded mb-4"
-        />
+        <div className="mb-4">
+          <input
+            type="url"
+            placeholder="LinkedIn Personal URL"
+            value={linkedinPersonal}
+            onChange={(e) => setLinkedinPersonal(e.target.value)}
+            disabled={linkedinPersonalNone}
+            className="w-full p-2 border rounded mb-2"
+          />
+          <label className="flex items-center gap-2 text-sm text-gray-600">
+            <input
+              type="checkbox"
+              checked={linkedinPersonalNone}
+              onChange={(e) => setLinkedinPersonalNone(e.target.checked)}
+            />
+            No LinkedIn Personal
+          </label>
+        </div>
 
-        <input
-          type="url"
-          placeholder="LinkedIn Business URL"
-          value={linkedinBusiness}
-          onChange={(e) => setLinkedinBusiness(e.target.value)}
-          className="w-full p-2 border rounded mb-4"
-        />
+        <div className="mb-4">
+          <input
+            type="url"
+            placeholder="LinkedIn Business URL"
+            value={linkedinBusiness}
+            onChange={(e) => setLinkedinBusiness(e.target.value)}
+            disabled={linkedinBusinessNone}
+            className="w-full p-2 border rounded mb-2"
+          />
+          <label className="flex items-center gap-2 text-sm text-gray-600">
+            <input
+              type="checkbox"
+              checked={linkedinBusinessNone}
+              onChange={(e) => setLinkedinBusinessNone(e.target.checked)}
+            />
+            No LinkedIn Business
+          </label>
+        </div>
 
-        <input
-          type="url"
-          placeholder="YouTube URL"
-          value={youtube}
-          onChange={(e) => setYoutube(e.target.value)}
-          className="w-full p-2 border rounded mb-4"
-        />
+        <div className="mb-4">
+          <input
+            type="url"
+            placeholder="YouTube URL"
+            value={youtube}
+            onChange={(e) => setYoutube(e.target.value)}
+            disabled={youtubeNone}
+            className="w-full p-2 border rounded mb-2"
+          />
+          <label className="flex items-center gap-2 text-sm text-gray-600">
+            <input
+              type="checkbox"
+              checked={youtubeNone}
+              onChange={(e) => setYoutubeNone(e.target.checked)}
+            />
+            No YouTube
+          </label>
+        </div>
 
-        <input
-          type="url"
-          placeholder="X (Twitter) URL"
-          value={x}
-          onChange={(e) => setX(e.target.value)}
-          className="w-full p-2 border rounded mb-4"
-        />
+        <div className="mb-6">
+          <input
+            type="url"
+            placeholder="X (Twitter) URL"
+            value={x}
+            onChange={(e) => setX(e.target.value)}
+            disabled={xNone}
+            className="w-full p-2 border rounded mb-2"
+          />
+          <label className="flex items-center gap-2 text-sm text-gray-600">
+            <input
+              type="checkbox"
+              checked={xNone}
+              onChange={(e) => setXNone(e.target.checked)}
+            />
+            No X
+          </label>
+        </div>
 
         <button
           type="submit"

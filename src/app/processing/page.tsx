@@ -70,14 +70,14 @@ export default function NewUserPage() {
             : "opacity-100"
         }`}
       >
-        <Image
-          src="https://omnipressence.com/wp-content/uploads/2025/09/Gensen-Logo-Final-version-lower-case-logo-and-spaces1-356x295-1.webp"
-          alt="GENSEN logo"
-          width={220}
-          height={180}
-          className="rounded-[20px] mb-8"
-          priority
-        />
+       <Image
+  src="/gensen-logo.webp"
+  alt="GENSEN logo"
+  width={220}
+  height={180}
+  className="rounded-[20px] mb-8"
+  priority
+  />
 
         <h1 className="text-2xl font-semibold mb-3">
           Mapping Your Voice Before Amplifying It…
