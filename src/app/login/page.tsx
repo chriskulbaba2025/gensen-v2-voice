@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 
 function base64urlencode(buffer: ArrayBuffer) {
   return btoa(String.fromCharCode(...new Uint8Array(buffer)))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
+    .replace(/\+/g, "-")  .replace(/\//g, "_")
     .replace(/=+$/, "");
 }
 
@@ -20,7 +19,7 @@ export default function Login() {
 
   useEffect(() => {
     const clientId = "32qheda7uvt0fmsrdqtuff0ocq";
-    const cognitoDomain = "https://gensen.omnipressence.com";
+    const cognitoDomain = "https://us-east-1h3gtxtqg3.auth.us-east-1.amazoncognito.com";
     const redirectUri =
       "https://voice.omnipressence.com/api/auth/callback";
 
