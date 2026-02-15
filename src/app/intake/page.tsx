@@ -3,29 +3,34 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "@/context/FormContext";
+import Image from "next/image";
 
 export default function IntakePage() {
   const router = useRouter();
   const { data, setData } = useForm();
 
-  const [businessName, setBusinessName] = useState<string>("");
-  const [businessURL, setBusinessURL] = useState<string>("");
-  const [facebook, setFacebook] = useState<string>("");
-  const [instagram, setInstagram] = useState<string>("");
-  const [linkedinPersonal, setLinkedinPersonal] = useState<string>("");
-  const [linkedinBusiness, setLinkedinBusiness] = useState<string>("");
-  const [youtube, setYoutube] = useState<string>("");
-  const [x, setX] = useState<string>("");
-
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [businessName, setBusinessName] = useState("");
+  const [businessURL, setBusinessURL] = useState("");
+  const [facebook, setFacebook] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [linkedinPersonal, setLinkedinPersonal] = useState("");
+  const [linkedinBusiness, setLinkedinBusiness] = useState("");
+  const [youtube, setYoutube] = useState("");
+  const [x, setX] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (loading) return;
 
-    if (!data?.clientId) {
-      setError("ClientID is required.");
+    if (!data.firstName || !data.email) {
+      setError("Missing name or email from first step.");
+      return;
+    }
+
+    if (!data.clientId) {
+      setError("ClientID required.");
       return;
     }
 
@@ -35,46 +40,51 @@ export default function IntakePage() {
     const normalizedSub = data.clientId.replace("#SUB", "").trim();
     const finalClientID = `sub#${normalizedSub}`;
 
-    try {
-      const res = await fetch(
-        "https://primary-production-77e7.up.railway.app/webhook/submit-brand",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ClientID: finalClientID,
-            SortKey: "PROFILE",
-            Email: data.email,
-            FirstName: data.firstName,
-            BusinessName: businessName,
-            BusinessURL: businessURL,
-            Social: {
-              facebook,
-              instagram,
-              linkedinPersonal,
-              linkedinBusiness,
-              youtube,
-              x,
-            },
-          }),
-        }
-      );
-
-      if (!res.ok) {
-        setError("Submission failed.");
-        setLoading(false);
-        return;
+    const res = await fetch(
+      "https://primary-production-77e7.up.railway.app/webhook/submit-brand",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ClientID: finalClientID,
+          SortKey: "PROFILE",
+          Email: data.email,
+          FirstName: data.firstName,
+          BusinessName: businessName,
+          BusinessURL: businessURL,
+          Social: {
+            facebook,
+            instagram,
+            linkedinPersonal,
+            linkedinBusiness,
+            youtube,
+            x,
+          },
+        }),
       }
+    );
 
-      router.push("/processing");
-    } catch {
+    if (!res.ok) {
       setError("Submission failed.");
       setLoading(false);
+      return;
     }
+
+    router.push("/processing");
   };
 
   return (
     <main className="min-h-screen flex flex-col items-center px-4 py-12 bg-[#f5f8ff]">
+      <div className="relative w-60 h-20 mb-6">
+        <Image
+          src="/oplogo.webp"
+          alt="Omnipressence Logo"
+          fill
+          className="object-contain"
+          priority
+        />
+      </div>
+
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-lg shadow w-full max-w-3xl border border-[#e0e6f5]"
@@ -85,7 +95,7 @@ export default function IntakePage() {
 
         <input
           type="text"
-          placeholder="Client ID (e.g. #SUB f4d80428-...)"
+          placeholder="Client ID (#SUB ...)"
           value={data.clientId || ""}
           onChange={(e) => setData({ clientId: e.target.value })}
           required

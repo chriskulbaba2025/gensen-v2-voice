@@ -1,9 +1,9 @@
 "use client";
 
-import type React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "@/context/FormContext";
+import Image from "next/image";
 
 export default function StartPage() {
   const router = useRouter();
@@ -14,7 +14,7 @@ export default function StartPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (loading) return;
 
@@ -38,22 +38,22 @@ export default function StartPage() {
 
       if (!res.ok) {
         setError("Unable to submit your information.");
+        setLoading(false);
         return;
       }
 
-      const data = await res.json();
+      const result = await res.json();
 
       setData({
         firstName,
         email: cleanEmail,
       });
 
-      if (data.exists === true) {
-        router.push(`/existing-user?name=${encodeURIComponent(firstName)}`);
+      if (result.exists === true) {
+        router.push("/existing-user");
       } else {
         router.push("/intake");
       }
-
     } catch {
       setError("Unable to submit your information.");
     } finally {
@@ -63,6 +63,16 @@ export default function StartPage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center px-4 py-12 bg-[#f5f8ff]">
+      <div className="relative w-60 h-20 mb-6">
+        <Image
+          src="/oplogo.webp"
+          alt="Omnipressence Logo"
+          fill
+          className="object-contain"
+          priority
+        />
+      </div>
+
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-lg shadow w-full max-w-3xl border border-[#e0e6f5]"
