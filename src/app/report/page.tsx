@@ -66,11 +66,11 @@ export default function ReportPage() {
   // FINAL REPORT READY
   if (finalHtml) {
     return (
-      <div className="min-h-screen bg-[#f5f8ff] p-[40px] flex justify-center">
+      <div className="min-h-screen bg-[#f5f8ff] p-10 flex justify-center">
         <iframe
           title="GENSEN Report"
           srcDoc={finalHtml}
-          className="w-full h-[90vh] max-w-[1100px] bg-white rounded-[12px] shadow-soft border border-[#e0e6f5]"
+          className="w-full h-[90vh] max-w-[1100px] bg-white rounded-xl shadow-soft border border-[#e0e6f5]"
         />
       </div>
     );
@@ -102,34 +102,34 @@ export default function ReportPage() {
 
   // ORIGINAL FULL LOADING UI
   return (
-    <div className="relative min-h-screen bg-[#f5f8ff] text-[#0a0a0a] font-raleway flex flex-col items-center px-[40px] py-[60px] overflow-hidden fade-in">
+    <div className="relative min-h-screen bg-[#f5f8ff] text-[#0a0a0a] font-raleway flex flex-col items-center px-10 py-[60px] overflow-hidden fade-in">
 
       {/* TIMER */}
-      <div className="relative w-[160px] h-[160px] flex items-center justify-center mb-[40px] mt-[40px]">
-        <div className="absolute inset-0 rounded-full border-[8px] border-[#076aff] border-t-transparent animate-spin-slow"></div>
-        <div className="absolute inset-[12px] rounded-full border-[8px] border-[#c7d8ff] border-b-transparent animate-spin-reverse-slower"></div>
+      <div className="relative w-40 h-40 flex items-center justify-center mb-10 mt-10">
+        <div className="absolute inset-0 rounded-full border-8 border-[#076aff] border-t-transparent animate-spin-slow"></div>
+        <div className="absolute inset-3 rounded-full border-8 border-[#c7d8ff] border-b-transparent animate-spin-reverse-slower"></div>
         <div className="absolute text-center text-[#002c71] font-semibold text-[28px]">
           {minutes}:{seconds.toString().padStart(2, '0')}
         </div>
       </div>
 
       {/* LOADING MESSAGE */}
-      <div className="bg-white shadow-soft rounded-[15px] px-[32px] py-[40px] border border-[#e0e6f5] leading-relaxed text-[17px] text-[#0b1320] max-w-[750px]">
-        <h1 className="text-[32px] font-semibold text-[#002c71] mb-[20px] text-center">
+      <div className="bg-white shadow-soft rounded-[15px] px-8 py-10 border border-[#e0e6f5] leading-relaxed text-[17px] text-[#0b1320] max-w-[750px]">
+        <h1 className="text-[32px] font-semibold text-[#002c71] mb-5 text-center">
           Your GENSEN Brand Intelligence Report Is Now in Development
         </h1>
 
-        <p className="mb-[16px]">
+        <p className="mb-4">
           Every brand has a voice long before it’s defined. GENSEN is mapping how your
           communication patterns form trust, tone, and perception.
         </p>
 
-        <p className="mb-[16px]">
+        <p className="mb-4">
           We analyze your website and social presence to extract language, positioning,
           and emotional cues.
         </p>
 
-        <p className="mb-[16px]">
+        <p className="mb-4">
           Your full Brand Intelligence Report will appear here automatically.
         </p>
 

@@ -51,7 +51,7 @@ export default function StartPage() {
       if (data.exists === true) {
         router.push(`/existing-user?name=${encodeURIComponent(firstName)}`);
       } else {
-        router.push("/new-user");
+        router.push("/intake");
       }
 
     } catch {

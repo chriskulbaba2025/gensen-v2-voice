@@ -64,7 +64,7 @@ export default function NewUserPage() {
     <main className="flex flex-col items-center justify-start p-8 text-center bg-gray-50 transition-all duration-700 relative">
       {/* LOADING STAGE */}
       <div
-        className={`flex flex-col items-center transition-opacity duration-[1500ms] ease-in-out ${
+        className={`flex flex-col items-center transition-opacity duration-1500 ease-in-out ${
           stage === "complete"
             ? "opacity-0 pointer-events-none h-0 overflow-hidden"
             : "opacity-100"
@@ -97,7 +97,7 @@ export default function NewUserPage() {
 
       {/* COMPLETE STAGE */}
       <div
-        className={`flex flex-col items-center justify-start text-center px-[20px] pt-[5px] pb-[20px] transition-opacity duration-[1500ms] ease-in-out ${
+        className={`flex flex-col items-center justify-start text-center px-5 pt-[5px] pb-5 transition-opacity duration-1500 ease-in-out ${
           stage === "complete"
             ? "opacity-100"
             : "opacity-0 pointer-events-none"
@@ -108,7 +108,7 @@ export default function NewUserPage() {
           alt="GENSEN logo"
           width={180}
           height={130}
-          className="w-[140px] mb-[10px] rounded-[12px]"
+          className="w-[140px] mb-2.5 rounded-xl"
         />
 
         {welcomeMessage && (
@@ -119,7 +119,7 @@ export default function NewUserPage() {
 
         {htmlContent && (
           <div
-            className="report-container bg-white border border-[#e0e6f5] rounded-[12px] shadow-soft p-[24px] mb-[24px] max-w-[760px] text-left opacity-0 animate-[fadeIn_1.0s_ease_forwards]"
+            className="report-container bg-white border border-[#e0e6f5] rounded-xl shadow-soft p-6 mb-6 max-w-[760px] text-left opacity-0 animate-[fadeIn_1.0s_ease_forwards]"
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
         )}
