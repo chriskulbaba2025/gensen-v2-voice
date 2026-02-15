@@ -41,7 +41,9 @@ export default function RootLayout({
             </h1>
           </header>
 
-          <main className="flex-1">{children}</main>
+          <main className="flex-1">
+            {children}
+          </main>
         </FormProvider>
       </body>
     </html>

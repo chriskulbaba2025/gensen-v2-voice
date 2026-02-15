@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "@/context/FormContext";
-import Image from "next/image";
 
 export default function StartPage() {
   const router = useRouter();
@@ -63,16 +62,6 @@ export default function StartPage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center px-4 py-12 bg-[#f5f8ff]">
-      <div className="relative w-60 h-20 mb-6">
-        <Image
-          src="/oplogo.webp"
-          alt="Omnipressence Logo"
-          fill
-          className="object-contain"
-          priority
-        />
-      </div>
-
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-lg shadow w-full max-w-3xl border border-[#e0e6f5]"
