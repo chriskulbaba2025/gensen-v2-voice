@@ -11,12 +11,25 @@ export default function IntakePage() {
 
   const [businessName, setBusinessName] = useState("");
   const [businessURL, setBusinessURL] = useState("");
+
   const [facebook, setFacebook] = useState("");
+  const [facebookNone, setFacebookNone] = useState(false);
+
   const [instagram, setInstagram] = useState("");
+  const [instagramNone, setInstagramNone] = useState(false);
+
   const [linkedinPersonal, setLinkedinPersonal] = useState("");
+  const [linkedinPersonalNone, setLinkedinPersonalNone] = useState(false);
+
   const [linkedinBusiness, setLinkedinBusiness] = useState("");
+  const [linkedinBusinessNone, setLinkedinBusinessNone] = useState(false);
+
   const [youtube, setYoutube] = useState("");
+  const [youtubeNone, setYoutubeNone] = useState(false);
+
   const [x, setX] = useState("");
+  const [xNone, setXNone] = useState(false);
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -53,12 +66,16 @@ export default function IntakePage() {
           BusinessName: businessName,
           BusinessURL: businessURL,
           Social: {
-            facebook,
-            instagram,
-            linkedinPersonal,
-            linkedinBusiness,
-            youtube,
-            x,
+            facebook: facebookNone ? "empty" : facebook || "empty",
+            instagram: instagramNone ? "empty" : instagram || "empty",
+            linkedinPersonal: linkedinPersonalNone
+              ? "empty"
+              : linkedinPersonal || "empty",
+            linkedinBusiness: linkedinBusinessNone
+              ? "empty"
+              : linkedinBusiness || "empty",
+            youtube: youtubeNone ? "empty" : youtube || "empty",
+            x: xNone ? "empty" : x || "empty",
           },
         }),
       }
@@ -72,6 +89,33 @@ export default function IntakePage() {
 
     router.push("/processing");
   };
+
+  const socialField = (
+    label: string,
+    value: string,
+    setValue: (v: string) => void,
+    none: boolean,
+    setNone: (v: boolean) => void
+  ) => (
+    <div className="mb-4">
+      <input
+        type="url"
+        placeholder={label}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        disabled={none}
+        className="w-full p-2 border rounded mb-2"
+      />
+      <label className="flex items-center gap-2 text-sm text-gray-600">
+        <input
+          type="radio"
+          checked={none}
+          onChange={() => setNone(true)}
+        />
+        No {label.replace(" URL", "")}
+      </label>
+    </div>
+  );
 
   return (
     <main className="min-h-screen flex flex-col items-center px-4 py-12 bg-[#f5f8ff]">
@@ -120,12 +164,12 @@ export default function IntakePage() {
           className="w-full p-2 border rounded mb-4"
         />
 
-        <input type="url" placeholder="Facebook URL" value={facebook} onChange={(e) => setFacebook(e.target.value)} className="w-full p-2 border rounded mb-4" />
-        <input type="url" placeholder="Instagram URL" value={instagram} onChange={(e) => setInstagram(e.target.value)} className="w-full p-2 border rounded mb-4" />
-        <input type="url" placeholder="LinkedIn Personal URL" value={linkedinPersonal} onChange={(e) => setLinkedinPersonal(e.target.value)} className="w-full p-2 border rounded mb-4" />
-        <input type="url" placeholder="LinkedIn Business URL" value={linkedinBusiness} onChange={(e) => setLinkedinBusiness(e.target.value)} className="w-full p-2 border rounded mb-4" />
-        <input type="url" placeholder="YouTube URL" value={youtube} onChange={(e) => setYoutube(e.target.value)} className="w-full p-2 border rounded mb-4" />
-        <input type="url" placeholder="X (Twitter) URL" value={x} onChange={(e) => setX(e.target.value)} className="w-full p-2 border rounded mb-4" />
+        {socialField("Facebook URL", facebook, setFacebook, facebookNone, setFacebookNone)}
+        {socialField("Instagram URL", instagram, setInstagram, instagramNone, setInstagramNone)}
+        {socialField("LinkedIn Personal URL", linkedinPersonal, setLinkedinPersonal, linkedinPersonalNone, setLinkedinPersonalNone)}
+        {socialField("LinkedIn Business URL", linkedinBusiness, setLinkedinBusiness, linkedinBusinessNone, setLinkedinBusinessNone)}
+        {socialField("YouTube URL", youtube, setYoutube, youtubeNone, setYoutubeNone)}
+        {socialField("X (Twitter) URL", x, setX, xNone, setXNone)}
 
         <button
           type="submit"
