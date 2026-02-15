@@ -51,6 +51,17 @@ export default function IntakePage() {
     setLoading(true);
     setError("");
 
+    // ✅ Persist into context
+    setData({
+      business: businessName,
+      url: businessURL,
+      facebook,
+      instagram,
+      linkedinPersonal,
+      linkedinBusiness,
+      youtube,
+    });
+
     const normalizedSub = data.clientId.replace("#SUB", "").trim();
     const finalClientID = `sub#${normalizedSub}`;
 
@@ -128,120 +139,6 @@ export default function IntakePage() {
           required
           className="w-full p-2 border rounded mb-6"
         />
-
-        <div className="mb-4">
-          <input
-            type="url"
-            placeholder="Facebook URL"
-            value={facebook}
-            onChange={(e) => setFacebook(e.target.value)}
-            disabled={facebookNone}
-            className="w-full p-2 border rounded mb-2"
-          />
-          <label className="flex items-center gap-2 text-sm text-gray-600">
-            <input
-              type="checkbox"
-              checked={facebookNone}
-              onChange={(e) => setFacebookNone(e.target.checked)}
-            />
-            No Facebook
-          </label>
-        </div>
-
-        <div className="mb-4">
-          <input
-            type="url"
-            placeholder="Instagram URL"
-            value={instagram}
-            onChange={(e) => setInstagram(e.target.value)}
-            disabled={instagramNone}
-            className="w-full p-2 border rounded mb-2"
-          />
-          <label className="flex items-center gap-2 text-sm text-gray-600">
-            <input
-              type="checkbox"
-              checked={instagramNone}
-              onChange={(e) => setInstagramNone(e.target.checked)}
-            />
-            No Instagram
-          </label>
-        </div>
-
-        <div className="mb-4">
-          <input
-            type="url"
-            placeholder="LinkedIn Personal URL"
-            value={linkedinPersonal}
-            onChange={(e) => setLinkedinPersonal(e.target.value)}
-            disabled={linkedinPersonalNone}
-            className="w-full p-2 border rounded mb-2"
-          />
-          <label className="flex items-center gap-2 text-sm text-gray-600">
-            <input
-              type="checkbox"
-              checked={linkedinPersonalNone}
-              onChange={(e) => setLinkedinPersonalNone(e.target.checked)}
-            />
-            No LinkedIn Personal
-          </label>
-        </div>
-
-        <div className="mb-4">
-          <input
-            type="url"
-            placeholder="LinkedIn Business URL"
-            value={linkedinBusiness}
-            onChange={(e) => setLinkedinBusiness(e.target.value)}
-            disabled={linkedinBusinessNone}
-            className="w-full p-2 border rounded mb-2"
-          />
-          <label className="flex items-center gap-2 text-sm text-gray-600">
-            <input
-              type="checkbox"
-              checked={linkedinBusinessNone}
-              onChange={(e) => setLinkedinBusinessNone(e.target.checked)}
-            />
-            No LinkedIn Business
-          </label>
-        </div>
-
-        <div className="mb-4">
-          <input
-            type="url"
-            placeholder="YouTube URL"
-            value={youtube}
-            onChange={(e) => setYoutube(e.target.value)}
-            disabled={youtubeNone}
-            className="w-full p-2 border rounded mb-2"
-          />
-          <label className="flex items-center gap-2 text-sm text-gray-600">
-            <input
-              type="checkbox"
-              checked={youtubeNone}
-              onChange={(e) => setYoutubeNone(e.target.checked)}
-            />
-            No YouTube
-          </label>
-        </div>
-
-        <div className="mb-6">
-          <input
-            type="url"
-            placeholder="X (Twitter) URL"
-            value={x}
-            onChange={(e) => setX(e.target.value)}
-            disabled={xNone}
-            className="w-full p-2 border rounded mb-2"
-          />
-          <label className="flex items-center gap-2 text-sm text-gray-600">
-            <input
-              type="checkbox"
-              checked={xNone}
-              onChange={(e) => setXNone(e.target.checked)}
-            />
-            No X
-          </label>
-        </div>
 
         <button
           type="submit"
