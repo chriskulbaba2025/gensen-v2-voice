@@ -54,66 +54,73 @@ export async function POST(req: NextRequest) {
     const brandCore = {
       "Brand Statement":
         body.brandStatement ||
-        (body.brandCore && body.brandCore["Brand Statement"]) ||
+        body.brandCore?.["Brand Statement"] ||
         "",
       Audience:
         body.audience ||
-        (body.brandCore && body.brandCore["Audience"]) ||
+        body.brandCore?.["Audience"] ||
         "",
       ICP:
-        body.icp || (body.brandCore && body.brandCore["ICP"]) || "",
+        body.icp ||
+        body.brandCore?.["ICP"] ||
+        "",
     };
 
     const s = body.sliderScores || {};
     const sliderScores = {
-      warmthAuthority: Number(s.warmthAuthority || 5),
-      authorityEnergy: Number(s.authorityEnergy || 5),
-      warmthEnergy: Number(s.warmthEnergy || 5),
-      clarityCreativity: Number(s.clarityCreativity || 5),
-      creativityEmpathy: Number(s.creativityEmpathy || 5),
-      clarityEmpathy: Number(s.clarityEmpathy || 5),
-      overall: Number(s.overall || 5),
+      warmthAuthority: Number(s.warmthAuthority ?? 5),
+      authorityEnergy: Number(s.authorityEnergy ?? 5),
+      warmthEnergy: Number(s.warmthEnergy ?? 5),
+      clarityCreativity: Number(s.clarityCreativity ?? 5),
+      creativityEmpathy: Number(s.creativityEmpathy ?? 5),
+      clarityEmpathy: Number(s.clarityEmpathy ?? 5),
+      overall: Number(s.overall ?? 5),
     };
 
     const payload = {
       firstName: body.firstName,
       lastName: body.lastName,
       email: body.email,
-      business: body.business || "",
-      url: body.url || "",
-      facebook: body.facebook || "",
-      instagram: body.instagram || "",
-      linkedin: body.linkedin || "",
-      youtube: body.youtube || "",
-      icp: body.icp || "",
-      audience: body.audience || "",
-      brandStatement: body.brandStatement || "",
+      business: body.business ?? "",
+      url: body.url ?? "",
+      facebook: body.facebook ?? "",
+      instagram: body.instagram ?? "",
+      linkedin: body.linkedin ?? "",
+      youtube: body.youtube ?? "",
+      icp: body.icp ?? "",
+      audience: body.audience ?? "",
+      brandStatement: body.brandStatement ?? "",
       brandCore,
-      topic: body.topic || "",
-      writingSample: body.writingSample || "",
+      topic: body.topic ?? "",
+      writingSample: body.writingSample ?? "",
       sliderScores,
     };
 
-    const webhook =
-      process.env.N8N_BRAND_VOICE_WEBHOOK ||
-      "https://primary-production-77e7.up.railway.app/webhook/brand-voice";
+    const webhook = process.env.N8N_BRAND_VOICE_WEBHOOK;
+
+    if (!webhook) {
+      console.error("❌ N8N_BRAND_VOICE_WEBHOOK not set");
+      return NextResponse.json(
+        { success: false, error: "Webhook not configured" },
+        { status: 500 }
+      );
+    }
 
     const webhookRes = await fetch(webhook, {
       method: "POST",
-      mode: "cors",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
     if (!webhookRes.ok) {
-      console.error("❌ n8n webhook failed:", await webhookRes.text());
+      const errorText = await webhookRes.text();
+      console.error("❌ n8n webhook failed:", errorText);
       return NextResponse.json(
-        { success: false, error: "Webhook failed" },
+        { success: false, error: "Webhook failed", details: errorText },
         { status: 500 }
       );
     }
 
-    // FIXED LINT ERROR
     let n8nJson: Record<string, unknown> = {};
     try {
       n8nJson = await webhookRes.json();
@@ -124,7 +131,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        reportUrl: n8nJson.reportUrl || null,
+        reportUrl: n8nJson.reportUrl ?? null,
         message: "Brand voice generated",
       },
       { status: 200 }
