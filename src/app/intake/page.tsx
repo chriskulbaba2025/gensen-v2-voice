@@ -6,7 +6,7 @@ import { useForm } from "@/context/FormContext";
 
 export default function IntakePage() {
   const router = useRouter();
-  const { data } = useForm();
+  const { data, setData } = useForm();
 
   const [businessName, setBusinessName] = useState<string>("");
   const [businessURL, setBusinessURL] = useState<string>("");
@@ -25,7 +25,7 @@ export default function IntakePage() {
     if (loading) return;
 
     if (!data?.clientId) {
-      setError("Missing ClientID.");
+      setError("ClientID is required.");
       return;
     }
 
@@ -44,13 +44,10 @@ export default function IntakePage() {
           body: JSON.stringify({
             ClientID: finalClientID,
             SortKey: "PROFILE",
-
             Email: data.email,
             FirstName: data.firstName,
-
             BusinessName: businessName,
             BusinessURL: businessURL,
-
             Social: {
               facebook,
               instagram,
@@ -85,6 +82,15 @@ export default function IntakePage() {
         <h1 className="text-2xl font-bold mb-6 text-center text-[#10284a]">
           Complete Your Brand Profile
         </h1>
+
+        <input
+          type="text"
+          placeholder="Client ID (e.g. #SUB f4d80428-...)"
+          value={data.clientId || ""}
+          onChange={(e) => setData({ clientId: e.target.value })}
+          required
+          className="w-full p-2 border rounded mb-4"
+        />
 
         <input
           type="text"
