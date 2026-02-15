@@ -10,14 +10,7 @@ export default function StartPage() {
   const { setData } = useForm();
 
   const [firstName, setFirstName] = useState("");
-  const [business, setBusiness] = useState("");
   const [email, setEmail] = useState("");
-  const [website, setWebsite] = useState("");
-  const [facebook, setFacebook] = useState("");
-  const [instagram, setInstagram] = useState("");
-  const [linkedinPersonal, setLinkedinPersonal] = useState("");
-  const [linkedinBusiness, setLinkedinBusiness] = useState("");
-  const [youtube, setYoutube] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -25,66 +18,44 @@ export default function StartPage() {
     e.preventDefault();
     if (loading) return;
 
-    setError("");
     setLoading(true);
+    setError("");
 
     const cleanEmail = email.trim().toLowerCase();
 
     try {
-      const checkRes = await fetch("/api/check-user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: cleanEmail }),
-      });
-
-      const checkData: { exists: boolean } = await checkRes.json();
-
-      if (checkData.exists === true) {
-        setData({ firstName, email: cleanEmail });
-        router.push(`/existing-user?name=${encodeURIComponent(firstName)}`);
-        return;
-      }
-
-      setData({
-        firstName,
-        email: cleanEmail,
-        business,
-        url: website,
-        facebook,
-        instagram,
-        linkedinPersonal,
-        linkedinBusiness,
-        youtube,
-      });
-
-      const submitRes = await fetch(
-        "https://primary-production-77e7.up.railway.app/webhook/submit-brand",
+      const res = await fetch(
+        "https://primary-production-77e7.up.railway.app/webhook/check-user",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             firstName,
             email: cleanEmail,
-            business,
-            url: website,
-            facebook,
-            instagram,
-            linkedinPersonal,
-            linkedinBusiness,
-            youtube,
           }),
         }
       );
 
-      if (!submitRes.ok) {
+      if (!res.ok) {
         setError("Unable to submit your information.");
-        setLoading(false);
         return;
       }
 
-      router.push("/new-user");
+      const data = await res.json();
+
+      setData({
+        firstName,
+        email: cleanEmail,
+      });
+
+      if (data.exists === true) {
+        router.push(`/existing-user?name=${encodeURIComponent(firstName)}`);
+      } else {
+        router.push("/new-user");
+      }
+
     } catch {
-      setError("Submission failed.");
+      setError("Unable to submit your information.");
     } finally {
       setLoading(false);
     }

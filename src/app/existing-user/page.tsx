@@ -65,7 +65,7 @@ export default function ExistingUserPage() {
       {/* Continue to Step 2 */}
  <a
   href="/screen-2"
-  className="px-6 py-3 bg-[#076aff] !text-[#ffffff] rounded-md hover:bg-[#002c71] transition text-lg font-medium shadow"
+  className="px-6 py-3 bg-[#076aff] text-[#ffffff] rounded-md hover:bg-[#002c71] transition text-lg font-medium shadow"
 >
   Continue
 </a>
