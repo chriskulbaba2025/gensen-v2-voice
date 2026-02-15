@@ -3,12 +3,12 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { decodeJwt } from "jose";
 
-export default function StartLayout({
+export default async function StartLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const token = cookieStore.get("gensen_session")?.value;
 
   if (!token) {
