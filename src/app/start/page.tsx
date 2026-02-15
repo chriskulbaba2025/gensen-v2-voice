@@ -43,10 +43,13 @@ export default function StartPage() {
 
       const result = await res.json();
 
-      setData({
+      const baseData = {
         firstName,
         email: cleanEmail,
-      });
+      };
+
+      setData(baseData);
+      localStorage.setItem("gensen_user", JSON.stringify(baseData));
 
       if (result.exists === true) {
         router.push("/existing-user");

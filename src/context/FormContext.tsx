@@ -1,9 +1,9 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 // ──────────────────────────────────────────────
-// Type definitions
+// Types
 // ──────────────────────────────────────────────
 
 export type BrandCoreField = {
@@ -24,19 +24,13 @@ export type OpportunityDetail = {
   opportunity: string;
 };
 
-// ──────────────────────────────────────────────
-// Global FormData structure
-// ──────────────────────────────────────────────
-
 export type FormData = {
-  // Basic info
   firstName: string;
   lastName: string;
   email: string;
   business: string;
   url: string;
 
-  // Social URLs
   facebook?: string;
   instagram?: string;
   linkedin?: string;
@@ -44,7 +38,6 @@ export type FormData = {
   linkedinPersonal?: string;
   linkedinBusiness?: string;
 
-  // Metadata
   message: string;
   persona: string;
   customAudience?: string;
@@ -52,15 +45,12 @@ export type FormData = {
   tagline: string;
   voiceTone: string;
 
-  // Brand-Voice inputs
   topic: string;
   writingSample: string;
 
-  // n8n interim report fields
   welcomeMessage?: string;
   htmlContent?: string;
 
-  // Webhook-derived data
   core?: BrandCoreField[];
   brandCore?: {
     "Brand Statement"?: string;
@@ -68,7 +58,6 @@ export type FormData = {
     ICP?: string;
   };
 
-  // Flattened high-level fields
   icp?: string;
   audience?: string;
   brandStatement?: string;
@@ -77,11 +66,8 @@ export type FormData = {
   opportunities?: OpportunityDetail[];
 
   reportHtml?: string;
-
-  // NEW: Cognito client ID
   clientId?: string | null;
 
-  // Sliders
   sliderScores: {
     warmthAuthority: number;
     authorityEnergy: number;
@@ -94,17 +80,72 @@ export type FormData = {
 };
 
 // ──────────────────────────────────────────────
-// Context interface
+// Default State
+// ──────────────────────────────────────────────
+
+const defaultState: FormData = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  business: "",
+  url: "",
+
+  facebook: "",
+  instagram: "",
+  linkedin: "",
+  youtube: "",
+  linkedinPersonal: "",
+  linkedinBusiness: "",
+
+  message: "",
+  persona: "",
+  customAudience: "",
+  brandValues: {},
+  tagline: "",
+  voiceTone: "",
+
+  topic: "",
+  writingSample: "",
+
+  welcomeMessage: "",
+  htmlContent: "",
+
+  core: [],
+  brandCore: {
+    "Brand Statement": "",
+    Audience: "",
+    ICP: "",
+  },
+
+  icp: "",
+  audience: "",
+  brandStatement: "",
+
+  socials: [],
+  opportunities: [],
+
+  reportHtml: "",
+  clientId: null,
+
+  sliderScores: {
+    warmthAuthority: 5,
+    authorityEnergy: 5,
+    warmthEnergy: 5,
+    clarityCreativity: 5,
+    creativityEmpathy: 5,
+    clarityEmpathy: 5,
+    overall: 5,
+  },
+};
+
+// ──────────────────────────────────────────────
+// Context
 // ──────────────────────────────────────────────
 
 type FormContextType = {
   data: FormData;
   setData: (values: Partial<FormData>) => void;
 };
-
-// ──────────────────────────────────────────────
-// Create context
-// ──────────────────────────────────────────────
 
 const FormContext = createContext<FormContextType | null>(null);
 
@@ -113,75 +154,25 @@ const FormContext = createContext<FormContextType | null>(null);
 // ──────────────────────────────────────────────
 
 export const FormProvider = ({ children }: { children: ReactNode }) => {
-  const [data, setDataState] = useState<FormData>({
-    // Basic defaults
-    firstName: "",
-    lastName: "",
-    email: "",
-    business: "",
-    url: "",
+  const [data, setDataState] = useState<FormData>(defaultState);
 
-    // Socials
-    facebook: "",
-    instagram: "",
-    linkedin: "",
-    youtube: "",
-    linkedinPersonal: "",
-    linkedinBusiness: "",
-
-    // Metadata
-    message: "",
-    persona: "",
-    customAudience: "",
-    brandValues: {},
-    tagline: "",
-    voiceTone: "",
-
-    // Inputs
-    topic: "",
-    writingSample: "",
-
-    // n8n interim HTML
-    welcomeMessage: "",
-    htmlContent: "",
-
-    // Brand data
-    core: [],
-    brandCore: {
-      "Brand Statement": "",
-      Audience: "",
-      ICP: "",
-    },
-
-    icp: "",
-    audience: "",
-    brandStatement: "",
-
-    socials: [],
-    opportunities: [],
-
-    reportHtml: "",
-
-    // NEW default clientId
-    clientId: null,
-
-    // Sliders
-    sliderScores: {
-      warmthAuthority: 5,
-      authorityEnergy: 5,
-      warmthEnergy: 5,
-      clarityCreativity: 5,
-      creativityEmpathy: 5,
-      clarityEmpathy: 5,
-      overall: 5,
-    },
-  });
+  // Hydrate from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem("gensen_user");
+    if (stored) {
+      setDataState((prev) => ({
+        ...prev,
+        ...JSON.parse(stored),
+      }));
+    }
+  }, []);
 
   const setData = (values: Partial<FormData>) => {
-    setDataState((prev) => ({
-      ...prev,
-      ...values,
-    }));
+    setDataState((prev) => {
+      const updated = { ...prev, ...values };
+      localStorage.setItem("gensen_user", JSON.stringify(updated));
+      return updated;
+    });
   };
 
   return (
@@ -192,7 +183,7 @@ export const FormProvider = ({ children }: { children: ReactNode }) => {
 };
 
 // ──────────────────────────────────────────────
-// Hook for components to access context
+// Hook
 // ──────────────────────────────────────────────
 
 export const useForm = () => {
