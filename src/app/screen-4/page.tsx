@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from '@/context/FormContext';
-import ProgressBar from '@/components/ProgressBar';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "@/context/FormContext";
+import ProgressBar from "@/components/ProgressBar";
 
 export default function Step4() {
   const router = useRouter();
@@ -11,60 +11,70 @@ export default function Step4() {
 
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
 
-  const handleBack = () => router.back();
+  const navigateWithFade = (path?: string, isBack?: boolean) => {
+    setIsExiting(true);
+    setTimeout(() => {
+      if (isBack) {
+        router.back();
+      } else if (path) {
+        router.push(path);
+      }
+    }, 500);
+  };
+
+  const handleBack = () => {
+    navigateWithFade(undefined, true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed) return;
+
     setLoading(true);
 
     try {
-      // Final payload — validated to match FormData + API spec
       const payload = {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-
         business: data.business,
         url: data.url,
-
-        facebook: data.facebook ?? '',
-        instagram: data.instagram ?? '',
-        linkedin: data.linkedin ?? '',
-        youtube: data.youtube ?? '',
-
+        facebook: data.facebook ?? "",
+        instagram: data.instagram ?? "",
+        linkedin: data.linkedin ?? "",
+        youtube: data.youtube ?? "",
         icp: data.icp,
         audience: data.audience,
         brandStatement: data.brandStatement,
-
         brandCore: data.brandCore,
         sliderScores: data.sliderScores,
         topic: data.topic,
         writingSample: data.writingSample,
       };
 
-      console.log('FINAL OUTGOING DATA (screen-4):', payload);
-
-      const res = await fetch('/api/brand-voice', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/brand-voice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error('Webhook failed');
+      if (!res.ok) throw new Error("Webhook failed");
 
       const result = await res.json();
 
       if (result.reportUrl) {
-        localStorage.setItem('reportUrl', result.reportUrl);
-        router.push(`/report?url=${encodeURIComponent(result.reportUrl)}`);
+        localStorage.setItem("reportUrl", result.reportUrl);
+        navigateWithFade(
+          `/report?url=${encodeURIComponent(result.reportUrl)}`
+        );
       } else {
-        router.push('/report');
+        navigateWithFade("/report");
       }
     } catch (err) {
-      console.error('Submission error:', err);
-      alert('Submission failed. Try again.');
+      console.error("Submission error:", err);
+      alert("Submission failed. Try again.");
       setLoading(false);
     }
   };
@@ -90,7 +100,11 @@ export default function Step4() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col px-4 pt-12">
+    <main
+      className={`min-h-screen flex flex-col px-4 pt-12 transition-opacity duration-500 ${
+        isExiting ? "opacity-0" : "opacity-100"
+      }`}
+    >
       <ProgressBar step={4} total={4} />
 
       <form
@@ -105,7 +119,7 @@ export default function Step4() {
           <div className="bg-white p-4 rounded shadow-sm">
             <p className="font-medium">Full Name</p>
             <p className="mt-1 text-gray-700">
-              {`${data.firstName || ''} ${data.lastName || ''}`.trim()}
+              {`${data.firstName || ""} ${data.lastName || ""}`.trim()}
             </p>
           </div>
 
@@ -132,7 +146,7 @@ export default function Step4() {
           <div className="bg-white p-4 rounded shadow-sm">
             <p className="font-medium">Writing Sample</p>
             <p className="mt-1 text-gray-700 whitespace-pre-wrap">
-              {data.writingSample || '(none provided)'}
+              {data.writingSample || "(none provided)"}
             </p>
           </div>
 
@@ -158,7 +172,7 @@ export default function Step4() {
           <button
             type="button"
             onClick={handleBack}
-            className="px-6 py-2 rounded border border-[#076aff] bg-transparent text-[#076aff] hover:bg-[#076aff] hover:text-[#ffffff] transition-colors duration-300"
+            className="px-6 py-2 rounded border border-[#076aff] bg-transparent text-[#076aff] hover:bg-[#076aff] hover:text-white transition-colors duration-300"
           >
             ← Back
           </button>
@@ -168,11 +182,11 @@ export default function Step4() {
             disabled={!agreed || loading}
             className={`px-6 py-2 rounded text-white font-medium transition-colors duration-300 ${
               !agreed || loading
-                ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-[#f66630] hover:bg-[#e6551a]'
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-[#f66630] hover:bg-[#e6551a]"
             }`}
           >
-            {loading ? 'Generating…' : 'Submit →'}
+            {loading ? "Generating…" : "Submit →"}
           </button>
         </div>
       </form>

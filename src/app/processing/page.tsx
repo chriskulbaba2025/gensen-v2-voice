@@ -14,20 +14,31 @@ export default function NewUserPage() {
   const [stage, setStage] = useState<"loading" | "complete">("loading");
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [htmlContent, setHtmlContent] = useState("");
+  const [isExiting, setIsExiting] = useState(false);
 
   // ───────────────────────────────────────────────
-  // HARD AUTO-ADVANCE AFTER 3 MINUTES + 5 SECONDS
+  // FADE + NAVIGATION HELPER
+  // ───────────────────────────────────────────────
+  const navigateWithFade = (path: string) => {
+    setIsExiting(true);
+    setTimeout(() => {
+      router.push(path);
+    }, 500); // match Tailwind duration-500
+  };
+
+  // ───────────────────────────────────────────────
+  // HARD AUTO-ADVANCE
   // ───────────────────────────────────────────────
   useEffect(() => {
     const redirectTimer = setTimeout(() => {
-      router.push("/screen-2");
-    }, 20000); // 3 minutes 5 seconds
+      navigateWithFade("/screen-2");
+    }, 20000);
 
     return () => clearTimeout(redirectTimer);
-  }, [router]);
+  }, []);
 
   // ───────────────────────────────────────────────
-  // POLLING — IMMEDIATE CHECK + EVERY 5 SECONDS
+  // POLLING
   // ───────────────────────────────────────────────
   useEffect(() => {
     let intervalId: NodeJS.Timeout | null = null;
@@ -50,7 +61,7 @@ export default function NewUserPage() {
 
           if (intervalId) clearInterval(intervalId);
 
-          router.push("/screen-2");
+          navigateWithFade("/screen-2");
         }
       } catch {}
     };
@@ -61,10 +72,14 @@ export default function NewUserPage() {
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [data, setData, router]);
+  }, []);
 
   return (
-    <main className="flex flex-col items-center justify-start p-8 text-center bg-gray-50 transition-all duration-700 relative">
+    <main
+      className={`flex flex-col items-center justify-start p-8 text-center bg-gray-50 transition-opacity duration-500 ${
+        isExiting ? "opacity-0" : "opacity-100"
+      }`}
+    >
       <div
         className={`flex flex-col items-center transition-opacity duration-1500 ease-in-out ${
           stage === "complete"
@@ -105,13 +120,12 @@ export default function NewUserPage() {
         }`}
       >
         <Image
-  src="/gensen-logo.webp"
-  alt="GENSEN logo"
-  width={180}
-  height={130}
-  className="w-[140px] mb-2.5 rounded-xl"
-/>
-
+          src="/gensen-logo.webp"
+          alt="GENSEN logo"
+          width={180}
+          height={130}
+          className="w-[140px] mb-2.5 rounded-xl"
+        />
 
         {welcomeMessage && (
           <p className="text-gray-700 mb-4 max-w-[700px] whitespace-pre-line leading-relaxed text-left">
@@ -126,12 +140,12 @@ export default function NewUserPage() {
           />
         )}
 
-        <Link
-          href="/screen-2"
+        <button
+          onClick={() => navigateWithFade("/screen-2")}
           className="mt-4 inline-block px-8 py-3 rounded-[10px] border border-[#076aff] text-[#076aff] bg-transparent hover:bg-[#076aff] hover:text-white transition-colors duration-300"
         >
           Continue to Step 2 →
-        </Link>
+        </button>
       </div>
 
       <footer className="my-[50px] text-gray-500 italic text-sm text-center">

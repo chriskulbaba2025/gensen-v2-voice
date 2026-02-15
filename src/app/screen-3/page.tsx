@@ -1,27 +1,39 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from '@/context/FormContext';
-import ProgressBar from '@/components/ProgressBar';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "@/context/FormContext";
+import ProgressBar from "@/components/ProgressBar";
 
 export default function Step3() {
   const router = useRouter();
   const { data, setData } = useForm();
 
-  const [contentFocus, setContentFocus] = useState(data.topic || '');
-  const [writingSample, setWritingSample] = useState(data.writingSample || '');
+  const [contentFocus, setContentFocus] = useState(data.topic || "");
+  const [writingSample, setWritingSample] = useState(data.writingSample || "");
   const [loading, setLoading] = useState(true);
+  const [isExiting, setIsExiting] = useState(false);
+
+  const navigateWithFade = (path?: string, isBack?: boolean) => {
+    setIsExiting(true);
+    setTimeout(() => {
+      if (isBack) {
+        router.back();
+      } else if (path) {
+        router.push(path);
+      }
+    }, 500);
+  };
 
   // ───────────────────────────────────────────────
-  // 1. AUTO-LOAD Topic from Airtable using CleanEmail
+  // AUTO-LOAD Topic
   // ───────────────────────────────────────────────
   useEffect(() => {
     async function loadTopic() {
       try {
-        const res = await fetch('/api/get-brand-data', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const res = await fetch("/api/get-brand-data", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: data.email }),
         });
 
@@ -37,7 +49,7 @@ export default function Step3() {
           setData({ topic: json.topic });
         }
       } catch (err) {
-        console.error('Topic fetch failed:', err);
+        console.error("Topic fetch failed:", err);
       } finally {
         setLoading(false);
       }
@@ -47,7 +59,7 @@ export default function Step3() {
   }, [data.email, setData]);
 
   // ───────────────────────────────────────────────
-  // 2. NEXT
+  // NEXT
   // ───────────────────────────────────────────────
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,13 +69,15 @@ export default function Step3() {
       writingSample: writingSample,
     });
 
-    router.push('/screen-4');
+    navigateWithFade("/screen-4");
   };
 
-  const handleBack = () => router.back();
+  const handleBack = () => {
+    navigateWithFade(undefined, true);
+  };
 
   // ───────────────────────────────────────────────
-  // 3. LOADING STATE
+  // LOADING STATE
   // ───────────────────────────────────────────────
   if (loading) {
     return (
@@ -74,10 +88,14 @@ export default function Step3() {
   }
 
   // ───────────────────────────────────────────────
-  // 4. UI
+  // UI
   // ───────────────────────────────────────────────
   return (
-    <main className="min-h-screen flex flex-col items-center px-4 pt-12 mb-20">
+    <main
+      className={`min-h-screen flex flex-col items-center px-4 pt-12 mb-20 transition-opacity duration-500 ${
+        isExiting ? "opacity-0" : "opacity-100"
+      }`}
+    >
       <ProgressBar step={3} total={4} />
 
       <h1 className="text-2xl font-bold mb-4 text-center">
@@ -118,7 +136,7 @@ export default function Step3() {
         <button
           type="button"
           onClick={handleBack}
-          className="px-6 py-2 rounded border border-[#076aff] text-[#076aff] hover:bg-[#076aff] hover:text-white transition-colors"
+          className="px-6 py-2 rounded border border-[#076aff] text-[#076aff] hover:bg-[#076aff] hover:text-white transition-colors duration-300"
         >
           ← Back
         </button>
@@ -126,7 +144,7 @@ export default function Step3() {
         <button
           type="submit"
           onClick={handleNext}
-          className="px-6 py-2 rounded border border-[#076aff] text-[#076aff] hover:bg-[#076aff] hover:text-white transition-colors"
+          className="px-6 py-2 rounded border border-[#076aff] text-[#076aff] hover:bg-[#076aff] hover:text-white transition-colors duration-300"
         >
           Next →
         </button>
