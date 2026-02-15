@@ -1,10 +1,8 @@
-"use client";
-
 // src/app/layout.tsx
 import "./globals.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { ReactNode } from "react";
-import { FormProvider } from "@/context/FormContext";
+import Providers from "./providers";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 
@@ -24,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="flex flex-col min-h-screen bg-[#f5f8ff] text-[#0a0a0a] font-raleway">
-        <FormProvider>
+        <Providers>
           <Navbar />
 
           <header className="w-full py-4 bg-white flex flex-col items-center shadow-sm">
@@ -43,10 +41,8 @@ export default function RootLayout({
             </h1>
           </header>
 
-          <main className="flex-1">
-            {children}
-          </main>
-        </FormProvider>
+          <main className="flex-1">{children}</main>
+        </Providers>
       </body>
     </html>
   );
