@@ -7,6 +7,7 @@ export async function POST(req: NextRequest) {
 
     console.log("BODY RECEIVED:", body);
 
+    // Check for missing email
     if (!body || !body.email) {
       return NextResponse.json(
         { success: false, error: "Missing email" },
@@ -14,8 +15,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Get the webhook URL from the environment variable
     const webhook = process.env.N8N_BRAND_VOICE_WEBHOOK;
 
+    // Ensure webhook URL is configured
     if (!webhook) {
       return NextResponse.json(
         { success: false, error: "Webhook not configured" },
@@ -23,6 +26,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Call the webhook with the received data
     const webhookRes = await fetch(webhook, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -31,6 +35,7 @@ export async function POST(req: NextRequest) {
 
     const text = await webhookRes.text();
 
+    // Check if the webhook response is OK
     if (!webhookRes.ok) {
       console.error("n8n error:", text);
       return NextResponse.json(
@@ -39,13 +44,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Parse the response from n8n
     let parsed: any = {};
     try {
       parsed = JSON.parse(text);
-    } catch {
+    } catch (error) {
+      console.error("Error parsing response:", error);
       parsed = {};
     }
 
+    // Respond back with the report URL or null if not available
     return NextResponse.json(
       {
         success: true,
