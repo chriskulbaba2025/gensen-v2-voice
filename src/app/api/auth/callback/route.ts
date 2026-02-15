@@ -8,7 +8,7 @@ export async function GET(req: Request) {
     return NextResponse.redirect("https://voice.omnipressence.com/login");
   }
 
-  const tokenUrl = "https://gensen.omnipressence.com/oauth2/token";
+  const tokenUrl = "https://us-east-1h3gtxqg3.auth.us-east-1.amazoncognito.com/oauth2/token";
 
   const params = new URLSearchParams();
   params.append("grant_type", "authorization_code");
