@@ -26,6 +26,8 @@ export default function IntakePage() {
   const [xNone, setXNone] = useState(false);
 
   const [loading, setLoading] = useState(false);
+  const [waiting, setWaiting] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
   const [error, setError] = useState("");
 
   const socialValue = (value: string, none: boolean) => {
@@ -36,7 +38,7 @@ export default function IntakePage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (loading) return;
+    if (loading || waiting) return;
 
     if (!data.firstName || !data.email) {
       setError("Missing name or email from first step.");
@@ -65,9 +67,20 @@ export default function IntakePage() {
     const finalClientID = `sub#${normalizedSub}`;
 
     try {
+      setLoading(false);
+      setWaiting(true);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+        setWaiting(false);
+        setTimedOut(true);
+      }, 300000); // 5 minutes
+
       const res = await fetch("/api/submit-brand", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           ClientID: finalClientID,
           SortKey: "PROFILE",
@@ -86,21 +99,49 @@ export default function IntakePage() {
         }),
       });
 
+      clearTimeout(timeoutId);
+
       if (!res.ok) {
         setError("Submission failed.");
-        setLoading(false);
+        setWaiting(false);
         return;
       }
 
-      router.push("/processing");
-    } catch {
-      setError("Submission failed.");
-      setLoading(false);
+      // n8n responded — move to screen-2
+      router.push("/screen-2");
+
+    } catch (err: any) {
+      if (err?.name !== "AbortError") {
+        setError("Submission failed.");
+        setWaiting(false);
+      }
     }
   };
 
   return (
     <main className="min-h-screen flex flex-col items-center px-4 py-12 bg-[#f5f8ff]">
+
+      {/* WAITING OVERLAY */}
+      {waiting && (
+        <div className="fixed inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center z-50">
+          <div className="w-16 h-16 border-4 border-[#076aff] border-t-transparent rounded-full animate-spin mb-6"></div>
+          <p className="text-xl font-semibold text-[#10284a] mb-2">Analyzing your brand presence…</p>
+          <p className="text-gray-500 text-sm">This may take a few minutes. Please stay on this page.</p>
+        </div>
+      )}
+
+      {/* TIMEOUT MESSAGE */}
+      {timedOut && (
+        <div className="fixed inset-0 bg-white bg-opacity-95 flex flex-col items-center justify-center z-50 px-6">
+          <div className="max-w-lg text-center">
+            <h2 className="text-2xl font-bold text-[#10284a] mb-4">We need to investigate the system</h2>
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              Something isn't quite right yet. Our team is looking into it and will have you moving forward shortly. Please stay on this page.
+            </p>
+          </div>
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-lg shadow w-full max-w-3xl border border-[#e0e6f5]"
@@ -184,8 +225,12 @@ export default function IntakePage() {
           </label>
         </div>
 
-        <button type="submit" disabled={loading} className="w-full px-6 py-2 rounded bg-[#076aff] text-white">
-          {loading ? "Submitting…" : "Submit & Generate"}
+        <button
+          type="submit"
+          disabled={loading || waiting}
+          className="w-full px-6 py-2 rounded bg-[#076aff] text-white"
+        >
+          {loading ? "Submitting…" : waiting ? "Processing…" : "Submit & Continue"}
         </button>
 
         {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
