@@ -5,7 +5,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     console.log('[RECEIVED FROM FRONTEND]', body);
 
-    const webhookURL = process.env.N8N_BRAND_VOICE_WEBHOOK;
+    const webhookURL = process.env.N8N_SUBMIT_WEBHOOK;
     if (!webhookURL) {
       console.error('❌ Missing N8N_BRAND_VOICE_WEBHOOK in environment variables.');
       return NextResponse.json({ error: 'Server config error' }, { status: 500 });
