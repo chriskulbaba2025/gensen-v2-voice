@@ -48,14 +48,14 @@ export default function Step8() {
 
   return (
     <main className="min-h-screen flex flex-col px-4 pt-12">
-      <ProgressBar step={8} total={8} />
+      <ProgressBar step={5} total={5} />
 
       <form
         onSubmit={handleSubmit}
         className="bg-gray-50 p-8 rounded-lg shadow w-full max-w-xl mx-auto space-y-6"
       >
         <h1 className="text-2xl font-bold text-center">
-          Step 8: Review & Submit Your Brand Voice
+          Step 5: Review & Submit Your Brand Voice
         </h1>
 
         <div className="space-y-4">

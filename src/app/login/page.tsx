@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 
 function base64urlencode(buffer: ArrayBuffer) {
   return btoa(String.fromCharCode(...new Uint8Array(buffer)))
-    .replace(/\+/g, "-")  .replace(/\//g, "_")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
     .replace(/=+$/, "");
 }
 
@@ -18,10 +19,9 @@ export default function Login() {
   const [loginUrl, setLoginUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    const clientId = "32qheda7uvt0fmsrdqtuff0ocq";
-    const cognitoDomain = "https://us-east-1h3gtxtqg3.auth.us-east-1.amazoncognito.com";
-    const redirectUri =
-      "https://voice.omnipressence.com/api/auth/callback";
+    const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID!;
+    const cognitoDomain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN!;
+    const redirectUri = "https://voice.omnipressence.com/api/auth/callback";
 
     async function generatePKCE() {
       const randomBytes = new Uint8Array(32);
@@ -31,8 +31,7 @@ export default function Login() {
       const hashed = await sha256(codeVerifier);
       const codeChallenge = base64urlencode(hashed);
 
-      document.cookie =
-        `pkce_verifier=${codeVerifier}; path=/; secure; samesite=lax`;
+      document.cookie = `pkce_verifier=${codeVerifier}; path=/; secure; samesite=lax`;
 
       const url =
         `${cognitoDomain}/oauth2/authorize` +

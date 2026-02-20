@@ -32,7 +32,7 @@ export default function NewUserPage() {
   useEffect(() => {
     const redirectTimer = setTimeout(() => {
       navigateWithFade("/screen-2");
-    }, 20000);
+    }, 300000);
 
     return () => clearTimeout(redirectTimer);
   }, []);

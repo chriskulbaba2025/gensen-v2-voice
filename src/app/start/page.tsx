@@ -23,17 +23,14 @@ export default function StartPage() {
     const cleanEmail = email.trim().toLowerCase();
 
     try {
-      const res = await fetch(
-        "https://primary-production-77e7.up.railway.app/webhook/check-user",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            firstName,
-            email: cleanEmail,
-          }),
-        }
-      );
+      const res = await fetch("/api/check-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName,
+          email: cleanEmail,
+        }),
+      });
 
       if (!res.ok) {
         setError("Unable to submit your information.");
