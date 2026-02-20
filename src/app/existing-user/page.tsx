@@ -62,15 +62,7 @@ export default function ExistingUserPage() {
         </p>
       </div>
 
-      {/* Continue to Step 2 */}
- <a
-  href="/screen-2"
-  className="px-6 py-3 bg-[#076aff] text-[#ffffff] rounded-md hover:bg-[#002c71] transition text-lg font-medium shadow"
->
-  Continue
-</a>
-
-      {/* Footer */}
+       {/* Footer */}
       <div className="border-t border-gray-200 pt-6 mt-12 w-full max-w-2xl text-center">
         <p className="text-lg text-gray-500">
           Reliable consistency is part of your edge. GENSEN keeps it that way.
